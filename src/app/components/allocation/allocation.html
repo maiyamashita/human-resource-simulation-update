@@ -1,0 +1,176 @@
+<section class="allocation-section">
+  <div class="section-title">
+    <div>
+      <h2>事業部別配置人数・スキル構成ギャップ</h2>
+      <p>シナリオ別の配置バランスおよび各事業部の平均能力構成</p>
+    </div>
+  </div>
+
+  <div class="allocation-grid">
+    @for (sc of scenarios; track sc.id) {
+      <div 
+        class="allocation-card"
+        [class.selected]="selectedScenarioId === sc.id"
+      >
+        <!-- シナリオヘッダー -->
+        <div class="card-header">
+          <div class="scenario-badge">SCENARIO {{ sc.id }}</div>
+          <h3 class="scenario-title">{{ sc.shortName || sc.name }}</h3>
+        </div>
+
+        <!-- 積み上げバーチャート (人数) -->
+        <div class="stacked-bar-container">
+          <div class="stacked-bar">
+            @if (sc?.departments) {
+              <!-- A事業部 -->
+              <div 
+                class="segment dept-a" 
+                [style.width.%]="getAllocationWidth(sc.departments.A?.count || 0)"
+              >
+                @if ((sc.departments.A?.count || 0) > 8) {
+                  <span class="segment-label">A: {{ sc.departments.A?.count }}名</span>
+                }
+              </div>
+
+              <!-- B事業部 -->
+              <div 
+                class="segment dept-b" 
+                [style.width.%]="getAllocationWidth(sc.departments.B?.count || 0)"
+              >
+                @if ((sc.departments.B?.count || 0) > 8) {
+                  <span class="segment-label">B: {{ sc.departments.B?.count }}名</span>
+                }
+              </div>
+
+              <!-- C事業部 -->
+              <div 
+                class="segment dept-c" 
+                [style.width.%]="getAllocationWidth(sc.departments.C?.count || 0)"
+              >
+                @if ((sc.departments.C?.count || 0) > 8) {
+                  <span class="segment-label">C: {{ sc.departments.C?.count }}名</span>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- 事業部別内訳ミニカード (人数) -->
+        <div class="department-breakdown">
+          <!-- A事業部 -->
+          <div class="dept-stat dept-a-stat">
+            <div class="dept-name">
+              <span class="color-dot dept-a-dot"></span>
+              A事業部
+            </div>
+            <div class="dept-val">
+              <strong>{{ sc.departments?.A?.count || 0 }}</strong>
+              <small>/ {{ appropriateCounts.A }}名</small>
+            </div>
+          </div>
+
+          <!-- B事業部 -->
+          <div class="dept-stat dept-b-stat">
+            <div class="dept-name">
+              <span class="color-dot dept-b-dot"></span>
+              B事業部
+            </div>
+            <div class="dept-val">
+              <strong>{{ sc.departments?.B?.count || 0 }}</strong>
+              <small>/ {{ appropriateCounts.B }}名</small>
+            </div>
+          </div>
+
+          <!-- C事業部 -->
+          <div class="dept-stat dept-c-stat">
+            <div class="dept-name">
+              <span class="color-dot dept-c-dot"></span>
+              C事業部
+            </div>
+            <div class="dept-val">
+              <strong>{{ sc.departments?.C?.count || 0 }}</strong>
+              <small>/ {{ appropriateCounts.C }}名</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- 事業部別スキル構成・ギャップ可視化エリア -->
+        <div class="skill-gap-section">
+          <div class="skill-gap-title">配属メンバーの平均能力構成</div>
+          
+          <div class="skill-depts-grid">
+            <!-- A事業部 スキル構成 -->
+            <div class="dept-skill-box dept-a-box">
+              <span class="box-label">A事業部（飽和）</span>
+              @let aAvg = getDepartmentSkillAvg(sc, 'A');
+              <div class="skill-bars">
+                <div class="skill-row" title="営業力">
+                  <span class="s-name">営業</span>
+                  <div class="s-bar-bg"><div class="s-bar-fill sales" [style.width.%]="aAvg.sales"></div></div>
+                  <span class="s-val">{{ aAvg.sales }}</span>
+                </div>
+                <div class="skill-row" title="管理力">
+                  <span class="s-name">管理</span>
+                  <div class="s-bar-bg"><div class="s-bar-fill mgmt" [style.width.%]="aAvg.management"></div></div>
+                  <span class="s-val">{{ aAvg.management }}</span>
+                </div>
+                <div class="skill-row" title="開拓力">
+                  <span class="s-name">開拓</span>
+                  <div class="s-bar-bg"><div class="s-bar-fill dev" [style.width.%]="aAvg.development"></div></div>
+                  <span class="s-val">{{ aAvg.development }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- B事業部 スキル構成 -->
+            <div class="dept-skill-box dept-b-box">
+              <span class="box-label">B事業部（成長）</span>
+              @let bAvg = getDepartmentSkillAvg(sc, 'B');
+              <div class="skill-bars">
+                <div class="skill-row" title="営業力">
+                  <span class="s-name">営業</span>
+                  <div class="s-bar-bg"><div class="s-bar-fill sales" [style.width.%]="bAvg.sales"></div></div>
+                  <span class="s-val">{{ bAvg.sales }}</span>
+                </div>
+                <div class="skill-row" title="管理力">
+                  <span class="s-name">管理</span>
+                  <div class="s-bar-bg"><div class="s-bar-fill mgmt" [style.width.%]="bAvg.management"></div></div>
+                  <span class="s-val">{{ bAvg.management }}</span>
+                </div>
+                <div class="skill-row" title="開拓力">
+                  <span class="s-name">開拓</span>
+                  <div class="s-bar-bg"><div class="s-bar-fill dev" [style.width.%]="bAvg.development"></div></div>
+                  <span class="s-val">{{ bAvg.development }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- C事業部 スキル構成 -->
+            <div class="dept-skill-box dept-c-box">
+              <span class="box-label">C事業部（新規）</span>
+              @let cAvg = getDepartmentSkillAvg(sc, 'C');
+              <div class="skill-bars">
+                <div class="skill-row" title="営業力">
+                  <span class="s-name">営業</span>
+                  <div class="s-bar-bg"><div class="s-bar-fill sales" [style.width.%]="cAvg.sales"></div></div>
+                  <span class="s-val">{{ cAvg.sales }}</span>
+                </div>
+                <div class="skill-row" title="管理力">
+                  <span class="s-name">管理</span>
+                  <div class="s-bar-bg"><div class="s-bar-fill mgmt" [style.width.%]="cAvg.management"></div></div>
+                  <span class="s-val">{{ cAvg.management }}</span>
+                </div>
+                <div class="skill-row" title="開拓力">
+                  <span class="s-name">開拓</span>
+                  <div class="s-bar-bg"><div class="s-bar-fill dev" [style.width.%]="cAvg.development"></div></div>
+                  <span class="s-val">{{ cAvg.development }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    }
+  </div>
+</section>

@@ -1,0 +1,543 @@
+/* ==================================================
+   全体・ベース（1画面固定 Viewport）
+================================================== */
+
+:host {
+  display: block;
+}
+
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #f5f7fa;
+  color: #1f2937;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "Noto Sans JP",
+    sans-serif;
+  box-sizing: border-box;
+}
+
+.app-layout *,
+.app-layout *::before,
+.app-layout *::after {
+  box-sizing: border-box;
+}
+
+/* ==================================================
+   タブナビゲーションバー
+================================================== */
+
+.tab-navigation {
+  display: flex;
+  gap: 8px;
+  background-color: #ffffff;
+  padding: 8px 24px 0 24px;
+  border-bottom: 2px solid #e8e8e8;
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-size: 0.95rem;
+  color: #595959;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  color: #1677ff;
+  background-color: #f0f7ff;
+}
+
+.tab-btn.active {
+  color: #1677ff;
+  border-bottom-color: #1677ff;
+  background-color: #ffffff;
+  font-weight: bold;
+}
+
+.tab-icon {
+  font-size: 1.1rem;
+}
+
+/* ==================================================
+   メインコンテンツエリア（枠内表示・自動スクロール）
+================================================== */
+
+.main-content-view {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 24px 40px;
+}
+
+/* タブ内レイアウト */
+.tab-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.tab-pane.dashboard-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px; /* セクション間の間隔を広げて境界を明確化 */
+}
+
+/* 各セクションを白いカード（コンテナ）で囲んで独立させる */
+.dashboard-section-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-section-title {
+  margin: 0 0 16px 0;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.dashboard-section-title h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.dashboard-section-title p {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 4px 0 0 0;
+}
+
+/* 下段（グラフ vs 配置ギャップ）の2列レイアウト */
+.dashboard-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.grid-left,
+.grid-right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ==================================================
+   スクロール追従ステータスバー（タブ1用）
+================================================== */
+
+.sticky-scenario-bar {
+  position: sticky;
+  top: -16px;
+  z-index: 100;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  padding: 10px 24px;
+  margin: -16px -24px 16px -24px;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.sticky-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.85rem;
+}
+
+.active-badge {
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.sc-kpis {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profit-txt { color: #4ade80; }
+.sep { color: #64748b; }
+
+/* ==================================================
+   セクション共通
+================================================== */
+
+section {
+  margin-bottom: 16px;
+}
+
+.section-title {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.section-title h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.section-title p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* ==================================================
+   CSVファイル読み込みエリア
+================================================== */
+
+.csv-card {
+  padding: 16px 20px;
+  background: #ffffff;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.csv-card label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.csv-card input[type="file"] {
+  font-size: 13px;
+  color: #475569;
+}
+
+.success-message,
+.csv-success {
+  margin-top: 10px;
+  margin-bottom: 0;
+  color: #15803d;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.error-message,
+.csv-error {
+  margin-top: 10px;
+  margin-bottom: 0;
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ==================================================
+   ローディング画面 (プログレス & スピナー)
+================================================== */
+
+.loading-overlay-card {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: #ffffff;
+  border: 1px solid #bfdbfe;
+  border-left: 5px solid #2563eb;
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+}
+
+.spinner-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 4px solid #e0f2fe;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-content {
+  flex: 1;
+}
+
+.loading-content h3 {
+  margin: 0 0 4px 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.loading-content p {
+  margin: 0 0 10px 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.progress-bar-track {
+  width: 100%;
+  height: 6px;
+  background: #f1f5f9;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+  border-radius: 3px;
+  animation: shimmer 1.8s infinite ease-in-out;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* ==================================================
+   初期表示（ウェルカム・CSVアップロード画面）
+================================================== */
+
+.welcome-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 100%);
+}
+
+.welcome-card {
+  width: 100%;
+  max-width: 520px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 40px 32px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+  text-align: center;
+}
+
+.welcome-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+
+.welcome-header h2 {
+  margin: 0 0 8px 0;
+  font-size: 1.4rem;
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.welcome-header p {
+  margin: 0 0 28px 0;
+  font-size: 0.85rem;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.upload-drop-area {
+  position: relative;
+  border: 2px dashed #3b82f6;
+  background-color: #eff6ff;
+  border-radius: 12px;
+  padding: 32px 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.upload-drop-area:hover {
+  background-color: #dbeafe;
+  border-color: #2563eb;
+}
+
+.upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.upload-btn-icon {
+  font-size: 2rem;
+}
+
+.upload-label strong {
+  font-size: 1rem;
+  color: #1d4ed8;
+}
+
+.upload-label small {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.file-input-hidden {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.welcome-loading {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.welcome-loading p {
+  font-size: 0.85rem;
+  color: #2563eb;
+  font-weight: bold;
+}
+
+.error-box {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  color: #dc2626;
+  font-size: 0.8rem;
+}
+
+/* ==================================================
+   レスポンシブ (画面幅縮小時)
+================================================== */
+
+@media (max-width: 900px) {
+  .dashboard-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .loading-overlay-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+/* --- 全社売上目標コントロールバー --- */
+.global-target-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffffff;
+  border: 1px solid #bfdbfe;
+  border-left: 5px solid #2563eb;
+  border-radius: 8px;
+  padding: 10px 18px;
+  margin: 12px 20px 0;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.08);
+}
+
+.target-input-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.target-icon {
+  font-size: 1.2rem;
+}
+
+.target-label {
+  font-size: 14px;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.target-input-global {
+  width: 75px;
+  padding: 5px 8px;
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+  border: 1.5px solid #93c5fd;
+  border-radius: 6px;
+  text-align: right;
+  background-color: #f8fafc;
+}
+
+.target-input-global:focus {
+  outline: none;
+  border-color: #2563eb;
+  background-color: #ffffff;
+}
+
+.unit-sm {
+  font-size: 13px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.btn-reoptimize-global {
+  background-color: #2563eb;
+  color: #ffffff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: 8px;
+}
+
+.btn-reoptimize-global:hover:not(:disabled) {
+  background-color: #1d4ed8;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+.btn-reoptimize-global:disabled {
+  background-color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.reoptimizing-badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: #2563eb;
+  background-color: #eff6ff;
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid #bfdbfe;
+}

@@ -1,0 +1,212 @@
+.diff-section {
+  margin-bottom: 24px;
+}
+
+.diff-card {
+  background: #ffffff;
+  border: 1px solid #3b82f6;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+}
+
+.diff-badge {
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.diff-header h3 {
+  margin: 6px 0 2px 0;
+  font-size: 18px;
+  color: #0f172a;
+}
+
+.diff-sub {
+  font-size: 12px;
+  color: #64748b;
+  margin: 0 0 18px 0;
+}
+
+/* KPIグリッド */
+.diff-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.kpi-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.kpi-box.highlight {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+.kpi-label {
+  font-size: 12px;
+  color: #475569;
+  font-weight: 600;
+}
+
+.kpi-val-group {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 6px 0;
+}
+
+.kpi-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+.kpi-value.warning {
+  color: #d97706;
+}
+
+.kpi-value.negative {
+  color: #dc2626;
+}
+
+.diff-tag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.diff-tag.positive {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.diff-tag.negative {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.diff-tag.cost {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.kpi-note {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+/* 比較テーブル */
+.dept-diff-table-container h4 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: #1e293b;
+}
+
+.diff-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.diff-table th, .diff-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.diff-table th {
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 600;
+}
+
+/* 右揃えクラス */
+.diff-table .text-right {
+  text-align: right;
+}
+
+/* 人数・バッジ表記エリア */
+.count-badge-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.count-badge {
+  background: #e0f2fe;
+  color: #0369a1;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.count-added-sub {
+  font-size: 11px;
+  color: #0284c7;
+  font-weight: 600;
+  background: #f0f9ff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #bae6fd;
+}
+
+.rate-bar-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 140px;
+}
+
+.rate-bar {
+  height: 8px;
+  background: #2563eb;
+  border-radius: 4px;
+  max-width: 100%;
+}
+
+.rate-text {
+  font-size: 11px;
+  font-weight: 700;
+  color: #334155;
+}
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.status-pill.active {
+  background: #dcfce7;
+  color: #15803d;
+  font-weight: bold;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.dot.green { background-color: #22c55e; }
+.dot.grey { background-color: #94a3b8; }

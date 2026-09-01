@@ -1,0 +1,405 @@
+/* ==================================================
+   全体のレイアウト構造
+================================================== */
+
+.charts-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ==================================================
+   1. 縦向き比較グラフ (単年度売上・利益)
+================================================== */
+
+.charts-grid-vertical {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.chart-card-vertical {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.chart-header h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.chart-header p {
+  margin: 2px 0 0;
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* 右上バッジの表示崩れ防止 */
+.target-badge {
+  font-size: 11px;
+  font-weight: bold;
+  color: #ef4444;
+  background-color: #fef2f2;
+  padding: 3px 10px;
+  border-radius: 4px;
+  border: 1px solid #fecaca;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.column-chart-container {
+  position: relative;
+  height: 230px;
+  margin-top: 12px;
+  padding-top: 24px;
+}
+
+.column-chart-body {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  height: 180px;
+  border-bottom: 2px solid #cbd5e1;
+  position: relative;
+  z-index: 2;
+}
+
+/* グラフ項目（各列） */
+.column-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+  width: 52px;
+  padding: 4px 0;
+  border-radius: 8px 8px 0 0;
+}
+
+/* ★ 変更点1: バー上部の「選択中」ミニバッジ */
+.active-column-badge {
+  position: absolute;
+  top: -20px;
+  font-size: 10px;
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #2563eb;
+  padding: 1px 6px;
+  border-radius: 10px;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+  z-index: 4;
+}
+
+.col-track {
+  width: 28px;
+  height: 100%;
+  background-color: #f1f5f9;
+  border-radius: 6px 6px 0 0;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+/* ★ 変更点2: 通常時は半透明にして主張を抑える */
+.col-fill {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+  transition: all 0.3s ease;
+  opacity: 0.55;
+}
+
+/* ★ 変更点3: 選択されたバーは100%発色＋シャドウで強調 */
+.col-fill.active-fill {
+  opacity: 1.0 !important;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4);
+}
+
+.col-fill.sales-fill { 
+  background: linear-gradient(180deg, #3b82f6, #1d4ed8); 
+}
+.col-fill.profit-fill { 
+  background: linear-gradient(180deg, #10b981, #047857); 
+}
+
+.col-value {
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: #0f172a;
+  margin-bottom: 6px;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+/* ★ 変更点4: 選択中の数値テキスト強調 */
+.col-value.highlight-text {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #2563eb;
+}
+
+/* 通常のシナリオ名 */
+.col-name {
+  font-size: 0.85rem;
+  color: #475569;
+  margin-top: 6px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+/* ★ 変更点5: 選択中のシナリオ名（くっきりした青丸バッジ） */
+.col-name.selected-name {
+  background-color: #2563eb;
+  color: #ffffff;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+}
+
+/* 目標数値水平ライン（赤色破線） */
+.target-line-horizontal {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 2px dashed #ef4444;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.target-line-label {
+  position: absolute;
+  right: 0;
+  top: -10px;
+  font-size: 0.7rem;
+  color: #ef4444;
+  font-weight: bold;
+  background: #ffffff;
+  padding: 0 4px;
+  border-radius: 2px;
+}
+
+/* ==================================================
+   2. 5か年成長シミュレーションカード
+================================================== */
+
+.forecast-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 18px 20px;
+}
+
+.forecast-card.empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.forecast-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.forecast-badge {
+  background: #f0f9ff;
+  color: #0284c7;
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid #bae6fd;
+}
+
+.forecast-header h3 {
+  margin: 4px 0 0 0;
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+/* 凡例 */
+.dept-legend {
+  display: flex;
+  gap: 12px;
+  font-size: 0.8rem;
+  color: #475569;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+.color-dot.dept-a, .bar-segment.dept-a { background-color: #1677ff; }
+.color-dot.dept-b, .bar-segment.dept-b { background-color: #52c41a; }
+.color-dot.dept-c, .bar-segment.dept-c { background-color: #fa8c16; }
+
+.forecast-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.scenario-trend-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.box-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 6px;
+}
+
+.yearly-bars {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 110px;
+  padding: 8px 0;
+  border-bottom: 1px dashed #cbd5e1;
+}
+
+.y-bar-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  height: 100%;
+}
+
+.stacked-bar-wrapper {
+  flex: 1;
+  width: 16px;
+  background: #f1f5f9;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column-reverse;
+  overflow: hidden;
+}
+
+.bar-segment {
+  width: 100%;
+  transition: height 0.3s ease;
+}
+
+.y-label {
+  font-size: 0.65rem;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.y-val {
+  font-size: 0.7rem;
+  font-weight: bold;
+  color: #0f172a;
+}
+
+.cumulative-summary {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  background: #ffffff;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #f1f5f9;
+}
+
+.cum-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.cum-item small {
+  font-size: 0.7rem;
+  color: #64748b;
+}
+
+.cum-item strong {
+  font-size: 0.85rem;
+  color: #0f172a;
+}
+
+.cum-item.profit strong {
+  color: #16a34a;
+}
+
+.forecast-note {
+  margin: 12px 0 0 0;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+/* ==================================================
+   レスポンシブ対応
+================================================== */
+
+@media (max-width: 800px) {
+  .charts-grid-vertical {
+    grid-template-columns: 1fr;
+  }
+}
+/* 左右のカード高さを揃える修正 */
+.charts-grid-vertical {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: stretch; /* 左右の高さを揃える */
+}
+
+.chart-card-vertical {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* ヘッダーとグラフエリアを上下に綺麗に割り振る */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  height: 100%;
+}
+
+.chart-header {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 8px;
+}
+
+.chart-header h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap; /* タイトルが絶対に折り返さないように固定 */
+}

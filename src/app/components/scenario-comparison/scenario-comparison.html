@@ -1,0 +1,89 @@
+<section class="scenario-section">
+
+  <div class="section-title">
+    <div>
+      <h2>シナリオ比較</h2>
+      <p>
+        戦略によって変化する配置・売上・利益を比較
+      </p>
+    </div>
+  </div>
+
+  <div class="scenario-grid">
+
+    @for (scenario of scenarios; track scenario?.id ?? $index) {
+      @if (scenario) {
+        <button
+          class="scenario-card"
+          [class.selected]="selectedScenarioId === scenario.id"
+          (click)="onSelectScenario(scenario.id)"
+        >
+
+          <div class="scenario-number">
+            SCENARIO {{ scenario.id }}
+          </div>
+
+          <h3>
+            {{ scenario.shortName || scenario.name }}
+          </h3>
+
+          <div class="scenario-objective">
+            最大化：{{ scenario.objective }}
+          </div>
+
+          <div class="scenario-metrics">
+
+            <div>
+              <span>全社売上</span>
+              <strong>
+                {{ scenario.totalSales ? scenario.totalSales.toFixed(2) : '0.00' }}
+                <small>億円</small>
+              </strong>
+            </div>
+
+            <div>
+              <span>全社利益</span>
+              <strong>
+                {{ scenario.totalProfit ? scenario.totalProfit.toFixed(2) : '0.00' }}
+                <small>億円</small>
+              </strong>
+            </div>
+
+          </div>
+
+          <!-- ★ リアルタイムギャップ ＆ 逆算追加人材表示エリア ★ -->
+          <div class="scenario-status">
+
+            @if (isTargetAchieved(scenario)) {
+
+              <div class="achieved-box">
+                <span class="success-badge">
+                  🎯 目標達成 (+{{ (scenario.totalSales - targetSales).toFixed(2) }}億円)
+                </span>
+              </div>
+
+            } @else {
+
+              <div class="unachieved-box">
+                <span class="warning-badge">
+                  ⚠️ 目標未達 (あと -{{ getSalesGap(scenario).toFixed(2) }}億円)
+                </span>
+
+                <!-- 逆算結果を1行でスマートに表示 -->
+                <div class="adoption-hint">
+                  💡 達成に必要な追加人材: 
+                  <strong>{{ getRequiredAdoptionInfo(scenario).skill }} × 約{{ getRequiredAdoptionInfo(scenario).count }}名</strong>
+                </div>
+              </div>
+
+            }
+
+          </div>
+
+        </button>
+      }
+    }
+
+  </div>
+
+</section>

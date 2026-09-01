@@ -1,0 +1,167 @@
+<section class="charts-section">
+
+  <!-- ================================================== -->
+  <!-- 1. 単年度比較グラフ (タブ1用: showForecastOnly が false の時) -->
+  <!-- ================================================== -->
+  @if (!showForecastOnly) {
+    <div class="charts-grid-vertical">
+      
+      <!-- 全社売上比較（縦型） -->
+      <div class="chart-card-vertical">
+        <div class="chart-header">
+  <div>
+    <h3>全社売上比較（単年度）</h3>
+    <p>単位：億円（差異強調スケール）</p>
+  </div>
+</div>
+
+        <div class="column-chart-container">
+          <!-- 目標ライン（赤色破線） -->
+          <div class="target-line-horizontal" [style.bottom.%]="getTargetSalesHeightPercent()">
+            <span class="target-line-label">目標 {{ targetSales }}億</span>
+          </div>
+
+          <div class="column-chart-body">
+            @for (scenario of scenarios; track scenario.id) {
+              <div 
+                class="column-item" 
+                [class.selected]="scenario.id === selectedScenarioId"
+              >
+                @if (scenario.id === selectedScenarioId) {
+                  <span class="active-column-badge">選択中</span>
+                }
+                <span class="col-value" [class.highlight-text]="scenario.id === selectedScenarioId">
+                  {{ formatVal(scenario.totalSales) }}億
+                </span>
+                <div class="col-track">
+                  <div 
+                    class="col-fill sales-fill" 
+                    [class.active-fill]="scenario.id === selectedScenarioId"
+                    [style.height.%]="getSalesColumnHeight(scenario)"
+                  ></div>
+                </div>
+                <strong class="col-name" [class.selected-name]="scenario.id === selectedScenarioId">
+                  S{{ scenario.id }}
+                </strong>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- 全社利益比較（縦型） -->
+      <div class="chart-card-vertical">
+        <div class="chart-header">
+          <div>
+            <h3>全社利益比較（単年度）</h3>
+            <p>単位：億円（差異強調スケール）</p>
+          </div>
+        </div>
+
+        <div class="column-chart-container">
+          <div class="column-chart-body">
+            @for (scenario of scenarios; track scenario.id) {
+              <div 
+                class="column-item" 
+                [class.selected]="scenario.id === selectedScenarioId"
+              >
+                @if (scenario.id === selectedScenarioId) {
+                  <span class="active-column-badge">選択中</span>
+                }
+                <span class="col-value" [class.highlight-text]="scenario.id === selectedScenarioId">
+                  {{ formatVal(scenario.totalProfit) }}億
+                </span>
+                <div class="col-track">
+                  <div 
+                    class="col-fill profit-fill" 
+                    [class.active-fill]="scenario.id === selectedScenarioId"
+                    [style.height.%]="getProfitColumnHeight(scenario)"
+                  ></div>
+                </div>
+                <strong class="col-name" [class.selected-name]="scenario.id === selectedScenarioId">
+                  S{{ scenario.id }}
+                </strong>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+    </div>
+  }
+
+  <!-- ================================================== -->
+  <!-- 2. 5か年成長シミュレーション (タブ2用) -->
+  <!-- ================================================== -->
+  @if (showForecastOnly) {
+    @if (fiveYearPlans && fiveYearPlans.length > 0) {
+      <div class="forecast-card">
+        <div class="forecast-header">
+          <div>
+            <span class="forecast-badge">📈 中長期成長予測</span>
+            <h3>シナリオ別 5か年売上推移（事業部別内訳）</h3>
+          </div>
+          <div class="dept-legend">
+            <span class="legend-item"><span class="color-dot dept-a"></span>A事業部（飽和）</span>
+            <span class="legend-item"><span class="color-dot dept-b"></span>B事業部（成長）</span>
+            <span class="legend-item"><span class="color-dot dept-c"></span>C事業部（新規）</span>
+          </div>
+        </div>
+
+        <div class="forecast-grid">
+          @for (plan of fiveYearPlans; track plan.scenarioId) {
+            <div class="scenario-trend-box">
+              <div class="box-header">
+                <strong>SCENARIO {{ plan.scenarioId }}</strong>
+                <span class="sc-name">{{ plan.scenarioName }}</span>
+              </div>
+
+              <div class="yearly-bars">
+                @for (f of plan.forecasts; track f.year) {
+                  <div class="y-bar-col" [title]="f.year + '年目: 計' + f.deptSales.total + '億円'">
+                    <div class="stacked-bar-wrapper">
+                      <div 
+                        class="bar-segment dept-a" 
+                        [style.height.%]="(f.deptSales.A / maxForecastSales) * 100"
+                      ></div>
+                      <div 
+                        class="bar-segment dept-b" 
+                        [style.height.%]="(f.deptSales.B / maxForecastSales) * 100"
+                      ></div>
+                      <div 
+                        class="bar-segment dept-c" 
+                        [style.height.%]="(f.deptSales.C / maxForecastSales) * 100"
+                      ></div>
+                    </div>
+                    <span class="y-label">{{ f.year }}年目</span>
+                    <span class="y-val">{{ f.deptSales.total | number:'1.1-1' }}億</span>
+                  </div>
+                }
+              </div>
+
+              <div class="cumulative-summary">
+                <div class="cum-item">
+                  <small>5年累計売上</small>
+                  <strong>{{ plan.cumulativeSales | number:'1.1-1' }} 億円</strong>
+                </div>
+                <div class="cum-item profit">
+                  <small>5年累計利益</small>
+                  <strong>{{ plan.cumulativeProfit | number:'1.1-1' }} 億円</strong>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <p class="forecast-note">
+          💡 各事業部の成長率には、配属された社員の「平均育成力」による成長加算ボーナス（最大+5%）が反映されています。
+        </p>
+      </div>
+    } @else {
+      <div class="forecast-card empty-state">
+        <p>シミュレーションデータを計算中、または社員データ（CSV）が読み込まれていません。</p>
+      </div>
+    }
+  }
+
+</section>

@@ -1,0 +1,50 @@
+@if (scenario) {
+  <div class="summary-card">
+    <div class="summary-header">
+      <div>
+        <h2>選択中のシナリオ: {{ scenario.name }}</h2>
+        <p>目的関数: {{ scenario.objective }}</p>
+      </div>
+
+      <!-- ★ 追加採用ステータスバッジ -->
+      <div class="employee-count-badge">
+        <span class="total-count">全社 {{ totalEmployeeCount }}名</span>
+        @if (addedEmployeeCount > 0) {
+          <span class="added-tag">追加採用 +{{ addedEmployeeCount }}名</span>
+        }
+      </div>
+    </div>
+
+    <!-- ★ 最低人数・適正人数の動的スライド明記パネル -->
+    @if (addedEmployeeCount > 0) {
+      <div class="slide-info-panel">
+        <div class="panel-title">人数の動的再計算（スライド結果）</div>
+        <div class="dept-slide-grid">
+          <div class="dept-slide-item">
+            <strong>A事業部:</strong>
+            <span>適正 {{ appropriateCounts.A }}名{{ getAppCountDiff('A') }} / 最低 {{ minimumCounts.A }}名{{ getMinCountDiff('A') }}</span>
+          </div>
+          <div class="dept-slide-item">
+            <strong>B事業部:</strong>
+            <span>適正 {{ appropriateCounts.B }}名{{ getAppCountDiff('B') }} / 最低 {{ minimumCounts.B }}名{{ getMinCountDiff('B') }}</span>
+          </div>
+          <div class="dept-slide-item">
+            <strong>C事業部:</strong>
+            <span>適正 {{ appropriateCounts.C }}名{{ getAppCountDiff('C') }} / 最低 {{ minimumCounts.C }}名{{ getMinCountDiff('C') }}</span>
+          </div>
+        </div>
+      </div>
+    }
+
+    <div class="summary-metrics">
+      <div class="metric-item">
+        <span class="label">全社売上</span>
+        <strong class="value">{{ scenario.totalSales ? scenario.totalSales.toFixed(2) : '0.00' }} 億円</strong>
+      </div>
+      <div class="metric-item">
+        <span class="label">全社利益</span>
+        <strong class="value">{{ scenario.totalProfit ? scenario.totalProfit.toFixed(2) : '0.00' }} 億円</strong>
+      </div>
+    </div>
+  </div>
+}

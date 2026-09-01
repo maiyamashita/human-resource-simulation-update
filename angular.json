@@ -2,7 +2,8 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "npm"
+    "packageManager": "npm",
+    "analytics": false
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -53,17 +54,20 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular/build:dev-server",
-          "configurations": {
-            "production": {
-              "buildTarget": "human-resource-simulation:build:production"
-            },
-            "development": {
-              "buildTarget": "human-resource-simulation:build:development"
-            }
-          },
-          "defaultConfiguration": "development"
-        },
+  "builder": "@angular/build:dev-server",
+  "configurations": {
+    "production": {
+      "buildTarget": "human-resource-simulation:build:production"
+    },
+    "development": {
+      "buildTarget": "human-resource-simulation:build:development"
+    }
+  },
+  "defaultConfiguration": "development",
+  "options": {
+    "proxyConfig": "proxy.conf.json"
+  }
+},
         "test": {
           "builder": "@angular/build:unit-test"
         }
