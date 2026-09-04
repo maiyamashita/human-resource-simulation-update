@@ -1,49 +1,148 @@
 <header class="app-header-compact">
   <div class="header-left">
-    <h1 class="app-title">人材配置シミュレーター</h1>
-    <span class="version-tag">PRO</span>
+    <div class="brand-logo">
+      <span class="logo-icon">📊</span>
+      <h1 class="app-title">人材配置シミュレーター</h1>
+      <span class="version-tag">PRO</span>
+    </div>
+  </div>
+
+  <div class="header-center">
+    <div class="target-inline-group">
+      <span class="target-label">目標売上:</span>
+      <div class="input-wrapper">
+        <input
+          type="number"
+          class="target-input-sm"
+          [ngModel]="targetSales"
+          (ngModelChange)="onTargetSalesChange($event)"
+          step="0.5"
+          min="1"
+          max="200"
+        />
+        <span class="unit-text">億円</span>
+      </div>
+    </div>
+
+    @if (adoptionMode === 'adoption' && candidateCount > 0) {
+      <div class="adoption-status-pill">
+        <span class="status-dot"></span>
+        <span class="status-text">追加採用 +{{ candidateCount }}名（計{{ 100 + candidateCount }}名）</span>
+        <button
+          type="button"
+          class="btn-reset-pill"
+          (click)="onResetAdoption()"
+          title="通常100名体制に戻す"
+        >
+          ✕
+        </button>
+      </div>
+    }
   </div>
 
   <div class="header-right">
-    <!-- 計算ロジック・ガイド呼び出しボタン -->
-    <button type="button" class="btn-guide" (click)="openGuide()">
-      <span class="icon">💡</span>
-      <span>計算ロジック ＆ ガイド</span>
+    
+    <div class="snapshot-header-group">
+      <select 
+        class="snapshot-select-sm"
+        [value]="selectedSnapshotId"
+        (change)="onSelectSnapshot($event)"
+        title="保存済みデータを選択して読み込み"
+      >
+        <option value="" disabled selected>💾 セーブデータ選択 ▾</option>
+        @for (sn of snapshots; track sn.id) {
+          <option [value]="sn.id">{{ sn.name }} ({{ sn.timestamp }})</option>
+        }
+      </select>
+
+      <button 
+        type="button" 
+        class="btn-header-save" 
+        (click)="openSaveModal()"
+        title="現在の状態を新しいセーブデータとして保存"
+      >
+        <span class="btn-icon">＋</span>
+        <span>保存</span>
+      </button>
+    </div>
+
+    <button type="button" class="btn-header-report" (click)="onOpenReport()">
+      <span class="btn-icon">📄</span>
+      <span>経営会議レポート</span>
+    </button>
+
+    <button type="button" class="btn-header-guide" (click)="openGuide()">
+      <span class="btn-icon">💡</span>
+      <span>計算ロジック</span>
     </button>
   </div>
 </header>
 
-<!-- ★ 計算ロジック・操作ガイドのモーダル（ポップアップ） ★ -->
+@if (isSaveModalOpen) {
+  <div class="modal-overlay" (click)="closeSaveModal()">
+    <div class="modal-content modal-content-sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-icon">💾</span>
+          <h3>現在の検討状態をセーブデータとして保存</h3>
+        </div>
+        <button type="button" class="btn-close" (click)="closeSaveModal()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <p style="margin-top: 0; font-size: 0.8rem; color: #cbd5e1;">
+          会議中の調整結果（選択シナリオ・目標売上・追加採用人数など）を即座に保存します。
+        </p>
+        <div class="save-input-group">
+          <label style="font-size: 0.75rem; color: #94a3b8; display: block; margin-bottom: 4px;">保存名:</label>
+          <input 
+            type="text" 
+            class="save-name-input" 
+            [(ngModel)]="newSnapshotName" 
+            placeholder="例: 9月度経営会議_決定案" 
+            (keyup.enter)="onSaveConfirm()"
+          />
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary-cancel" (click)="closeSaveModal()">キャンセル</button>
+        <button type="button" class="btn-primary-save" (click)="onSaveConfirm()">保存する</button>
+      </div>
+    </div>
+  </div>
+}
+
 @if (isGuideOpen) {
   <div class="modal-overlay" (click)="closeGuide()">
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h3>💡 計算ロジック ＆ シミュレーション仕様</h3>
+        <div class="modal-title-group">
+          <span class="modal-icon">💡</span>
+          <h3>計算ロジック ＆ シミュレーション仕様ガイド</h3>
+        </div>
         <button type="button" class="btn-close" (click)="closeGuide()">×</button>
       </div>
 
       <div class="modal-body">
-        
-        <!-- 1. 基本最適化モデル -->
         <section class="guide-section">
           <h4>1. 1年目（単年度）最適化モデル（OR-Tools）</h4>
           <p>
             各社員の能力値（営業・管理・開拓・育成）に事業部ごとの<strong>「評価重み」</strong>を乗じて個人貢献度を算出し、全社の合計売上・利益が最大化となる配属を数理最適化で求めています。
           </p>
           <div class="formula-box">
-            <code>社員貢献度 = 営業力×w_s + 管理力×w_m + 開拓力×w_d + 育成力×w_t</code><br>
+            <code>社員貢献度 = 営業力×w_s + 管理力×w_m + 開拓力×w_d + 育成力×w_t</code><br />
             <code>基本売上 = 基準売上 × [1 + (事業部能力値 / 100) × 成長係数]</code>
           </div>
         </section>
 
-        <!-- 2. 事業部パラメータテーブル -->
         <section class="guide-section">
           <h4>2. 事業部別パラメータ仕様</h4>
           <table class="guide-table">
             <thead>
               <tr>
                 <th>事業部</th>
-                <th>評価重み (営業/管理/開拓/育成)</th>
+                <th>評価重み (営業 / 管理 / 開拓 / 育成)</th>
                 <th>基準売上</th>
                 <th>成長係数</th>
                 <th>適正 / 最低人数</th>
@@ -51,21 +150,21 @@
             </thead>
             <tbody>
               <tr>
-                <td><strong>A (飽和)</strong></td>
+                <td><strong class="dept-badge dept-a">A事業部 (飽和)</strong></td>
                 <td>0.45 / 0.35 / 0.10 / 0.10</td>
                 <td>10 億円</td>
                 <td>0.06</td>
                 <td>40名 / 30名</td>
               </tr>
               <tr>
-                <td><strong>B (成長)</strong></td>
+                <td><strong class="dept-badge dept-b">B事業部 (成長)</strong></td>
                 <td>0.35 / 0.20 / 0.30 / 0.15</td>
                 <td>7 億円</td>
                 <td>0.12</td>
                 <td>35名 / 20名</td>
               </tr>
               <tr>
-                <td><strong>C (新規)</strong></td>
+                <td><strong class="dept-badge dept-c">C事業部 (新規)</strong></td>
                 <td>0.20 / 0.10 / 0.50 / 0.20</td>
                 <td>2 億円</td>
                 <td>0.25</td>
@@ -75,29 +174,26 @@
           </table>
         </section>
 
-        <!-- 3. 人員補正ペナルティ ＆ コスト計算 -->
         <section class="guide-section">
           <h4>3. 充足率ペナルティ ＆ コスト算出ルール</h4>
           <p>最終売上は、適正人数に対する配属充足率（配属人数 / 適正人数）に応じた補正係数を乗じて補正します。</p>
-          <ul>
+          <ul class="guide-list">
             <li><strong>不足ペナルティ（70%未満時）</strong>: A事業部 ×0.30 / B事業部 ×0.50 / C事業部 ×0.70</li>
             <li><strong>過剰ペナルティ</strong>: 120%〜140% (×0.95) / 140%〜160% (×0.90) / 160%以上 (×0.80)</li>
-            <li><strong>全社人件費コスト</strong>: 給与以外の各種福利厚生・管理費用を含めるため <strong>「人件費 × 3倍」</strong> で試算</li>
+            <li><strong>全社コスト</strong>: 各種福利厚生・管理費用を含めるため <strong>「人件費 × 3倍」</strong> で算定</li>
             <li><strong>利益</strong>: 全社最終売上 − 事業部人件費コスト計</li>
           </ul>
         </section>
 
-        <!-- 4. 5か年成長シミュレーションロジック -->
         <section class="guide-section highlight-section">
           <h4>4. 中長期（2〜5年目）成長シミュレーションモデル</h4>
           <p>1年目の算出結果（最終売上）をベースとし、配属された社員の<strong>「平均育成力」による成長ボーナス</strong>を加算して複利成長を試算します。</p>
           <div class="formula-box">
-            <code>事業部年成長率(g) = 基本年率(A:2%, B:8%, C:20%) + (平均育成力 / 100 × 0.05)</code><br>
+            <code>事業部年成長率(g) = 基本年率(A:2%, B:8%, C:20%) + (平均育成力 / 100 × 0.05)</code><br />
             <code>t年目売上 = (t-1年目売上) × (1 + g)</code>
           </div>
           <small class="note-text">※ 平均育成力が100の場合、事業部の成長率が最大+5%上乗せ（平均70なら+3.5%加算）されます。</small>
         </section>
-
       </div>
 
       <div class="modal-footer">

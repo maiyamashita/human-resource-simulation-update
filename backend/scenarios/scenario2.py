@@ -1,3 +1,6 @@
+#このファイル名はbackend/scenarios/scenario2.pyです。
+
+
 from ortools.sat.python import cp_model
 
 from app.common_optimizer import (

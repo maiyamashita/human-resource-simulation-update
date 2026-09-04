@@ -1,177 +1,178 @@
 <section class="scenario-detail-section" *ngIf="scenario">
-  
-  <!-- ★ 独立した最上部「全社KPI特大サマリーカード」 ★ -->
-  <div class="total-kpi-summary-card">
-    <div class="summary-header">
-      <span class="summary-title">📊 全社パフォーマンス要約</span>
-      <span *ngIf="isCustomActive" class="badge-whatif-tag">What-if シミュレーション中</span>
-    </div>
 
-    <div class="summary-kpi-grid">
-      <!-- 全社売上 -->
-      <div class="summary-kpi-box">
-        <span class="kpi-title">全社合計売上</span>
-        <div class="kpi-value-group">
-          <strong class="main-num">{{ formatNumber(activeScenario?.totalSales, 2) }} <span class="unit">億円</span></strong>
-          <span 
-            *ngIf="isCustomActive && totalSalesDiff !== 0" 
-            class="diff-badge-hero" 
-            [ngClass]="totalSalesDiff > 0 ? 'pos' : 'neg'"
-          >
-            {{ totalSalesDiff > 0 ? '▲ +' : '▼ ' }}{{ totalSalesDiff | number:'1.2-2' }} 億円
-          </span>
-        </div>
-        <!-- 親（タブ1）で設定された目標値を参照表示 -->
-        <span class="sub-target" [class.achieved]="(activeScenario?.totalSales || 0) >= targetSales">
-          目標 {{ targetSales }} 億円 ({{ (activeScenario?.totalSales || 0) >= targetSales ? '達成 🎯' : '未達 ⚠️' }})
+  <!-- ★ 上段：シナリオ決定理由 ＆ サブヘッダー（見切れ完全解消・2行構造） ★ -->
+  <div class="light-top-card" [class.is-custom]="isCustomActive">
+    
+    <!-- 上行：バッジ・タイトル ＆ 右側アクション群 -->
+    <div class="top-card-row-1">
+      <div class="header-left-info">
+        <span class="sc-badge-light" [class.custom]="isCustomActive">
+          {{ isCustomActive ? '試算案 S99' : 'S' + activeScenario?.id }}
         </span>
-      </div>
+        <strong class="sc-title-txt">
+          {{ isCustomActive ? '手動調整シミュレーション' : activeScenario?.name }}
+        </strong>
 
-      <!-- 全社利益 -->
-      <div class="summary-kpi-box">
-        <span class="kpi-title">全社合計利益</span>
-        <div class="kpi-value-group">
-          <strong class="main-num">{{ formatNumber(activeScenario?.totalProfit, 2) }} <span class="unit">億円</span></strong>
-          <span 
-            *ngIf="isCustomActive && totalProfitDiff !== 0" 
-            class="diff-badge-hero" 
-            [ngClass]="totalProfitDiff > 0 ? 'pos' : 'neg'"
-          >
-            {{ totalProfitDiff > 0 ? '▲ +' : '▼ ' }}{{ totalProfitDiff | number:'1.2-2' }} 億円
-          </span>
+        <!-- 目標未達時の強力赤警告（最優先で目立つ位置に表示） -->
+        <div *ngIf="isCustomActive && customAlerts.length > 0" class="inline-alert-badge-strong">
+          🚨 目標未達 ({{ formatNumber(activeScenario?.totalSales, 2) }}億 / 目標{{ targetSales }}億)
         </div>
       </div>
 
-      <!-- 操作ボタン / 状態通知 -->
-      <div class="summary-action-box">
-        <button *ngIf="isCustomActive" class="btn-reset-hero" (click)="resetCustomScenario()">
-          🔄 最適化配置に戻す
+      <div class="header-right-actions">
+        <!-- What-if 試算差分バッジ -->
+        <div *ngIf="isCustomActive" class="whatif-diff-group">
+          <span class="diff-pill-light" [class.pos]="totalSalesDiff > 0" [class.neg]="totalSalesDiff < 0">
+            売上 {{ totalSalesDiff > 0 ? '+' : '' }}{{ totalSalesDiff | number:'1.2-2' }}億
+          </span>
+          <span class="diff-pill-light" [class.pos]="totalProfitDiff > 0" [class.neg]="totalProfitDiff < 0">
+            利益 {{ totalProfitDiff > 0 ? '+' : '' }}{{ totalProfitDiff | number:'1.2-2' }}億
+          </span>
+          <button class="btn-action-light reset" (click)="resetCustomScenario()" title="最適化配置に戻す">
+            🔄 リセット
+          </button>
+        </div>
+
+        <!-- 氏名マスキング切替 -->
+        <button
+          type="button"
+          class="btn-action-light mask"
+          [class.active]="isMasked"
+          (click)="toggleMasking()"
+          title="氏名/ID表示切り替え"
+        >
+          <span>{{ isMasked ? '🔒 ID表示' : '👤 氏名表示' }}</span>
         </button>
-        <span *ngIf="!isCustomActive" class="guide-text-muted">
-          ※ 下の一覧で社員をクリックして移動させると、リアルタイムに試算・比較ができます。
-        </span>
       </div>
     </div>
+
+    <!-- 下行：配置方針・判断根拠（最重要なため独立させて見切れを解消） -->
+    <div class="top-card-row-2">
+      <span class="reason-tag">配置方針・判断根拠:</span>
+      <p class="reason-txt-full">{{ strategyReason }}</p>
+    </div>
+
   </div>
 
   <!-- 社員選択中の移動ガイドバー -->
   <div *ngIf="selectedEmployeeId" class="selection-guide-bar">
-    <span>💡 社員<strong>【{{ selectedEmployeeId }}】</strong>を選択中：移動させたい事業部の「ここに移動 🎯」ボタンを押してください。</span>
+    <span class="guide-text">
+      🎯 社員【#{{ selectedEmployeeId }}】を選択中 ➔ 移動先の事業部で「配置変更」ボタンを押してください。
+    </span>
     <button class="btn-cancel-select" (click)="clearSelection()">選択解除</button>
   </div>
 
-  <!-- アラート通知（TS型エラー完全解消版） -->
-  <div *ngIf="isCustomActive && customAlerts.length > 0" class="alerts-banner-hero">
-    <div *ngFor="let alert of customAlerts" class="alert-card-hero" [ngClass]="alert.level">
-      <div class="alert-icon">⚠️</div>
-      <div class="alert-content">
-        <strong class="alert-title">
-          {{ alert.level !== 'warning' ? '【警告】全社売上目標 未達' : '【注意】人員配置警告' }}
-        </strong>
-        <p class="alert-msg">{{ alert.message }}</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- 選定理由カード -->
-  <div class="strategy-card">
-    <div class="strategy-header">
-      <span class="badge">配置方針・判断根拠</span>
-      <h3>{{ activeScenario?.name }}</h3>
-    </div>
-    <p class="reason-text">{{ strategyReason }}</p>
-  </div>
-
-  <!-- 事業部配属詳細グリッド -->
+  <!-- ★ メイン領域：事業部配属コンソール ★ -->
   <div class="dept-detail-grid">
     @for (deptKey of deptKeys; track deptKey) {
       @let deptResult = activeScenario?.departments?.[deptKey];
       @let countDiff = getDeptCountDiff(deptKey);
       @let salesDiff = getDeptSalesDiff(deptKey);
       @let profitDiff = getDeptProfitDiff(deptKey);
+      @let skillAvg = getDepartmentSkillAverages(deptKey);
 
       <div class="dept-detail-card" [ngClass]="'dept-' + deptKey.toLowerCase() + '-card'">
         
         <!-- 事業部ヘッダー -->
-        <div class="dept-card-header">
+        <div class="dept-card-top-bar">
           <div class="title-group">
-            <h4>{{ deptKey }}事業部</h4>
+            <h4 class="dept-title">{{ deptKey }}事業部</h4>
+            <span class="dept-sub-label">({{ deptKey === 'A' ? '飽和' : deptKey === 'B' ? '成長' : '新規' }})</span>
             <button 
               *ngIf="selectedEmployeeId && selectedFromDept !== deptKey" 
               class="btn-move-here"
               [disabled]="isLoading"
               (click)="onMoveToDepartment(deptKey)"
             >
-              {{ isLoading ? '計算中...' : 'ここに移動 🎯' }}
+              {{ isLoading ? '計算中...' : '配置変更' }}
             </button>
           </div>
           <span class="fulfillment-badge">
-            充足率: {{ getFulfillmentRate(deptKey) | number:'1.0-0' }}%
+            充足率 {{ getFulfillmentRate(deptKey) | number:'1.0-0' }}%
           </span>
         </div>
 
-        <!-- 充足率バー -->
-        <div class="rate-progress-bg">
-          <div 
-            class="rate-progress-fill" 
-            [ngClass]="'dept-' + deptKey.toLowerCase() + '-fill'"
-            [style.width.%]="getFulfillmentWidth(deptKey)"
-          ></div>
-        </div>
-
-        <!-- 事業部内KPIボックス -->
-        <div class="kpi-block-grid">
-          <!-- 配置人数 -->
-          <div class="kpi-box">
-            <span class="kpi-label">配置人数</span>
-            <div class="kpi-val-row">
-              <strong class="kpi-num">{{ getDepartmentBreakdown(deptKey).total }} 名</strong>
-              <span *ngIf="isCustomActive && countDiff !== 0" class="diff-chip" [ngClass]="countDiff > 0 ? 'pos' : 'neg'">
-                {{ countDiff > 0 ? '+' : '' }}{{ countDiff }}名
-              </span>
-            </div>
-            <small class="kpi-sub">(適正 {{ appropriateCounts[deptKey] }}名 / 最低 {{ minimumCounts[deptKey] }}名)</small>
-          </div>
-
-          <!-- 売上 -->
-          <div class="kpi-box">
-            <span class="kpi-label">事業部売上</span>
-            <div class="kpi-val-row">
-              <strong class="kpi-num">{{ formatNumber(deptResult?.sales, 2) }} 億円</strong>
-              <span *ngIf="isCustomActive && salesDiff !== 0" class="diff-chip" [ngClass]="salesDiff > 0 ? 'pos' : 'neg'">
-                {{ salesDiff > 0 ? '+' : '' }}{{ salesDiff | number:'1.2-2' }}億
+        <!-- 業績 ＆ 配置人数 KPIトリプルストリップ (0の差分は非表示化) -->
+        <div class="dept-kpi-triple-bar">
+          <div class="kpi-unit">
+            <small>配置人数</small>
+            <div class="val-with-diff">
+              <strong>{{ getDepartmentBreakdown(deptKey).total }} <small>名</small></strong>
+              <!-- ★ 人数差分が0の場合は非表示 ★ -->
+              <span *ngIf="isCustomActive && countDiff !== 0" class="mini-diff-pill" [class.pos]="countDiff > 0" [class.neg]="countDiff < 0">
+                {{ countDiff > 0 ? '+' : '' }}{{ countDiff }}
               </span>
             </div>
           </div>
 
-          <!-- 利益 -->
-          <div class="kpi-box">
-            <span class="kpi-label">事業部利益</span>
-            <div class="kpi-val-row">
-              <strong class="kpi-num">{{ formatNumber(deptResult?.profit, 2) }} 億円</strong>
-              <span *ngIf="isCustomActive && profitDiff !== 0" class="diff-chip" [ngClass]="profitDiff > 0 ? 'pos' : 'neg'">
-                {{ profitDiff > 0 ? '+' : '' }}{{ profitDiff | number:'1.2-2' }}億
+          <div class="kpi-unit">
+            <small>事業部売上</small>
+            <div class="val-with-diff">
+              <strong class="sales-txt">{{ formatNumber(deptResult?.sales, 2) }} <small>億</small></strong>
+              <!-- ★ 差分の絶対値が0.01以上の場合のみ表示（0.00の赤誤表示を防止） ★ -->
+              <span *ngIf="isCustomActive && salesDiff && (salesDiff > 0.009 || salesDiff < -0.009)" class="mini-diff-pill" [class.pos]="salesDiff > 0" [class.neg]="salesDiff < 0">
+                {{ salesDiff > 0 ? '+' : '' }}{{ salesDiff | number:'1.2-2' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="kpi-unit">
+            <small>事業部利益</small>
+            <div class="val-with-diff">
+              <strong class="profit-txt">{{ formatNumber(deptResult?.profit, 2) }} <small>億</small></strong>
+              <!-- ★ 差分の絶対値が0.01以上の場合のみ表示 ★ -->
+              <span *ngIf="isCustomActive && profitDiff && (profitDiff > 0.009 || profitDiff < -0.009)" class="mini-diff-pill" [class.pos]="profitDiff > 0" [class.neg]="profitDiff < 0">
+                {{ profitDiff > 0 ? '+' : '' }}{{ profitDiff | number:'1.2-2' }}
               </span>
             </div>
           </div>
         </div>
 
-        <!-- 配属社員メンバーリスト (番号順ソート) -->
+        <!-- 平均能力スコアバッジ -->
+        <div class="skill-avg-chips">
+          <span class="skill-chip">営業 <strong>{{ skillAvg.sales }}</strong></span>
+          <span class="skill-chip">管理 <strong>{{ skillAvg.mgmt }}</strong></span>
+          <span class="skill-chip">開拓 <strong>{{ skillAvg.dev }}</strong></span>
+          <span class="skill-chip">育成 <strong>{{ skillAvg.train }}</strong></span>
+        </div>
+
+        <!-- 名簿メンバーリストエリア -->
         <div class="assigned-employees-area">
-          <h5>配属メンバー一覧</h5>
           <div class="employee-tags">
             @for (empId of getAssignedEmployees(deptKey); track empId) {
               @let formatted = formatEmployeeId(empId);
-              <button 
-                type="button" 
-                class="employee-tag"
-                [class.candidate]="formatted.isCandidate"
-                [class.moved]="isEmployeeMoved(empId)"
-                [class.active-selected]="selectedEmployeeId === '' + empId"
-                (click)="onSelectEmployee(empId, deptKey)"
+              @let isMoved = isEmployeeMoved(empId);
+              @let isSelected = selectedEmployeeId === '' + empId;
+
+              <div 
+                class="employee-tag-wrapper"
+                [class.active-selected]="isSelected"
+                [class.is-moved-wrapper]="isMoved"
               >
-                {{ isEmployeeMoved(empId) ? '↗ ' : '' }}{{ formatted.isCandidate ? '★ ' : '' }}{{ formatted.label }}
-              </button>
+                <button 
+                  type="button" 
+                  class="employee-tag"
+                  [class.candidate]="formatted.isCandidate"
+                  [class.moved]="isMoved"
+                  (click)="onSelectEmployee(empId, deptKey)"
+                  title="選択して移動先事業部を指定"
+                >
+                  <span class="emp-name-text">
+                    <span *ngIf="isMoved" class="moved-dot" title="配置変更済み社員">●</span>
+                    {{ formatted.label }}
+                  </span>
+                  <span *ngIf="!isMasked" class="emp-id-badge">#{{ empId }}</span>
+                </button>
+
+                <button 
+                  type="button" 
+                  class="btn-notice-icon"
+                  (click)="openEmployeeNotice(empId, deptKey, $event)"
+                  title="配属決定通知書・理由書を表示"
+                >
+                  📄 理由
+                </button>
+              </div>
             }
           </div>
         </div>
@@ -179,5 +180,15 @@
       </div>
     }
   </div>
+
+  <!-- 配属決定通知書モーダル -->
+  <app-employee-notice
+    *ngIf="isNoticeModalOpen"
+    [employee]="selectedNoticeEmployee"
+    [scenario]="activeScenario"
+    [assignedDepartment]="selectedNoticeDept"
+    (close)="closeNoticeModal()"
+    (navigateEmployee)="navigateNoticeEmployee($event)"
+  ></app-employee-notice>
 
 </section>

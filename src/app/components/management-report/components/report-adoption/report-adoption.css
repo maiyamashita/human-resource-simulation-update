@@ -1,0 +1,139 @@
+/* src/app/components/management-report/components/report-adoption/report-adoption.css */
+
+.adoption-report-card {
+  padding: 18px 20px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-top: 16px;
+  page-break-inside: avoid;
+}
+
+.adoption-card-header {
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #0f172a;
+}
+
+.header-title-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-title-group h4 {
+  margin: 0;
+  font-size: 15px;
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.badge-candidate-count {
+  padding: 3px 10px;
+  background: #2563eb;
+  color: #ffffff;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.adoption-card-sub {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* KPIカード 4列グリッド */
+.adoption-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.kpi-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.kpi-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.kpi-value {
+  font-size: 18px;
+  font-weight: 800;
+  margin: 4px 0 2px;
+  font-family: 'SFMono-Regular', Consolas, sans-serif;
+}
+
+.kpi-value small {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.kpi-value.positive { color: #16a34a; }
+.kpi-value.neutral { color: #334155; }
+.kpi-value.highlight { color: #2563eb; }
+
+.kpi-sub {
+  font-size: 9px;
+  color: #94a3b8;
+}
+
+/* 候補者テーブル */
+.candidates-table-section h5 {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.candidates-report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  background: #ffffff;
+}
+
+.candidates-report-table th,
+.candidates-report-table td {
+  padding: 6px 8px;
+  border: 1px solid #cbd5e1;
+  text-align: center;
+}
+
+.candidates-report-table th {
+  background: #e2e8f0;
+  color: #334155;
+  font-weight: 700;
+}
+
+.candidates-report-table td {
+  color: #1e293b;
+}
+
+.role-badge {
+  padding: 2px 6px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  font-size: 10px;
+  color: #475569;
+}
+
+.no-data-box {
+  padding: 16px;
+  background: #fef3c7;
+  border: 1px solid #fde68a;
+  border-radius: 6px;
+  color: #92400e;
+  font-size: 11px;
+  text-align: center;
+}

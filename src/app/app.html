@@ -1,15 +1,15 @@
 <div class="app-layout">
 
-  <!-- ================================================== -->
-  <!-- ① 初期状態：CSV読み込み前（ヘッダーなし・完全中央配置） -->
-  <!-- ================================================== -->
+  <!-- ① 初期状態：CSV読み込み前 -->
   @if (!isLoaded) {
     <main class="welcome-container">
       <div class="welcome-card">
         <div class="welcome-header">
           <div class="welcome-icon">📁</div>
           <h2>人材配置シミュレーション</h2>
-          <p>はじめに、シミュレーションに使用する社員データ（CSV）を読み込んでください。</p>
+          <p>
+            はじめに、シミュレーションに使用する社員データ（CSV）を読み込んでください。
+          </p>
         </div>
 
         <div class="upload-drop-area">
@@ -18,6 +18,7 @@
             <strong>CSVファイルを選択</strong>
             <small>またはファイルをここにドロップ (100名用データ)</small>
           </label>
+
           <input
             id="csv-file-welcome"
             type="file"
@@ -43,215 +44,266 @@
     </main>
   }
 
-  <!-- ================================================== -->
-  <!-- ② CSV読み込み完了後：4タブ構成メインダッシュボード -->
-  <!-- ================================================== -->
+  <!-- ② CSV読み込み完了後 -->
   @else {
-    <app-header></app-header>
 
-    <!-- ★ 全社売上目標コントロールバー（即時連動版） ★ -->
-<div class="global-target-bar">
-  <div class="target-input-group">
-    <span class="target-icon">🎯</span>
-    <label class="target-label">全社売上目標設定:</label>
-    <input 
-      type="number" 
-      class="target-input-global" 
-      [(ngModel)]="targetSales" 
-      (ngModelChange)="onTargetSalesChange($event)"
-      step="0.5" 
-      min="1" 
-      max="200"
-    />
-    <span class="unit-sm">億円</span>
-  </div>
-</div>
+    <!-- 通常のシミュレーション画面 -->
+    @if (!reportMode) {
 
-    <!-- 4タブ ナビゲーションバー -->
-    <nav class="tab-navigation">
-      <button 
-        type="button" 
-        class="tab-btn" 
-        [class.active]="activeTab === 'dashboard'" 
-        (click)="switchTab('dashboard')"
-      >
-        <span class="tab-icon">📊</span>
-        <strong>今期最適化比較</strong>
-      </button>
+      <!-- 高さを42pxに圧縮したコンパクトヘッダー（スナップショット機能連携） -->
+      <app-header
+        [targetSales]="targetSales"
+        [adoptionMode]="adoptionMode"
+        [candidateCount]="candidateEmployees.length"
+        [snapshots]="headerSnapshots"
+        [selectedSnapshotId]="selectedSnapshotId"
+        (targetSalesChange)="onTargetSalesChange($event)"
+        (openReport)="openManagementReport()"
+        (resetAdoption)="resetAdoptionToStandard()"
+        (saveSnapshot)="onSaveSnapshotFromHeader($event)"
+        (loadSnapshot)="onLoadSnapshotFromHeader($event)"
+      ></app-header>
 
-      <button 
-        type="button" 
-        class="tab-btn" 
-        [class.active]="activeTab === 'forecast'" 
-        (click)="switchTab('forecast')"
-      >
-        <span class="tab-icon">📈</span>
-        <strong>中長期成長予測 (5か年)</strong>
-      </button>
+      <!-- 4タブ ナビゲーションバー -->
+      <nav class="tab-navigation">
 
-      <button 
-        type="button" 
-        class="tab-btn" 
-        [class.active]="activeTab === 'detail'" 
-        (click)="switchTab('detail')"
-      >
-        <span class="tab-icon">📋</span>
-        <strong>配属詳細・選定理由</strong>
-      </button>
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="activeTab === 'dashboard'"
+          (click)="switchTab('dashboard')"
+        >
+          <span class="tab-icon">📊</span>
+          <strong>今期最適化比較</strong>
+        </button>
 
-      <button 
-        type="button" 
-        class="tab-btn" 
-        [class.active]="activeTab === 'adoption'" 
-        (click)="switchTab('adoption')"
-      >
-        <span class="tab-icon">🎯</span>
-        <strong>採用要件 ＆ ROI設定</strong>
-      </button>
-    </nav>
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="activeTab === 'forecast'"
+          (click)="switchTab('forecast')"
+        >
+          <span class="tab-icon">📈</span>
+          <strong>中長期成長予測 (5か年)</strong>
+        </button>
 
-    @if (loading) {
-      <div class="loading-overlay-card">
-        <div class="spinner-container">
-          <div class="spinner"></div>
-        </div>
-        <div class="loading-content">
-          <h3>数理最適化シミュレーションを実行中...</h3>
-          <p>4つのシナリオの厳密解を計算しています（約10〜30秒）</p>
-        </div>
-      </div>
-    }
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="activeTab === 'detail'"
+          (click)="switchTab('detail')"
+        >
+          <span class="tab-icon">📋</span>
+          <strong>配属詳細・選定理由</strong>
+        </button>
 
-    <main class="main-content-view">
-      
-      <!-- 【タブ1】今期最適化比較 -->
-      @if (activeTab === 'dashboard') {
-        <div class="tab-pane dashboard-grid">
-          
-          <!-- スクロール追従バー -->
-          <div class="sticky-scenario-bar">
-            <div class="sticky-inner">
-              <span class="active-badge">選択中のシナリオ</span>
-              <strong class="sc-title">S{{ selectedScenario?.id }}: {{ selectedScenario?.name }}</strong>
-              <div class="sc-kpis">
-                <span>売上: <strong>{{ selectedScenario?.totalSales | number:'1.2-2' }}億円</strong></span>
-                <span class="sep">|</span>
-                <span>利益: <strong class="profit-txt">{{ selectedScenario?.totalProfit | number:'1.2-2' }}億円</strong></span>
-              </div>
-            </div>
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="activeTab === 'adoption'"
+          (click)="switchTab('adoption')"
+        >
+          <span class="tab-icon">🎯</span>
+          <strong>追加採用・改善効果分析</strong>
+        </button>
+
+      </nav>
+
+      <!-- ローディング表示 -->
+      @if (loading) {
+        <div class="loading-overlay-card">
+          <div class="spinner-container">
+            <div class="spinner"></div>
           </div>
 
-          <!-- セクション1: シナリオ比較カード一覧 -->
-          <section class="dashboard-section-card">
-            <div class="dashboard-section-title">
-              <h2>シナリオ比較</h2>
-              <p>戦略によって変化する配置・売上・利益を比較</p>
-            </div>
-            <!-- ★ targetSales から appliedTargetSales へ変更 ★ -->
-            <app-scenario-comparison
-  [scenarios]="scenarios"
-  [selectedScenarioId]="selectedScenarioId"
-  [targetSales]="targetSales"
-  [employeeCount]="100 + candidateEmployees.length"
-  (selectScenario)="selectScenario($event)"
-></app-scenario-comparison>
-          </section>
+          <div class="loading-content">
+            <h3>数理最適化シミュレーションを実行中...</h3>
+            <p>
+              4つのシナリオの厳密解を計算しています（約10〜30秒）
+            </p>
+          </div>
+        </div>
+      }
 
-          <!-- セクション2 & 3: 下段（比較グラフ / 配置人数・スキルギャップ） -->
-          <div class="dashboard-bottom-grid">
-            <!-- 左：全社グラフ -->
-            <div class="grid-left dashboard-section-card">
+      <!-- メインコンテンツ -->
+      <main class="main-content-view">
+
+        <!-- ★ スクロール追従シナリオ選択バー (タブ2・3・4のみ表示＆切替スイッチ機能付き) ★ -->
+        @if (activeTab !== 'dashboard') {
+          <div class="sticky-scenario-bar">
+            <div class="sticky-inner">
+
+              <!-- インタラクティブなシナリオ切替スイッチボタン群 -->
+              <div class="scenario-switch-group" style="display: flex; gap: 6px; align-items: center;">
+                <span class="active-badge" style="margin-right: 4px;">シナリオ切替:</span>
+                
+                @for (sc of scenarios; track sc.id) {
+                  <button
+                    type="button"
+                    class="sticky-sc-btn"
+                    [style.background]="selectedScenarioId === sc.id ? '#2563eb' : 'rgba(255, 255, 255, 0.1)'"
+                    [style.color]="'#ffffff'"
+                    [style.border]="selectedScenarioId === sc.id ? '1px solid #60a5fa' : '1px solid rgba(255, 255, 255, 0.2)'"
+                    [style.padding]="'2px 8px'"
+                    [style.border-radius]="'4px'"
+                    [style.font-size]="'0.75rem'"
+                    [style.font-weight]="'700'"
+                    [style.cursor]="'pointer'"
+                    (click)="selectScenario(sc.id)"
+                  >
+                    S{{ sc.id }}
+                  </button>
+                }
+              </div>
+
+              <strong class="sc-title" style="margin-left: 8px;">
+                {{ selectedScenario?.shortName || selectedScenario?.name }}
+              </strong>
+
+              <div class="sc-kpis">
+
+                <span>
+                  売上:
+                  <strong>
+                    {{ selectedScenario?.totalSales | number:'1.2-2' }}億円
+                  </strong>
+                </span>
+
+                <span class="sep">|</span>
+
+                <span>
+                  利益:
+                  <strong class="profit-txt">
+                    {{ selectedScenario?.totalProfit | number:'1.2-2' }}億円
+                  </strong>
+                </span>
+
+              </div>
+
+            </div>
+          </div>
+        }
+
+        <!-- 【タブ1】今期最適化比較 -->
+        @if (activeTab === 'dashboard') {
+
+          <div class="tab-pane dashboard-grid">
+
+            <!-- セクション1：シナリオ比較カード一覧 -->
+            <section class="dashboard-section-card">
+
+              <app-scenario-comparison
+                [scenarios]="scenarios"
+                [base100Scenarios]="base100Scenarios"
+                [selectedScenarioId]="selectedScenarioId"
+                [targetSales]="targetSales"
+                [employeeCount]="100 + (adoptionMode === 'adoption' ? candidateEmployees.length : 0)"
+                (selectScenario)="selectScenario($event)"
+              ></app-scenario-comparison>
+
+            </section>
+
+            <!-- セクション2：全社比較グラフ -->
+            <section class="dashboard-section-card">
+
               <app-charts
                 [scenarios]="scenarios"
+                [base100Scenarios]="base100Scenarios"
                 [employees]="employees"
                 [targetSales]="targetSales"
                 [selectedScenarioId]="selectedScenarioId"
-                [showForecastOnly]="false" 
+                [employeeCount]="100 + (adoptionMode === 'adoption' ? candidateEmployees.length : 0)"
+                [showForecastOnly]="false"
               ></app-charts>
-            </div>
 
-            <!-- 右：事業部別配置・スキルギャップ -->
-            <div class="grid-right dashboard-section-card">
-              <app-allocation
-                [scenarios]="scenarios"
-                [selectedScenarioId]="selectedScenarioId"
-                [employees]="employees"
-                [appropriateCounts]="appropriateCounts"
-                [employeeCount]="100 + candidateEmployees.length"
-              ></app-allocation>
-            </div>
+            </section>
+
           </div>
+        }
 
-        </div>
-      }
+        <!-- 【タブ2】中長期成長予測 -->
+        @if (activeTab === 'forecast') {
 
-      <!-- 【タブ2】中長期成長予測（5か年に完全集中） -->
-      @if (activeTab === 'forecast') {
-        <div class="tab-pane forecast-view">
-          <app-charts
-            [scenarios]="scenarios"
-            [employees]="employees"
-            [targetSales]="targetSales"
-            [selectedScenarioId]="selectedScenarioId"
-            [showForecastOnly]="true"
-          ></app-charts>
-        </div>
-      }
+          <div class="tab-pane forecast-view">
 
-      <!-- 【タブ3】配属詳細・選定理由 -->
-      @if (activeTab === 'detail') {
-        <div class="tab-pane detail-view">
-          <app-scenario-detail
-            [scenario]="selectedScenario"
-            [employees]="employees"
-            [targetSales]="targetSales"
-            [appropriateCounts]="appropriateCounts"
-            [minimumCounts]="minimumCounts"
-            [totalEmployeeCount]="100 + candidateEmployees.length"
-          ></app-scenario-detail>
-        </div>
-      }
+            <app-charts
+              [scenarios]="scenarios"
+              [base100Scenarios]="base100Scenarios"
+              [employees]="employees"
+              [targetSales]="targetSales"
+              [selectedScenarioId]="selectedScenarioId"
+              [employeeCount]="100 + (adoptionMode === 'adoption' ? candidateEmployees.length : 0)"
+              [showForecastOnly]="true"
+            ></app-charts>
 
-      <!-- 【タブ4】採用要件 ＆ ROI設定 -->
-      @if (activeTab === 'adoption') {
-        <div class="tab-pane adoption-setting-grid">
-          <app-adoption-diff
-            [mode]="adoptionMode"
-            [scenario]="selectedScenario"
-            [candidates]="candidateEmployees"
-          ></app-adoption-diff>
+          </div>
+        }
 
-          <app-adoption-control
-            [mode]="adoptionMode"
-            [selectedScenarioId]="selectedScenarioId"
-            (modeChange)="onModeChange($event)"
-            (candidatesChange)="onCandidatesChange($event)"
-          ></app-adoption-control>
+        <!-- 【タブ3】配属詳細・選定理由 -->
+        @if (activeTab === 'detail') {
 
-          <section class="csv-section">
-            <div class="section-title">
-              <div>
-                <h2>社員データの変更・再読み込み</h2>
-                <p>別の社員CSVでシミュレーションを行いたい場合はこちらから選択してください。</p>
-              </div>
-            </div>
+          <div class="tab-pane detail-view">
 
-            <div class="csv-card">
-              <label for="csv-file-reupload">新しいCSVファイルを選択</label>
-              <input
-                id="csv-file-reupload"
-                type="file"
-                accept=".csv,text/csv"
-                (change)="onCsvSelected($event)"
-              />
-              <p class="success-message">
-                ✓ 現在の適用データ: {{ employees.length }} 名
-              </p>
-            </div>
-          </section>
-        </div>
-      }
+            <app-scenario-detail
+              [scenario]="selectedScenario"
+              [base100Scenario]="selectedBase100Scenario"
+              [employees]="employees"
+              [candidateEmployees]="candidateEmployees"
+              [targetSales]="targetSales"
+              [appropriateCounts]="appropriateCounts"
+              [minimumCounts]="minimumCounts"
+              [totalEmployeeCount]="100 + (adoptionMode === 'adoption' ? candidateEmployees.length : 0)"
+            ></app-scenario-detail>
 
-    </main>
+          </div>
+        }
+
+        <!-- 【タブ4】追加採用・改善効果分析 -->
+        @if (activeTab === 'adoption') {
+
+          <div class="tab-pane">
+
+            <app-adoption-view
+              [selectedScenario]="selectedScenario"
+              [selectedBase100Scenario]="selectedBase100Scenario"
+              [base100Scenarios]="base100Scenarios"
+              [targetSales]="targetSales"
+              [employees]="employees"
+              [adoptionMode]="adoptionMode"
+              [candidateEmployees]="candidateEmployees"
+              [snapshots]="adoptionSnapshots"
+              (snapshotsChange)="onSnapshotsChange($event)"
+              (modeChange)="onModeChange($event)"
+              (candidatesChange)="onCandidatesChange($event)"
+              (csvSelected)="onCsvSelected($event)"
+            ></app-adoption-view>
+
+          </div>
+        }
+
+      </main>
+    }
+
+    <!-- 経営会議レポート画面 -->
+    @else {
+
+      <div class="management-report-view">
+
+        <app-management-report
+          [scenarios]="scenarios"
+          [base100Scenarios]="base100Scenarios"
+          [employees]="employees"
+          [targetSales]="targetSales"
+          [appropriateCounts]="appropriateCounts"
+          [minimumCounts]="minimumCounts"
+          [adoptionSnapshots]="adoptionSnapshots"
+          (close)="closeManagementReport()"
+        ></app-management-report>
+
+      </div>
+
+    }
+
   }
+
 </div>

@@ -1,321 +1,247 @@
+/* src/app/components/scenario-comparison/scenario-comparison.css */
+
 .scenario-section {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  width: 100%;
 }
 
-.section-title {
-  margin-bottom: 12px;
-}
-
-.section-title h2 {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.section-title p {
-  margin: 4px 0 0 0;
-  font-size: 0.8rem;
-  color: #64748b;
-}
-
-/* 4つのシナリオカード/ボタンのグリッド配置 */
+/* 4つのシナリオカードのグリッド配置（コンパクト1画面フィット） */
 .scenario-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  width: 100%;
 }
 
 /* ==================================================
-   1. 通常時（押せるボタンであることを可視化）
+   1. シナリオカード基本構成（Executive Light: 白系・品格仕様）
 ================================================== */
 .scenario-card {
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   width: 100%;
-  background-color: #f8fafc; /* 薄いグレーブルーで「ボタン」感を提示 */
-  border: 2px solid #e2e8f0;  /* 明確な境界線 */
-  border-radius: 12px;
-  padding: 16px;
+  background-color: var(--exec-bg-surface, #ffffff);
+  border: 1px solid var(--exec-border-color, #e2e8f0);
+  border-radius: 6px;
+  padding: 8px 12px;
   cursor: pointer;
   text-align: left;
-  font-family: inherit;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+  font-family: var(--exec-font-family, sans-serif);
+  transition: all 0.15s ease-in-out;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  box-sizing: border-box;
+  outline: none;
+  overflow: hidden;
 }
 
-/* ホバー時（マウスを乗せた時に浮き上がり＋青い影） */
+/* ホバー時：淡いブルーグレーへの微変化 */
 .scenario-card:hover {
-  background-color: #f0f7ff;  /* 淡いブルー */
-  border-color: #93c5fd;      /* 薄い青枠線 */
-  transform: translateY(-3px); /* ぽこっと浮き上がるアニメーション */
-  box-shadow: 0 8px 16px rgba(37, 99, 235, 0.12);
-}
-
-/* クリック時（押し込み感） */
-.scenario-card:active {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(37, 99, 235, 0.1);
 }
 
 /* ==================================================
-   2. 選択中（濃い色で圧倒的に強調）
+   2. 選択中シナリオ（クラシックネイビー太枠 ＆ 上部静的アクセントバー）
 ================================================== */
 .scenario-card.selected {
   background-color: #ffffff;
-  border: 2px solid #2563eb;  /* 濃いメインブルーの太枠 */
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.18), 0 0 0 1px #2563eb;
+  border: 2px solid var(--exec-accent-blue, #2563eb);
+  box-shadow: 0 3px 8px rgba(37, 99, 235, 0.1);
 }
 
-/* 選択中のカード上部に濃い青アクセントバーを表示 */
 .scenario-card.selected::before {
   content: '';
   position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  height: 6px;
-  background: linear-gradient(90deg, #2563eb, #1d4ed8);
-  border-radius: 12px 12px 0 0;
-}
-
-/* 選択中のシナリオ番号バッジ（SCENARIO 1等）を青地に反転 */
-.scenario-card.selected .scenario-number {
-  background-color: #2563eb;
-  color: #ffffff;
-  font-weight: bold;
-}
-
-/* 選択中のタイトルテキストを強調 */
-.scenario-card.selected h3 {
-  color: #1e3a8a;
-  font-weight: 800;
-}
-
-/* 選択中の数値（全社売上・全社利益）を濃い色で浮き立たせる */
-.scenario-card.selected .scenario-metrics strong {
-  color: #1d4ed8;
-  font-weight: 800;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--exec-accent-blue, #2563eb);
 }
 
 /* ==================================================
-   カード内部要素のスタイル
+   3. カード内部要素構造
 ================================================== */
-.scenario-number {
-  font-size: 0.7rem;
-  color: #64748b;
-  background-color: #e2e8f0;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  margin-bottom: 8px;
-  transition: all 0.2s ease;
+.scenario-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 4px;
 }
 
-.scenario-card h3 {
-  margin: 0 0 4px 0;
-  font-size: 1rem;
+.scenario-number {
+  font-size: 0.62rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--exec-text-muted, #64748b);
+  letter-spacing: 0.05em;
+  font-family: var(--exec-font-mono, monospace);
+  background-color: #f1f5f9;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+.scenario-card.selected .scenario-number {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+}
+
+.adoption-tag {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #0369a1;
+  background: #e0f2fe;
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid #bae6fd;
+}
+
+.title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-bottom: 6px;
+}
+
+.scenario-title {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--exec-text-primary, #0f172a);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.scenario-card.selected .scenario-title {
+  color: #1e3a8a; /* 選択時は落ち着いた濃紺テキスト */
 }
 
 .scenario-objective {
-  font-size: 0.75rem;
-  color: #64748b;
-  margin-bottom: 12px;
+  font-size: 0.68rem;
+  color: var(--exec-text-secondary, #475569);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* 売上・利益メトリクスエリア */
+/* メトリクスエリア（全社売上 ＆ 全社利益 ＋ 全社利益率バッジ） */
 .scenario-metrics {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  padding-top: 10px;
-  margin-bottom: 12px;
-  border-top: 1px dashed #cbd5e1;
+  padding-top: 6px;
+  margin-bottom: 4px;
+  border-top: 1px solid #f1f5f9;
 }
 
-.scenario-metrics div {
+.metric-item {
   display: flex;
   flex-direction: column;
 }
 
-.scenario-metrics span {
-  font-size: 0.7rem;
-  color: #64748b;
+.metric-label-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.scenario-metrics strong {
-  font-size: 1.1rem;
+.metric-label {
+  font-size: 0.65rem;
+  color: var(--exec-text-secondary, #64748b);
+}
+
+/* 全社利益率ミニバッジ */
+.margin-badge-small {
+  font-size: 0.58rem;
   font-weight: 700;
-  color: #0f172a;
-  line-height: 1.2;
+  color: #047857;
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 0 4px;
+  border-radius: 3px;
+  font-family: var(--exec-font-mono, monospace);
 }
 
-.scenario-metrics small {
-  font-size: 0.75rem;
-  font-weight: normal;
-  color: #64748b;
-  margin-left: 2px;
+.metric-val-group {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
 }
 
-/* 目標ステータスバッジ */
-.scenario-status {
+.metric-value {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--exec-text-primary, #0f172a);
+  font-family: var(--exec-font-mono, monospace);
+  line-height: 1;
+}
+
+.metric-value.profit-val {
+  color: var(--exec-accent-green, #15803d); /* フォレストグリーン */
+}
+
+.unit {
+  font-size: 0.65rem;
+  color: var(--exec-text-muted, #64748b);
+}
+
+.diff-text {
+  font-size: 0.62rem;
+  font-weight: 600;
+  margin-top: 1px;
+  font-family: var(--exec-font-mono, monospace);
+}
+
+.diff-text.plus { color: var(--exec-accent-green, #15803d); }
+.diff-text.minus { color: var(--exec-accent-red, #be123c); }
+.diff-text.profit-diff.plus { color: var(--exec-accent-blue, #2563eb); }
+
+/* ==================================================
+   4. 達成判定ステータスインジケーター
+================================================== */
+.scenario-status-bar {
   margin-top: auto;
-}
-
-.success-badge {
-  display: inline-block;
-  font-size: 0.7rem;
-  font-weight: bold;
-  color: #15803d;
-  background-color: #dcfce7;
-  padding: 2px 8px;
-  border-radius: 4px;
-  border: 1px solid #bbf7d0;
-}
-
-.warning-badge {
-  display: inline-block;
-  font-size: 0.7rem;
-  font-weight: bold;
-  color: #b45309;
-  background-color: #fef3c7;
-  padding: 2px 8px;
-  border-radius: 4px;
-  border: 1px solid #fde68a;
-}
-/* --- 未達時の可視化・追加採用アドバイススタイル --- */
-.unachieved-box {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
   width: 100%;
+  padding-top: 4px;
+  border-top: 1px solid #f8fafc;
 }
 
-.warning-badge {
-  background-color: #fef2f2;
-  color: #dc2626;
-  border: 1px solid #fca5a5;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 700;
-  display: inline-block;
-}
-
-.recommend-adoption-msg {
-  font-size: 11px;
-  line-height: 1.4;
-  color: #b91c1c;
-  background-color: #fff1f2;
-  border-left: 3px solid #f43f5e;
-  padding: 6px 8px;
-  border-radius: 4px;
-  margin: 4px 0 0;
-  text-align: left;
-}
-
-.recommend-adoption-msg b {
-  font-weight: 800;
-  text-decoration: underline;
-}
-/* --- 未達時の可視化・追加採用アドバイススタイル --- */
-.unachieved-box {
+.status-indicator {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-  width: 100%;
-}
-
-.warning-badge {
-  background-color: #fef2f2;
-  color: #dc2626;
-  border: 1px solid #fca5a5;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 12px;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.68rem;
   font-weight: 700;
-  display: inline-block;
-  text-align: center;
+  font-family: var(--exec-font-mono, monospace);
 }
 
-.success-badge {
-  background-color: #f0fdf4;
-  color: #16a34a;
-  border: 1px solid #86efac;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 700;
-  display: inline-block;
-  text-align: center;
+.status-indicator.success {
+  color: var(--exec-accent-green, #15803d);
 }
 
-.recommend-adoption-msg {
-  font-size: 11px;
-  line-height: 1.4;
-  color: #b91c1c;
-  background-color: #fff1f2;
-  border-left: 3px solid #f43f5e;
-  padding: 6px 8px;
-  border-radius: 4px;
-  margin: 4px 0 0;
-  text-align: left;
+.status-indicator.warning {
+  color: var(--exec-accent-red, #be123c);
 }
 
-.recommend-adoption-msg b {
-  font-weight: 800;
-  text-decoration: underline;
-}
-/* --- ギャップ表示＆逆算アドバイス用スッキリスタイル --- */
-.unachieved-box, .achieved-box {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  width: 100%;
-  margin-top: 8px;
+.status-text {
+  letter-spacing: -0.01em;
 }
 
-.warning-badge {
-  background-color: #fef2f2;
-  color: #dc2626;
-  border: 1px solid #fca5a5;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 700;
-  text-align: center;
+.adoption-hint-inline {
+  font-size: 0.58rem;
+  color: var(--exec-text-muted, #64748b);
+  font-weight: normal;
+  margin-left: 4px;
 }
 
-.success-badge {
-  background-color: #f0fdf4;
-  color: #16a34a;
-  border: 1px solid #86efac;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 700;
-  text-align: center;
-}
-
-.adoption-hint {
-  font-size: 11px;
-  color: #4b5563;
-  background-color: #f9fafb;
-  border: 1px solid #e5e7eb;
-  padding: 6px;
-  border-radius: 4px;
-  text-align: left;
-  line-height: 1.3;
-}
-
-.adoption-hint strong {
-  color: #2563eb;
-  font-weight: 700;
+/* レスポンシブ対応 */
+@media (max-width: 1024px) {
+  .scenario-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }

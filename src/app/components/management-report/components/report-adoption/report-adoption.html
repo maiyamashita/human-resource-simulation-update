@@ -1,0 +1,83 @@
+<!-- src/app/components/management-report/components/report-adoption/report-adoption.html -->
+
+<div class="adoption-report-card">
+  <div class="adoption-card-header">
+    <div class="header-title-group">
+      <h4>追加採用 ＆ ROI損益分岐シミュレーション</h4>
+      <span class="badge-candidate-count">追加人員: {{ snapshot?.candidateCount || 0 }} 名</span>
+    </div>
+    <p class="adoption-card-sub">
+      現在の100名体制に対し、新規候補者を増員配置した場合の全社ROI純増インパクトおよび投資回収試算です。
+    </p>
+  </div>
+
+  @if (snapshot) {
+    <!-- 1. 定量インパクト（KPIカード） -->
+    <div class="adoption-kpi-grid">
+      <div class="kpi-card sales-kpi">
+        <span class="kpi-label">全社売上 純増インパクト</span>
+        <strong class="kpi-value positive">
+          {{ salesImpact > 0 ? '+' : '' }}{{ salesImpact | number:'1.2-2' }} <small>億円</small>
+        </strong>
+        <span class="kpi-sub">対 100名標準体制比</span>
+      </div>
+
+      <div class="kpi-card profit-kpi">
+        <span class="kpi-label">全社利益 純増インパクト</span>
+        <strong class="kpi-value positive">
+          {{ profitImpact > 0 ? '+' : '' }}{{ profitImpact | number:'1.2-2' }} <small>億円</small>
+        </strong>
+        <span class="kpi-sub">人件費増額（3倍ルール適用済）</span>
+      </div>
+
+      <div class="kpi-card cost-kpi">
+        <span class="kpi-label">想定年間追加コスト</span>
+        <strong class="kpi-value neutral">
+          {{ estimatedCost | number:'1.2-2' }} <small>億円</small>
+        </strong>
+        <span class="kpi-sub">給与＋法定福利・諸経費</span>
+      </div>
+
+      <div class="kpi-card payback-kpi">
+        <span class="kpi-label">投資回収見込み（ROI）</span>
+        <strong class="kpi-value highlight">
+          {{ paybackMonths > 0 ? paybackMonths + ' ヶ月' : '回収困難' }}
+        </strong>
+        <span class="kpi-sub">追加利益による原価回収期間</span>
+      </div>
+    </div>
+
+    <!-- 2. 追加候補者の配置・スキル構成内訳テーブル -->
+    <div class="candidates-table-section">
+      <h5>追加採用メンバー属性・配属内訳 (全 {{ snapshot.candidates.length }} 名)</h5>
+      <table class="candidates-report-table">
+        <thead>
+          <tr>
+            <th>仮名 / ID</th>
+            <th>営業力</th>
+            <th>管理力</th>
+            <th>開拓力</th>
+            <th>育成力</th>
+            <th>人件費</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of snapshot.candidates; track c.id) {
+            <tr>
+              <td><strong>{{ c.name }}</strong></td>
+              <td>{{ c.sales_ability }}</td>
+              <td>{{ c.management_ability }}</td>
+              <td>{{ c.development_ability }}</td>
+              <td>{{ c.training_ability }}</td>
+              <td>{{ c.cost }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else {
+    <div class="no-data-box">
+      <p>※追加採用の試算データが選択されていません。構成画面で試算履歴を選択してください。</p>
+    </div>
+  }
+</div>

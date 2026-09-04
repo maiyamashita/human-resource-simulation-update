@@ -1,0 +1,103 @@
+<!-- src/app/components/management-report/components/report-calculation/report-calculation.html -->
+
+<div class="calculation-report-card">
+  <div class="calculation-header">
+    <div>
+      <span class="report-section-badge">仕様・共通前提</span>
+      <h4>計算ロジック ＆ シミュレーション仕様前提</h4>
+      <p class="calculation-sub">本レポートの各指標数値（最適化・コスト・5か年予測）算出に用いているアルゴリズムおよびパラメータ定義です。</p>
+    </div>
+  </div>
+
+  <!-- 上段：基本数式モデル (高さ均一・整列カード) -->
+  <div class="top-formula-grid">
+    <!-- 1年目最適化モデル -->
+    <div class="formula-card">
+      <div class="card-header-row">
+        <span class="card-tag">1年目（単年度）</span>
+        <h5>数理最適化モデル (OR-Tools)</h5>
+      </div>
+      <p class="card-desc">個人貢献度を算出し、全社売上・利益が最大化する配属を数理最適化で算出。</p>
+      <div class="formula-display">
+        <div class="formula-line"><span class="f-label">貢献度</span> ＝ 営業力×w_s ＋ 管理力×w_m ＋ 開拓力×w_d ＋ 育成力×w_t</div>
+        <div class="formula-line"><span class="f-label">基本売上</span> ＝ 基準売上 × [1 ＋ (事業部能力値 / 100) × 成長係数]</div>
+      </div>
+    </div>
+
+    <!-- 2〜5年目成長モデル -->
+    <div class="formula-card highlight-card">
+      <div class="card-header-row">
+        <span class="card-tag highlight">2〜5年目（中長期）</span>
+        <h5>複利成長シミュレーション</h5>
+      </div>
+      <p class="card-desc">配属社員の<strong>「平均育成力」による成長ボーナス</strong>を加算して複利成長を試算。</p>
+      <div class="formula-display">
+        <div class="formula-line"><span class="f-label">年成長率(g)</span> ＝ 基本年率 ＋ (平均育成力 / 100 × 0.05)</div>
+        <div class="formula-line"><span class="f-label">t年目売上</span> ＝ (t-1年目売上) × (1 ＋ g)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 下段：左右2分割グリッド（高さ統一） -->
+  <div class="bottom-spec-grid">
+    
+    <!-- 左：事業部別パラメータ仕様 -->
+    <div class="spec-box">
+      <div class="box-title">2. 事業部別パラメータ仕様</div>
+      <table class="guide-table">
+        <thead>
+          <tr>
+            <th class="text-left">事業部</th>
+            <th>評価重み (営業 / 管理 / 開拓 / 育成)</th>
+            <th>基準売上</th>
+            <th>成長率</th>
+            <th>適正 / 最低</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-left"><strong>A (飽和)</strong></td>
+            <td><span class="w-bold">0.45</span> / 0.35 / 0.10 / 0.10</td>
+            <td>10 億円</td>
+            <td>6%</td>
+            <td>40 / 30名</td>
+          </tr>
+          <tr>
+            <td class="text-left"><strong>B (成長)</strong></td>
+            <td>0.35 / 0.20 / <span class="w-bold">0.30</span> / 0.15</td>
+            <td>7 億円</td>
+            <td>12%</td>
+            <td>35 / 20名</td>
+          </tr>
+          <tr>
+            <td class="text-left"><strong>C (新規)</strong></td>
+            <td>0.20 / 0.10 / <span class="w-bold">0.50</span> / <span class="w-bold">0.20</span></td>
+            <td>2 億円</td>
+            <td>25%</td>
+            <td>25 / 10名</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 右：補正ペナルティ ＆ コスト計算ルール -->
+    <div class="spec-box">
+      <div class="box-title">3. 充足率ペナルティ ＆ コストルール</div>
+      <div class="rules-flex">
+        <div class="rule-row danger-row">
+          <span class="r-label">不足（70%未満）</span>
+          <span class="r-val">A: ×0.30 ／ B: ×0.50 ／ C: ×0.70</span>
+        </div>
+        <div class="rule-row warning-row">
+          <span class="r-label">過剰補正</span>
+          <span class="r-val">120〜140% (×0.95) ／ 140〜160% (×0.90) ／ 160%〜 (×0.80)</span>
+        </div>
+        <div class="rule-row info-row">
+          <span class="r-label">コスト・利益</span>
+          <span class="r-val">人件費 ＝ 単純総計 × 3倍 ／ 利益 ＝ 売上 － 人件費</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

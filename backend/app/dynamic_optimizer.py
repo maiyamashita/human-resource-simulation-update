@@ -1,3 +1,5 @@
+#このファイル名はbackend/app/dynamic_optimizer.pyです。
+
 # ============================================================
 # 本番最適化ロジック
 # FastAPI の api/simulation.py から呼ばれる実際のOptimizer

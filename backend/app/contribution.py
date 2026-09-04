@@ -1,5 +1,5 @@
 #これは共通部分です。書き換え不可！
-# backend/app/contribution.py
+#このファイル名はbackend/app/contribution.pyです。
 
 # 各事業部の評価重み
 WEIGHTS = {

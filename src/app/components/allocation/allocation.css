@@ -1,25 +1,69 @@
+/* src/app/components/allocation/allocation.css */
+
 .allocation-section {
-  margin-bottom: 32px;
+  margin-bottom: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans JP", sans-serif;
+  color: #1e293b;
 }
 
-.allocation-grid {
+.section-title {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.section-title h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+.section-title p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+}
+
+/* 追加採用適用中のフォーマルタグ */
+.adoption-badge-inline {
+  display: inline-block;
+  background-color: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-left: 8px;
+}
+
+/* シナリオカードを2列×2行で配置 */
+.allocation-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
 }
 
 .allocation-card {
   background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 14px 16px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
   transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .allocation-card:hover {
   border-color: #cbd5e1;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
 }
 
 .allocation-card.selected {
@@ -27,44 +71,52 @@
   background-color: #f8fafc;
 }
 
-/* カードヘッダー */
+/* 上部ヘッダー & バーチャートの横並び配置 */
+.card-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
 .card-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .scenario-badge {
   background: #eff6ff;
   color: #2563eb;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
-  padding: 4px 8px;
-  border-radius: 6px;
+  padding: 2px 6px;
+  border-radius: 4px;
   letter-spacing: 0.5px;
+  border: 1px solid #bfdbfe;
 }
 
 .scenario-title {
   margin: 0;
-  font-size: 15px;
-  font-weight: 700;
-  color: #1e293b;
+  font-size: 13px;
+  font-weight: 800;
+  color: #0f172a;
 }
 
 /* 積み上げバー */
 .stacked-bar-container {
-  margin-bottom: 16px;
+  flex: 1;
 }
 
 .stacked-bar {
   display: flex;
-  height: 32px;
+  height: 18px;
   width: 100%;
   background-color: #f1f5f9;
-  border-radius: 8px;
+  border-radius: 4px;
   overflow: hidden;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
 .segment {
@@ -72,115 +124,25 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width 0.3s ease;
   position: relative;
   overflow: hidden;
 }
 
 .segment-label {
   color: #ffffff;
-  font-size: 12px;
+  font-size: 9.5px;
   font-weight: 700;
   white-space: nowrap;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   padding: 0 4px;
 }
 
-/* 事業部ごとのカラー定義 */
-.dept-a {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-}
+/* 事業部ごとのカラー定義（オフィシャルトーン） */
+.dept-a { background: #3b82f6; }
+.dept-b { background: #10b981; }
+.dept-c { background: #f59e0b; }
 
-.dept-b {
-  background: linear-gradient(135deg, #10b981, #059669);
-}
-
-.dept-c {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-}
-
-/* 内訳ミニカード */
-.department-breakdown {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-}
-
-.dept-stat {
-  background: #f8fafc;
-  border-radius: 8px;
-  padding: 10px 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border: 1px solid #f1f5f9;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.dept-name {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #475569;
-}
-
-.color-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  display: inline-block;
-  flex-shrink: 0;
-}
-
-.dept-a-dot { background-color: #2563eb; }
-.dept-b-dot { background-color: #059669; }
-.dept-c-dot { background-color: #d97706; }
-
-.dept-val {
-  font-size: 13px;
-  color: #1e293b;
-  display: flex;
-  align-items: baseline;
-  gap: 2px;
-}
-
-.dept-val strong {
-  font-size: 15px;
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.dept-val small {
-  font-size: 11px;
-  color: #64748b;
-  margin-left: 2px;
-  font-weight: 500;
-}
-
-/* レスポンシブ対応 */
-@media (max-width: 640px) {
-  .department-breakdown {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-}
-/* 機能No.7 スキルギャップ分析エリアの装飾 */
-.skill-gap-section {
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px dashed #e8e8e8;
-}
-
-.skill-gap-title {
-  font-size: 0.8rem;
-  font-weight: bold;
-  color: #595959;
-  margin-bottom: 8px;
-}
-
+/* 事業部別スキル・人数統合グリッド */
 .skill-depts-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -188,128 +150,155 @@
 }
 
 .dept-skill-box {
-  background: #fafafa;
-  border: 1px solid #f0f0f0;
-  border-radius: 4px;
-  padding: 6px 8px;
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 6px;
+  padding: 8px 10px;
 }
 
-.box-label {
-  display: block;
-  font-size: 0.75rem;
-  font-weight: bold;
-  color: #262626;
+.dept-box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #e2e8f0;
 }
 
+.dept-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #334155;
+}
+
+.color-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.dept-a-dot { background-color: #3b82f6; }
+.dept-b-dot { background-color: #10b981; }
+.dept-c-dot { background-color: #f59e0b; }
+
+.dept-val {
+  font-size: 10.5px;
+  color: #1e293b;
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+}
+
+.dept-val strong {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.dept-val small {
+  font-size: 9.5px;
+  color: #64748b;
+}
+
+/* 差分タグ (人数) */
+.count-diff-tag {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #2563eb;
+  background-color: #eff6ff;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.count-diff-tag.plus {
+  color: #15803d;
+  background-color: #dcfce7;
+}
+
+/* スキルバー構造 */
 .skill-bars {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .skill-row {
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 0.7rem;
+  gap: 6px;
+  font-size: 10px;
 }
 
 .s-name {
-  width: 24px;
-  color: #8c8c8c;
+  width: 22px;
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 600;
 }
 
 .s-bar-bg {
   flex: 1;
-  height: 6px;
-  background-color: #e8e8e8;
-  border-radius: 3px;
+  height: 5px;
+  background-color: #e2e8f0;
+  border-radius: 2px;
   overflow: hidden;
 }
 
 .s-bar-fill {
   height: 100%;
-  border-radius: 3px;
+  border-radius: 2px;
   transition: width 0.3s ease;
 }
 
-.s-bar-fill.sales { background-color: #1677ff; }
-.s-bar-fill.mgmt { background-color: #52c41a; }
-.s-bar-fill.dev { background-color: #fa8c16; }
+.s-bar-fill.sales { background-color: #3b82f6; }
+.s-bar-fill.mgmt { background-color: #10b981; }
+.s-bar-fill.dev { background-color: #f59e0b; }
 
 .s-val {
-  width: 20px;
+  min-width: 28px;
   text-align: right;
-  font-weight: bold;
-  color: #434343;
-}
-/* 社員チップの基本スタイル */
-.employee-chip {
-  background-color: #f1f5f9;
-  border: 1px solid #cbd5e1;
+  font-weight: 700;
   color: #334155;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  margin: 2px;
-}
-
-.employee-chip:hover {
-  background-color: #e2e8f0;
-  border-color: #94a3b8;
-}
-
-/* ★ 選択された社員のハイライト色（目立つオレンジ＆グロー効果） ★ */
-.employee-chip.active-selected {
-  background-color: #ff9800 !important;
-  color: #ffffff !important;
-  border-color: #e65100 !important;
-  font-weight: bold;
-  transform: scale(1.1);
-  box-shadow: 0 0 10px rgba(255, 152, 0, 0.6);
-  animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.7); }
-  70% { box-shadow: 0 0 0 8px rgba(255, 152, 0, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(255, 152, 0, 0); }
-}
-
-/* ガイドバーと移動ボタン */
-.selection-guide-bar {
-  background-color: #fff3cd;
-  border: 1px solid #ffeba2;
-  color: #856404;
-  padding: 10px 16px;
-  border-radius: 6px;
-  margin-bottom: 16px;
+  font-size: 10px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: flex-end;
+  gap: 2px;
 }
 
-.btn-move-here {
-  background-color: #22c55e;
-  color: white;
-  border: none;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  cursor: pointer;
-  margin-left: auto;
-  animation: bounce 1s infinite alternate;
+/* 差分タグ (スキルpt) */
+.skill-diff-tag {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 800;
+  color: #b91c1c;
 }
 
-.btn-move-here:hover {
-  background-color: #16a34a;
+.skill-diff-tag.plus {
+  color: #15803d;
 }
 
-/* What-if カード強調スタイル */
-.custom-whatif-card {
-  border: 2px solid #3b82f6 !important;
-  background-color: #eff6ff !important;
+/* レスポンシブ対応 */
+@media (max-width: 1024px) {
+  .allocation-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .card-top-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .stacked-bar-container {
+    width: 100%;
+  }
+  .skill-depts-grid {
+    grid-template-columns: 1fr;
+  }
 }

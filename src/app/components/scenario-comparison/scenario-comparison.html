@@ -1,79 +1,102 @@
 <section class="scenario-section">
 
-  <div class="section-title">
-    <div>
-      <h2>シナリオ比較</h2>
-      <p>
-        戦略によって変化する配置・売上・利益を比較
-      </p>
-    </div>
-  </div>
-
   <div class="scenario-grid">
 
     @for (scenario of scenarios; track scenario?.id ?? $index) {
       @if (scenario) {
+        @let salesDiff = getSalesDiff(scenario);
+        @let profitDiff = getProfitDiff(scenario);
+
         <button
+          type="button"
           class="scenario-card"
           [class.selected]="selectedScenarioId === scenario.id"
+          [class.adoption-card]="isAdoptionApplied"
           (click)="onSelectScenario(scenario.id)"
         >
 
-          <div class="scenario-number">
-            SCENARIO {{ scenario.id }}
+          <!-- カード上部ヘッダー（シナリオ番号＋適用バッジ） -->
+          <div class="scenario-card-header">
+            <span class="scenario-number">SCENARIO {{ scenario.id }}</span>
+            
+            @if (isAdoptionApplied) {
+              <span class="adoption-tag">+{{ adoptionCount }}名適用</span>
+            }
           </div>
 
-          <h3>
-            {{ scenario.shortName || scenario.name }}
-          </h3>
-
-          <div class="scenario-objective">
-            最大化：{{ scenario.objective }}
+          <!-- タイトル ＆ 目的に関する説明 -->
+          <div class="title-group">
+            <h3 class="scenario-title">
+              {{ scenario.shortName || scenario.name }}
+            </h3>
+            <span class="scenario-objective">最大化：{{ scenario.objective }}</span>
           </div>
 
+          <!-- 数値メイン指標（売上 ＆ 利益 ＋ 全社利益率バッジ） -->
           <div class="scenario-metrics">
 
-            <div>
-              <span>全社売上</span>
-              <strong>
-                {{ scenario.totalSales ? scenario.totalSales.toFixed(2) : '0.00' }}
-                <small>億円</small>
-              </strong>
+            <!-- 全社売上 -->
+            <div class="metric-item">
+              <div class="metric-label">全社売上</div>
+              <div class="metric-val-group">
+                <strong class="metric-value">
+                  {{ scenario.totalSales ? scenario.totalSales.toFixed(2) : '0.00' }}
+                </strong>
+                <span class="unit">億円</span>
+              </div>
+
+              <!-- 100名比差分 -->
+              @if (isAdoptionApplied && salesDiff !== 0) {
+                <div class="diff-text" [class.plus]="salesDiff > 0" [class.minus]="salesDiff < 0">
+                  (100名比 {{ salesDiff > 0 ? '+' : '' }}{{ salesDiff.toFixed(2) }}億)
+                </div>
+              }
             </div>
 
-            <div>
-              <span>全社利益</span>
-              <strong>
-                {{ scenario.totalProfit ? scenario.totalProfit.toFixed(2) : '0.00' }}
-                <small>億円</small>
-              </strong>
+            <!-- 全社利益 ＆ 全社利益率バッジ -->
+            <div class="metric-item">
+              <div class="metric-label-row">
+                <span class="metric-label">全社利益</span>
+                <span class="margin-badge-small">
+                  利益率 {{ getProfitMargin(scenario) }}%
+                </span>
+              </div>
+              <div class="metric-val-group">
+                <strong class="metric-value profit-val">
+                  {{ scenario.totalProfit ? scenario.totalProfit.toFixed(2) : '0.00' }}
+                </strong>
+                <span class="unit">億円</span>
+              </div>
+
+              <!-- 100名比利益差分 -->
+              @if (isAdoptionApplied && profitDiff !== 0) {
+                <div class="diff-text profit-diff" [class.plus]="profitDiff > 0" [class.minus]="profitDiff < 0">
+                  (100名比 {{ profitDiff > 0 ? '+' : '' }}{{ profitDiff.toFixed(2) }}億)
+                </div>
+              }
             </div>
 
           </div>
 
-          <!-- ★ リアルタイムギャップ ＆ 逆算追加人材表示エリア ★ -->
-          <div class="scenario-status">
+          <!-- 達成判定インジケーター -->
+          <div class="scenario-status-bar">
 
             @if (isTargetAchieved(scenario)) {
 
-              <div class="achieved-box">
-                <span class="success-badge">
-                  🎯 目標達成 (+{{ (scenario.totalSales - targetSales).toFixed(2) }}億円)
-                </span>
+              <div class="status-indicator success">
+                <span class="status-text">達成 ▲ +{{ (scenario.totalSales - targetSales).toFixed(2) }}億</span>
               </div>
 
             } @else {
 
-              <div class="unachieved-box">
-                <span class="warning-badge">
-                  ⚠️ 目標未達 (あと -{{ getSalesGap(scenario).toFixed(2) }}億円)
-                </span>
-
-                <!-- 逆算結果を1行でスマートに表示 -->
-                <div class="adoption-hint">
-                  💡 達成に必要な追加人材: 
-                  <strong>{{ getRequiredAdoptionInfo(scenario).skill }} × 約{{ getRequiredAdoptionInfo(scenario).count }}名</strong>
-                </div>
+              <div class="status-indicator warning">
+                <span class="status-text">未達 ▼ -{{ getSalesGap(scenario).toFixed(2) }}億</span>
+                
+                @if (!isAdoptionApplied) {
+                  <span class="adoption-hint-inline">
+                    (要目安: {{ getRequiredAdoptionInfo(scenario).skill }} × {{ getRequiredAdoptionInfo(scenario).count }}名)
+                  </span>
+                }
               </div>
 
             }

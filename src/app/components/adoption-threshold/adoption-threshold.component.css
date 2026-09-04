@@ -1,0 +1,307 @@
+/* src/app/components/adoption-threshold/adoption-threshold.component.css */
+
+.threshold-section {
+  margin-bottom: 16px;
+}
+
+.threshold-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.threshold-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.threshold-badge {
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.threshold-header h3 {
+  margin: 6px 0 4px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.threshold-sub {
+  font-size: 12px;
+  color: #64748b;
+  margin: 0;
+  max-width: 600px;
+  line-height: 1.4;
+}
+
+.btn-run-threshold {
+  background: #ffffff;
+  color: #2563eb;
+  border: 1px solid #2563eb;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-run-threshold:hover:not(:disabled) {
+  background: #eff6ff;
+}
+
+.btn-run-threshold:disabled {
+  border-color: #cbd5e1;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+/* ローディング・エラー */
+.threshold-loading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 8px;
+  margin-top: 12px;
+}
+
+.threshold-loading p {
+  margin: 0;
+  font-size: 12px;
+  color: #475569;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #dbeafe;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: threshold-spin 0.8s linear infinite;
+}
+
+@keyframes threshold-spin {
+  to { transform: rotate(360deg); }
+}
+
+.error-box {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: #fef2f2;
+  color: #991b1b;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+/* 推奨結果レイアウト */
+.recommendation-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+/* ヒーロー推奨カード（1案ハイライト） */
+.hero-recommendation-card {
+  position: relative;
+  background: linear-gradient(135deg, #ffffff, #f0f9ff);
+  border: 2px solid #3b82f6;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.08);
+}
+
+.recommendation-tag {
+  position: absolute;
+  top: -12px;
+  left: 20px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 12px;
+}
+
+.recommendation-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+  margin-bottom: 16px;
+}
+
+.persona-main-info h4 {
+  margin: 0 0 6px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.persona-params {
+  margin: 0;
+  font-size: 12px;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cost-badge {
+  background: #f3e8ff;
+  color: #6b21a8;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.impact-summary {
+  text-align: right;
+}
+
+.impact-badge {
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.impact-badge.success {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.impact-badge.info {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.impact-sub {
+  display: block;
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.action-footer {
+  border-top: 1px solid #dbeafe;
+  padding-top: 12px;
+  text-align: right;
+}
+
+.btn-apply-hero {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+  transition: all 0.15s ease;
+}
+
+.btn-apply-hero:hover {
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+  transform: translateY(-1px);
+}
+
+/* その他のサブペルソナ */
+.sub-personas-section {
+  border-top: 1px solid #f1f5f9;
+  padding-top: 12px;
+}
+
+.sub-personas-section h5 {
+  margin: 0 0 10px 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.sub-personas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.sub-persona-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sub-persona-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sub-persona-header strong {
+  font-size: 12px;
+  color: #334155;
+}
+
+.sub-cost {
+  font-size: 10px;
+  color: #6b21a8;
+  font-weight: 700;
+}
+
+.sub-params {
+  margin: 0;
+  font-size: 10px;
+  color: #64748b;
+}
+
+.btn-apply-sub {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #2563eb;
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  align-self: flex-end;
+  transition: all 0.15s ease;
+}
+
+.btn-apply-sub:hover {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+@media (max-width: 640px) {
+  .recommendation-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .impact-summary {
+    text-align: left;
+  }
+}

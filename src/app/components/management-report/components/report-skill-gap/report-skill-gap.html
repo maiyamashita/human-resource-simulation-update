@@ -1,0 +1,117 @@
+<div class="report-skill-gap-card">
+  <div class="skill-card-header">
+    <div class="header-titles">
+      <span class="report-section-badge">構成分析</span>
+      <h4>事業部別配置人数・スキル構成ギャップ</h4>
+      <p class="skill-card-sub">
+        第一候補（推奨案）における事業部別の人員配置バランスおよび配属メンバーの平均能力構成
+      </p>
+    </div>
+    @if (snapshot) {
+      <div class="adoption-status-tag">
+        追加採用 +{{ snapshot.candidateCount }}名 適用中
+      </div>
+    }
+  </div>
+
+  @if (activeScenario) {
+    <!-- 1. 全体人員配置の構成バー -->
+    <div class="overall-allocation-bar-box">
+      <div class="bar-header-info">
+        <span class="bar-title">全社人員配置バランス</span>
+        <span class="bar-total-count">
+          総配置人数：<strong>{{ snapshot ? 100 + snapshot.candidateCount : totalEmployeeCount }}名</strong>
+        </span>
+      </div>
+
+      <div class="stacked-bar-track">
+        <div 
+          class="seg dept-a" 
+          [style.width.%]="getAllocationWidth(getDepartmentCount('A'))"
+        >
+          <span>A事業部：{{ getDepartmentCount('A') }}名</span>
+        </div>
+        <div 
+          class="seg dept-b" 
+          [style.width.%]="getAllocationWidth(getDepartmentCount('B'))"
+        >
+          <span>B事業部：{{ getDepartmentCount('B') }}名</span>
+        </div>
+        <div 
+          class="seg dept-c" 
+          [style.width.%]="getAllocationWidth(getDepartmentCount('C'))"
+        >
+          <span>C事業部：{{ getDepartmentCount('C') }}名</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. 事業部別 人数充足 ＆ スキルギャップ格子カード -->
+    <div class="dept-detail-grid">
+      @for (dept of deptKeys; track dept) {
+        @let assignedCount = getDepartmentCount(dept);
+        @let targetCount = appropriateCounts[dept] || 0;
+        @let fulfillmentRate = targetCount > 0 ? (assignedCount / targetCount * 100) : 0;
+        @let skillAvg = getDepartmentSkillAvg(dept);
+
+        <div class="dept-report-box" [class]="'box-' + dept.toLowerCase()">
+          <!-- 事業部ヘッダー -->
+          <div class="dept-box-header">
+            <strong class="dept-title-name">{{ getDepartmentName(dept) }}</strong>
+            <div class="dept-count-badge">
+              <strong>{{ assignedCount }}名</strong>
+              <small>（適正 {{ targetCount }}名 / 充足率 {{ fulfillmentRate | number:'1.0-0' }}%）</small>
+            </div>
+          </div>
+
+          <!-- スキル構成ギャップ -->
+          <div class="skill-analysis-container">
+            <div class="skill-analysis-header">
+              <span class="skill-analysis-title">配属メンバー平均能力構成</span>
+            </div>
+
+            <div class="skill-rows-list">
+              <!-- 営業力 -->
+              <div class="s-row" [class.is-focus]="dept === 'A' || dept === 'B'">
+                <span class="s-label">
+                  営業
+                  @if (dept === 'A' || dept === 'B') { <small class="focus-tag">重点</small> }
+                </span>
+                <div class="s-bg"><div class="s-fill" [style.width.%]="skillAvg.sales"></div></div>
+                <span class="s-val">{{ skillAvg.sales }}</span>
+              </div>
+
+              <!-- 管理力 -->
+              <div class="s-row" [class.is-focus]="dept === 'A'">
+                <span class="s-label">
+                  管理
+                  @if (dept === 'A') { <small class="focus-tag">重点</small> }
+                </span>
+                <div class="s-bg"><div class="s-fill" [style.width.%]="skillAvg.management"></div></div>
+                <span class="s-val">{{ skillAvg.management }}</span>
+              </div>
+
+              <!-- 開拓力 -->
+              <div class="s-row" [class.is-focus]="dept === 'B' || dept === 'C'">
+                <span class="s-label">
+                  開拓
+                  @if (dept === 'B' || dept === 'C') { <small class="focus-tag">重点</small> }
+                </span>
+                <div class="s-bg"><div class="s-fill" [style.width.%]="skillAvg.development"></div></div>
+                <span class="s-val">{{ skillAvg.development }}</span>
+              </div>
+
+              <!-- 育成力 -->
+              <div class="s-row">
+                <span class="s-label">育成</span>
+                <div class="s-bg"><div class="s-fill" [style.width.%]="skillAvg.training"></div></div>
+                <span class="s-val">{{ skillAvg.training }}</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      }
+    </div>
+  }
+</div>

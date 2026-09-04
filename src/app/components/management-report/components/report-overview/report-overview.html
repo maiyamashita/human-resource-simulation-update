@@ -1,0 +1,337 @@
+<!-- src/app/components/management-report/components/report-overview/report-overview.html -->
+
+<div class="report-page-preview">
+  <div class="page-header">
+    <span>経営会議資料</span>
+    <span>第1号演題：主要シナリオ比較サマリー</span>
+  </div>
+
+  <div class="page-title-row">
+    <h3 class="page-title">4シナリオ比較表</h3>
+    @if (snapshot) {
+      <div class="header-adoption-badge">
+        <span class="badge-dot"></span>
+        <span>追加採用適用中: <strong class="num-val">+{{ snapshot.candidateCount }}名</strong> (計100名 → {{ 100 + snapshot.candidateCount }}名体制)</span>
+      </div>
+    }
+  </div>
+
+  <!-- 1. 比較表 -->
+  @if (validScenarios.length > 0) {
+    <div class="scenario-table-wrapper">
+      <table class="scenario-table">
+        <colgroup>
+          <col style="width: 220px;">
+          <col style="width: 125px;">
+          <col style="width: 115px;">
+          <col style="width: 110px;">
+          <col style="width: 90px;">
+          <col style="width: 90px;">
+          <col style="width: 90px;">
+          <col style="width: 90px;">
+          <col style="width: 70px;">
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="text-left">シナリオ名称</th>
+            <th class="text-right">総売上 (億円)</th>
+            <th class="text-center">対・第一候補差分</th>
+            <th class="text-right">総利益 (億円)</th>
+            <th class="text-right">A売上 (億円)</th>
+            <th class="text-right">B売上 (億円)</th>
+            <th class="text-right">C売上 (億円)</th>
+            <th class="text-center">配置人員</th>
+            <th class="text-center">目標判定</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (scenario of validScenarios; track scenario.id) {
+            <tr
+              [class.row-primary]="scenario.id === primaryScenarioId"
+              [class.row-secondary]="scenario.id === secondaryScenarioId"
+            >
+              <td class="scenario-name-cell">
+                <div class="scenario-cell-content">
+                  <div class="badge-slot">
+                    @if (scenario.id === primaryScenarioId) {
+                      <span class="badge-role primary">第一候補</span>
+                    } @else if (scenario.id === secondaryScenarioId) {
+                      <span class="badge-role secondary">第二候補</span>
+                    }
+                  </div>
+                  <span class="scenario-text-name">{{ getScenarioName(scenario) }}</span>
+                </div>
+              </td>
+
+              <!-- 総売上列 -->
+              <td class="text-right num-cell strong-sales">
+                <div class="sales-val-container">
+                  <span class="num-val">{{ getScenarioSales(scenario) | number:'1.2-2' }}</span>
+                  @if (snapshot && getAdoptionSalesImpact() > 0) {
+                    <small class="adoption-plus-tag">(100名比 +{{ getAdoptionSalesImpact() | number:'1.2-2' }}億)</small>
+                  }
+                </div>
+              </td>
+
+              <!-- 客観比較差分（▲記号併記） -->
+              <td class="text-center diff-cell">
+                @if (scenario.id === primaryScenarioId) {
+                  <span class="diff-base">基準</span>
+                } @else {
+                  @let diff = getSalesDiffFromPrimary(scenario);
+                  <span class="num-val" [class.diff-minus]="diff < 0" [class.diff-plus]="diff > 0">
+                    {{ diff > 0 ? '+' : '▲ ' }}{{ (diff < 0 ? -diff : diff) | number:'1.2-2' }}億
+                  </span>
+                }
+              </td>
+
+              <!-- 売上・利益の小数点以下桁数を '1.2-2' で完全統一 -->
+              <td class="text-right num-cell num-val">{{ getScenarioProfit(scenario) | number:'1.2-2' }}</td>
+              <td class="text-right num-cell num-val">{{ getDepartmentSales(scenario, 'A') | number:'1.2-2' }}</td>
+              <td class="text-right num-cell num-val">{{ getDepartmentSales(scenario, 'B') | number:'1.2-2' }}</td>
+              <td class="text-right num-cell num-val">{{ getDepartmentSales(scenario, 'C') | number:'1.2-2' }}</td>
+              
+              <!-- 配置人数列 -->
+              <td class="text-center">
+                <strong class="num-val">{{ getTotalAssignedCount(scenario) }}名</strong>
+                @if (snapshot) {
+                  <span class="count-diff-tag num-val">(+{{ snapshot.candidateCount }}名)</span>
+                }
+              </td>
+
+              <!-- 目標判定（記号 ◯ / ▲ 併記） -->
+              <td class="text-center" [class.target-achieved]="isTargetAchieved(scenario)" [class.target-not-achieved]="!isTargetAchieved(scenario)">
+                <span class="status-symbol">{{ isTargetAchieved(scenario) ? '◯ 達成' : '▲ 未達' }}</span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- 2. グラフ比較エリア -->
+  <div class="comparison-chart-grid">
+    
+    <!-- 左：総売上比較 -->
+    <div class="report-chart-card">
+      <div class="chart-card-header">
+        <div>
+          <h4>総売上比較</h4>
+          <span class="chart-subtitle">
+            第一候補案と他シナリオの達成度比較
+            @if (snapshot) { <strong class="chart-adoption-note">【追加採用 +{{ snapshot.candidateCount }}名 適用中】</strong> }
+          </span>
+        </div>
+        <div class="chart-header-right">
+          @if (snapshot) {
+            <div class="chart-stack-legend">
+              <span class="legend-item"><span class="legend-box legend-base"></span>標準100名</span>
+              <span class="legend-item"><span class="legend-box legend-add"></span>追加採用純増</span>
+            </div>
+          }
+          <span class="unit-tag">単位：億円</span>
+        </div>
+      </div>
+
+      <div class="total-sales-chart">
+        <div class="total-sales-chart-body">
+          <div class="total-sales-y-axis">
+            <span>80</span>
+            <span>60</span>
+            <span>40</span>
+            <span>20</span>
+            <span>0</span>
+          </div>
+
+          <div class="total-sales-plot">
+            <div class="chart-grid-lines">
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+
+            <!-- 目標線 -->
+            <div class="target-sales-line" [style.bottom.%]="(targetSales / 80) * 100">
+              <span class="target-tag">目標 {{ targetSales | number:'1.1-1' }}億円</span>
+            </div>
+
+            <!-- 棒グラフエリア -->
+            <div class="total-sales-bars">
+              @for (item of totalSalesChartData; track item.id) {
+                <div
+                  class="total-sales-bar-item"
+                  [class.bar-type-primary]="item.isPrimary"
+                  [class.bar-type-secondary]="item.isSecondary"
+                  [class.bar-type-other]="!item.isPrimary && !item.isSecondary"
+                >
+                  <div class="total-sales-bar-wrapper">
+                    <!-- 数値タグ -->
+                    <div class="total-sales-value-tag">
+                      <span class="val-total num-val">{{ item.totalValue | number:'1.2-2' }}<small>億</small></span>
+                      @if (snapshot && item.addValue > 0) {
+                        <small class="val-add-badge num-val">(+{{ item.addValue | number:'1.2-2' }}億)</small>
+                      }
+                    </div>
+
+                    <!-- スタックバーコンテナ -->
+                    <div class="total-sales-bar-container" [style.height.%]="item.totalHeightPct">
+                      <div
+                        class="total-sales-bar base-bar"
+                        [style.height.%]="item.basePctOfTotal"
+                      ></div>
+                      @if (snapshot && item.addValue > 0) {
+                        <div
+                          class="total-sales-bar add-bar"
+                          [style.height.%]="item.addPctOfTotal"
+                        ></div>
+                      }
+                    </div>
+                  </div>
+
+                  <div class="total-sales-label">
+                    S{{ item.id }}
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右：部門別売上比較 -->
+    <div class="report-chart-card">
+      <div class="chart-card-header">
+        <div>
+          <h4>部門別売上比較</h4>
+          <span class="chart-subtitle">A・B・C部門の売上構成比較</span>
+        </div>
+        <div class="dept-chart-legend">
+          <span class="legend-item"><span class="legend-dot dept-a"></span>A事業部</span>
+          <span class="legend-item"><span class="legend-dot dept-b"></span>B事業部</span>
+          <span class="legend-item"><span class="legend-dot dept-c"></span>C事業部</span>
+        </div>
+      </div>
+
+      <div class="dept-sales-chart">
+        <div class="dept-sales-chart-body">
+          <div class="dept-sales-y-axis">
+            <span>40</span><span>30</span><span>20</span><span>10</span><span>0</span>
+          </div>
+
+          <div class="dept-sales-plot">
+            <div class="chart-grid-lines">
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+
+            <div class="dept-sales-bars-group">
+              @for (scenario of validScenarios; track scenario.id) {
+                @let deptA = getDepartmentSalesData(scenario, 'A');
+                @let deptB = getDepartmentSalesData(scenario, 'B');
+                @let deptC = getDepartmentSalesData(scenario, 'C');
+
+                <div class="dept-sales-scenario-item" [class.dept-item-primary]="scenario.id === primaryScenarioId">
+                  <div class="dept-bars-container">
+                    
+                    <!-- A部門バー -->
+                    <div class="dept-bar-item">
+                      <div class="dept-bar-wrapper">
+                        <span class="dept-bar-value num-val" [style.bottom.%]="getDeptSalesBarHeight(deptA.total)">
+                          {{ deptA.total | number:'1.1-1' }}
+                        </span>
+                        <div class="dept-bar-container" [style.height.%]="getDeptSalesBarHeight(deptA.total)">
+                          <div class="dept-bar dept-a-base" [style.height.%]="deptA.total > 0 ? (deptA.base / deptA.total) * 100 : 100"></div>
+                          @if (deptA.add > 0) {
+                            <div class="dept-bar dept-a-add" [style.height.%]="(deptA.add / deptA.total) * 100"></div>
+                          }
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- B部門バー -->
+                    <div class="dept-bar-item">
+                      <div class="dept-bar-wrapper">
+                        <span class="dept-bar-value num-val" [style.bottom.%]="getDeptSalesBarHeight(deptB.total)">
+                          {{ deptB.total | number:'1.1-1' }}
+                        </span>
+                        <div class="dept-bar-container" [style.height.%]="getDeptSalesBarHeight(deptB.total)">
+                          <div class="dept-bar dept-b-base" [style.height.%]="deptB.total > 0 ? (deptB.base / deptB.total) * 100 : 100"></div>
+                          @if (deptB.add > 0) {
+                            <div class="dept-bar dept-b-add" [style.height.%]="(deptB.add / deptB.total) * 100"></div>
+                          }
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- C部門バー -->
+                    <div class="dept-bar-item">
+                      <div class="dept-bar-wrapper">
+                        <span class="dept-bar-value num-val" [style.bottom.%]="getDeptSalesBarHeight(deptC.total)">
+                          {{ deptC.total | number:'1.1-1' }}
+                        </span>
+                        <div class="dept-bar-container" [style.height.%]="getDeptSalesBarHeight(deptC.total)">
+                          <div class="dept-bar dept-c-base" [style.height.%]="deptC.total > 0 ? (deptC.base / deptC.total) * 100 : 100"></div>
+                          @if (deptC.add > 0) {
+                            <div class="dept-bar dept-c-add" [style.height.%]="(deptC.add / deptC.total) * 100"></div>
+                          }
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <div class="dept-sales-label">S{{ scenario.id }}</div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 3. 経営確認ポイント（メリット・デメリット・第二候補比較） -->
+  <div class="executive-point-box">
+    <div class="executive-point-header">
+      <span class="executive-badge">審議・決裁要旨</span>
+      <h4 class="executive-title">第一候補（推奨案）における採択構造および比較検証</h4>
+    </div>
+
+    <div class="executive-point-grid">
+      <!-- ポイント 01: メリット（業績・目標達成） -->
+      <div class="executive-point-card card-advantage">
+        <div class="card-tag tag-advantage">推奨メリット</div>
+        <div class="point-content">
+          <strong class="point-headline">業績目標（{{ targetSales | number:'1.1-1' }}億円）の確実に伴う全社売上極大化</strong>
+          <p class="point-detail">
+            全シナリオ中最高となる売上 <strong>{{ getScenarioSales(primaryScenario!) | number:'1.2-2' }}億円</strong> を達成。コア人材（高評価層）を収益基盤である主力部門へ傾斜配置し、全社成長を最短で牽引する構造。
+          </p>
+        </div>
+      </div>
+
+      <!-- ポイント 02: 第二候補（対案）との比較検証 -->
+      <div class="executive-point-card card-comparison">
+        <div class="card-tag tag-comparison">第二候補比較</div>
+        <div class="point-content">
+          @let secSc = validScenarios[3] || primaryScenario;
+          @let salesDiff = getScenarioSales(primaryScenario!) - getScenarioSales(secSc);
+          <strong class="point-headline">第二候補（対案）に対する売上・収益優位性</strong>
+          <p class="point-detail">
+            第二候補（S{{ secSc?.id }}）と比較し、全社売上において <strong>+{{ salesDiff | number:'1.2-2' }}億円</strong> の明確なアドバンテージを確保。資源配分の効率および全体業績への寄与度で大きく勝る。
+          </p>
+        </div>
+      </div>
+
+      <!-- ポイント 03: デメリット ＆ リスク緩和策 -->
+      <div class="executive-point-card card-disadvantage">
+        <div class="card-tag tag-disadvantage">課題・留意事項</div>
+        <div class="point-content">
+          <strong class="point-headline">特定部門における人員リソースの平準化課題</strong>
+          <p class="point-detail">
+            主力事業部への重点配置に伴い、他部門の人員密度が低下。中長期の組織リスクに対しては、追加採用プラン（+{{ snapshot?.candidateCount || 0 }}名）の適用またはOJT強化による能力補完を想定。
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

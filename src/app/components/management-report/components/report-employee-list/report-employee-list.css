@@ -1,0 +1,202 @@
+/* src/app/components/management-report/components/report-employee-list/report-employee-list.css */
+
+.employee-list-report-card {
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  /* page-break-inside: avoid; ←★ 不要な塊化を防ぐため削除 */
+}
+
+.employee-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+  gap: 12px;
+}
+
+.report-section-badge {
+  display: inline-block;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+  border: 1px solid #bfdbfe;
+}
+
+.employee-list-header h4 {
+  margin: 0;
+  font-size: 15px;
+  color: #1e293b;
+  font-weight: 800;
+}
+
+.employee-list-sub {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* 3事業部並列グリッド */
+.employee-depts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.dept-employee-box {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+
+.dept-box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.dept-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dept-box-header h5 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.badge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.dept-a-box .badge { background: #dbeafe; color: #1e40af; }
+.dept-b-box .badge { background: #ccfbf1; color: #0f766e; }
+.dept-c-box .badge { background: #ffedd5; color: #c2410c; }
+
+/* テーブルコンテナ */
+.table-scroll-container {
+  width: 100%;
+}
+
+.emp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  table-layout: fixed; /* ★ 列幅固定で整列を保証 */
+}
+
+/* ★ 列幅のパーセンテージ配分 */
+.col-id   { width: 14%; } /* ID列 */
+.col-name { width: 32%; } /* 氏名列 */
+.col-skill { width: 10%; } /* 各能力値列 */
+.col-cost  { width: 14%; } /* 人件費列 */
+
+.emp-table th,
+.emp-table td {
+  padding: 5px 2px;
+  text-align: center;
+  border-bottom: 1px solid #f1f5f9;
+  box-sizing: border-box;
+}
+
+.emp-table th {
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 700;
+  font-size: 10px;
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #cbd5e1;
+}
+
+/* ID列セル */
+.emp-id-cell {
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 氏名セル */
+.emp-name-cell {
+  padding-left: 2px !important;
+}
+
+.emp-name-text {
+  color: #0f172a;
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+/* スコア表示 ＆ 最強能力ハイライト */
+.num-val {
+  font-size: 11px;
+  color: #64748b;
+  font-variant-numeric: tabular-nums;
+}
+
+/* その本人の最高強みスコア（4以上）を強調表示 */
+.num-val.top-skill {
+  background-color: #fef9c3;
+  color: #854d0e;
+  font-weight: 800;
+  border-radius: 3px;
+}
+
+.cost-cell {
+  color: #334155;
+  font-size: 10.5px;
+}
+
+/* 印刷（紙面レイアウト）の最適化 */
+@media print {
+  /* 1. 見出しだけがページの最下部に取り残されるのを防止 */
+  .employee-list-header,
+  .dept-box-header {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  /* 2. 3事業部を紙面幅に合わせて配置 */
+  .employee-depts-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+    align-items: start !important;
+  }
+
+  /* 3. 事業部ボックス自体が1つ丸ごと改ページされるのを許可 */
+  .dept-employee-box {
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
+  /* 4. テーブルの「1行（tr）」だけがページを跨いで斜めに千切れるのを保護 */
+  .emp-table tr {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .emp-table {
+    font-size: 9.5px;
+  }
+}

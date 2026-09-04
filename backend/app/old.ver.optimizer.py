@@ -1,3 +1,5 @@
+//このファイルは現在使われておりません。
+
 from ortools.sat.python import cp_model
 
 from app.department_calculator import (

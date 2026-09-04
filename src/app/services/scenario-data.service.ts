@@ -1,3 +1,5 @@
+//このファイル名はsrc/app/services/scenario-data.service.tsです。
+
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
@@ -43,6 +45,76 @@ export interface ScenarioResponse {
   scenarios: Scenario[];
 }
 
+// ==================================================
+// ★ 必要人材の目安（4ペルソナ x 4シナリオ 必要人数試算）用インターフェース
+// ==================================================
+
+/** バックエンド app/persona_definitions.py の4タイプ（正式なペルソナ定義） */
+export interface AdoptionPersona {
+  key: string;
+  label: string;
+  sales: number;
+  management: number;
+  development: number;
+  training: number;
+  cost: number;
+}
+
+export interface AdoptionThresholdScenario {
+  id: number;
+  shortName: string;
+  mode: string;
+}
+
+export interface AdoptionThresholdAttempt {
+  count: number;
+  totalSales: number;
+  totalProfit: number;
+}
+
+export interface AdoptionThresholdResult {
+  personaKey: string;
+  scenarioId: number;
+  reached: boolean;
+  minCount: number | null;
+  totalSales: number | null;
+  totalProfit: number | null;
+  gap: number | null;
+  attempts: AdoptionThresholdAttempt[];
+}
+
+export interface AdoptionThresholdResponse {
+  personas: AdoptionPersona[];
+  scenarios: AdoptionThresholdScenario[];
+  targetSales: number;
+  maxCount: number;
+  results: AdoptionThresholdResult[];
+  isEstimate: boolean;
+}
+
+/**
+ * /api/scenarios/adoption-threshold へ送信する「現在の100名の配置」
+ * （既存4シナリオそれぞれの部門別人数・能力値・売上）のベースラインデータ。
+ * 概算計算のみに使用し、CP-SATは呼ばない。
+ */
+export interface AdoptionThresholdBaselineDepartment {
+  count: number;
+  ability: number;
+  sales: number;
+}
+
+export interface AdoptionThresholdBaselineScenario {
+  id: number;
+  mode: string;
+  totalSales: number;
+  totalProfit: number;
+  departments: {
+    A: AdoptionThresholdBaselineDepartment;
+    B: AdoptionThresholdBaselineDepartment;
+    C: AdoptionThresholdBaselineDepartment;
+  };
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -56,6 +128,8 @@ export class ScenarioDataService {
   private readonly recalculateApiUrl = '/api/scenarios/recalculate';
   // 目標売上動的再最適化用API URL
   private readonly reoptimizeApiUrl = '/api/scenarios/reoptimize';
+  // 必要人材の目安（4ペルソナ x 4シナリオ）試算用API URL
+  private readonly adoptionThresholdApiUrl = '/api/scenarios/adoption-threshold';
 
   // inject 関数を使用して確実に依存注入（NG2003 エラー回避）
   private http = inject(HttpClient);
@@ -120,5 +194,22 @@ export class ScenarioDataService {
       .pipe(
         map((response: any) => response.scenarios)
       );
+  }
+
+  /**
+   * 必要人材の目安（4ペルソナ x 4シナリオ）概算試算 API呼び出し
+   * CP-SATは使用せず、課題仕様の直接計算式による概算のみを行う。
+   * @param baselineScenarios 「現在の100名の配置」＝既存4シナリオの部門別データ
+   * @param targetSales ユーザーが設定した目標売上（億円）
+   * @returns 4ペルソナ x 4シナリオ分の必要最小人数の概算試算結果
+   */
+  getAdoptionThreshold(
+    baselineScenarios: AdoptionThresholdBaselineScenario[],
+    targetSales: number
+  ): Observable<AdoptionThresholdResponse> {
+    return this.http.post<AdoptionThresholdResponse>(this.adoptionThresholdApiUrl, {
+      baseline_scenarios: baselineScenarios,
+      target_sales: targetSales
+    });
   }
 }

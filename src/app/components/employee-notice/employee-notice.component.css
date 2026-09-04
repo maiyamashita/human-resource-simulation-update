@@ -1,0 +1,866 @@
+/* src/app/components/employee-notice/employee-notice.component.css */
+
+/* ==================================================
+   1. 基本設定
+================================================== */
+
+:host {
+  display: block;
+}
+
+
+/* ==================================================
+   2. 画面表示：モーダル背景
+================================================== */
+
+.notice-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  height: 100%;
+
+  padding: 16px;
+  box-sizing: border-box;
+
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(4px);
+}
+
+
+/* ==================================================
+   3. 画面表示：モーダル本体
+
+   操作バーと書類を別管理する
+================================================== */
+
+.notice-modal-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  width: 100%;
+  max-width: 900px;
+
+  max-height: calc(100vh - 32px);
+
+  box-sizing: border-box;
+
+  background: transparent;
+
+  font-family:
+    "游明朝",
+    "Yu Mincho",
+    "YuMincho",
+    "Hiragino Mincho ProN",
+    "MS 明朝",
+    serif;
+}
+
+
+/* ==================================================
+   4. 画面表示：操作バー
+================================================== */
+
+.modal-control-bar {
+  width: 100%;
+  max-width: 794px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  flex-shrink: 0;
+
+  margin-bottom: 10px;
+  padding: 8px 12px;
+
+  box-sizing: border-box;
+
+  background: #0f172a;
+  color: #ffffff;
+
+  border-radius: 6px;
+
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+}
+
+
+.nav-btn-group,
+.action-btn-group {
+  display: flex;
+  align-items: center;
+}
+
+
+.btn-nav,
+.btn-print,
+.btn-close {
+  border: none;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  padding: 6px 12px;
+
+  border-radius: 4px;
+
+  cursor: pointer;
+
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+
+.btn-nav:hover,
+.btn-print:hover,
+.btn-close:hover {
+  opacity: 0.88;
+}
+
+
+.btn-nav:active,
+.btn-print:active,
+.btn-close:active {
+  transform: translateY(1px);
+}
+
+
+.btn-nav {
+  background: #334155;
+  color: #ffffff;
+}
+
+
+.btn-nav + .btn-nav {
+  margin-left: 6px;
+}
+
+
+.btn-print {
+  background: #2563eb;
+  color: #ffffff;
+
+  border: 1px solid #3b82f6;
+
+  margin-right: 8px;
+}
+
+
+.btn-close {
+  background: #475569;
+  color: #ffffff;
+}
+
+
+/* ==================================================
+   5. 画面表示：A4書類
+
+   A4縦 = 210 : 297
+   画面上では「A4比率」を維持する
+================================================== */
+
+.notice-document {
+  /*
+    A4の縦横比を維持
+
+    794pxはA4を96dpi換算したおおよその幅
+  */
+  width: min(100%, 794px);
+
+  aspect-ratio: 210 / 297;
+
+  /*
+    操作バーを除いた画面高に収める
+  */
+  max-height: calc(100vh - 100px);
+
+  /*
+    高さ制限時でもA4比率を維持するため、
+    幅は自動計算させる
+  */
+  height: auto;
+
+  flex: 0 1 auto;
+
+  padding: 42px 52px;
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+
+  background: #ffffff;
+  color: #000000;
+
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+
+  /*
+    書類内の各ブロックを上下方向に自然配置
+  */
+  display: flex;
+  flex-direction: column;
+
+  line-height: 1.45;
+}
+
+
+/* ==================================================
+   6. 文書ヘッダー
+================================================== */
+
+.doc-header-official {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  font-size: 10px;
+
+  margin-bottom: 12px;
+}
+
+
+.doc-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+
+.doc-no {
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+}
+
+
+.confidential-mark {
+  width: fit-content;
+
+  font-size: 9px;
+  font-weight: bold;
+
+  border: 1px solid #000000;
+
+  padding: 1px 4px;
+}
+
+
+.doc-meta-official {
+  text-align: right;
+}
+
+
+.doc-meta-official p {
+  margin: 0;
+}
+
+
+.issue-date {
+  font-size: 9.5px;
+  margin-bottom: 4px !important;
+}
+
+
+.company-name {
+  font-size: 12px;
+  font-weight: bold;
+
+  margin-bottom: 3px !important;
+}
+
+
+.issuer-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  gap: 8px;
+}
+
+
+.issuer-title {
+  font-size: 9.5px;
+}
+
+
+.sub-issuer {
+  margin-top: 3px !important;
+
+  font-size: 9px;
+
+  color: #333333;
+}
+
+
+/* ==================================================
+   7. 社印
+================================================== */
+
+.official-seal {
+  width: 34px;
+  height: 34px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  border: 1.5px solid #c8161d;
+  border-radius: 2px;
+
+  color: #c8161d;
+
+  font-size: 8px;
+  font-weight: bold;
+  line-height: 1.1;
+
+  transform: rotate(-3deg);
+}
+
+
+/* ==================================================
+   8. 文書タイトル
+================================================== */
+
+.doc-title-official {
+  text-align: center;
+
+  margin: 10px 0 20px;
+}
+
+
+.doc-title-official h1 {
+  display: inline-block;
+
+  margin: 0;
+  padding-bottom: 4px;
+
+  font-size: 20px;
+  font-weight: 700;
+
+  letter-spacing: 0.45em;
+
+  border-bottom: 1.5px solid #000000;
+}
+
+
+/* ==================================================
+   9. 宛名
+================================================== */
+
+.recipient-official {
+  margin-bottom: 16px;
+
+  font-size: 12px;
+}
+
+
+.employee-id-name {
+  margin: 0;
+}
+
+
+.recipient-official .emp-id-sub {
+  margin-left: 6px;
+
+  font-size: 9.5px;
+
+  color: #4b5563;
+}
+
+
+/* ==================================================
+   10. 主文
+================================================== */
+
+.main-statement {
+  margin-bottom: 16px;
+
+  font-size: 10.5px;
+  line-height: 1.65;
+
+  text-indent: 1em;
+}
+
+
+.main-statement p {
+  margin: 0;
+}
+
+
+/* ==================================================
+   11. 「記」
+================================================== */
+
+.ki-title {
+  margin-bottom: 10px;
+
+  text-align: center;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  letter-spacing: 0.4em;
+}
+
+
+/* ==================================================
+   12. 配属決定テーブル
+================================================== */
+
+.official-table {
+  width: 100%;
+
+  border-collapse: collapse;
+
+  margin-bottom: 14px;
+
+  font-size: 10px;
+
+  border: 1.2px solid #000000;
+}
+
+
+.official-table th,
+.official-table td {
+  border: 1px solid #000000;
+
+  padding: 7px 9px;
+
+  vertical-align: middle;
+}
+
+
+.official-table th.col-label {
+  width: 24%;
+
+  background: #f2f2f2;
+
+  text-align: left;
+
+  font-weight: 700;
+}
+
+
+.col-value.bold-dept {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+
+.pref-badge-official {
+  margin-left: 4px;
+
+  font-size: 9px;
+  font-weight: normal;
+
+  color: #333333;
+}
+
+
+/* ==================================================
+   13. 配属理由
+================================================== */
+
+.official-reason-body {
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+
+.reason-summary-bold {
+  margin: 0;
+
+  font-weight: 700;
+}
+
+
+.reason-detail-text {
+  margin: 0;
+
+  font-size: 9.5px;
+  line-height: 1.55;
+
+  color: #222222;
+}
+
+
+/* ==================================================
+   14. 能力評価表
+================================================== */
+
+.sub-table-title {
+  margin-bottom: 5px;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+
+.skill-table {
+  text-align: center;
+}
+
+
+.skill-table th {
+  background: #f2f2f2;
+
+  font-weight: 700;
+}
+
+
+/* ==================================================
+   15. 文書フッター
+================================================== */
+
+.doc-footer-official {
+  margin-top: auto;
+
+  padding-top: 10px;
+
+  text-align: right;
+}
+
+
+.foot-end {
+  margin: 0;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  letter-spacing: 0.25em;
+}
+
+
+/* ==================================================
+   16. 小さい画面への対応
+================================================== */
+
+@media (max-width: 820px) {
+
+  .notice-modal-overlay {
+    padding: 8px;
+  }
+
+
+  .notice-modal-container {
+    max-height: calc(100vh - 16px);
+  }
+
+
+  .modal-control-bar {
+    margin-bottom: 6px;
+
+    padding: 6px 8px;
+  }
+
+
+  .btn-nav,
+  .btn-print,
+  .btn-close {
+    font-size: 10px;
+
+    padding: 5px 8px;
+  }
+
+
+  .notice-document {
+    width: min(100%, 720px);
+
+    padding:
+      clamp(18px, 5vw, 42px)
+      clamp(20px, 6vw, 52px);
+
+    max-height: calc(100vh - 90px);
+  }
+}
+
+
+/* ==================================================
+   17. 印刷専用
+
+   重要：
+   ・モーダル背景を消す
+   ・操作バーを消す
+   ・通知書だけを通常の文書として印刷する
+   ・親側に残っている fixed 指定も解除する
+================================================== */
+
+@media print {
+
+  /* -----------------------------------------------
+     A4設定
+  ----------------------------------------------- */
+
+  @page {
+    size: A4 portrait;
+    margin: 12mm 15mm;
+  }
+
+
+  /* -----------------------------------------------
+     印刷時はコンポーネントのホストも固定解除
+
+     scenario-detail.css 等に
+     app-employee-notice { position: fixed; }
+     が残っていても印刷時に解除する
+  ----------------------------------------------- */
+
+  :host {
+    position: static !important;
+
+    display: block !important;
+
+    width: auto !important;
+    height: auto !important;
+
+    overflow: visible !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+
+  /* -----------------------------------------------
+     操作系は印刷しない
+  ----------------------------------------------- */
+
+  .no-print,
+  .modal-control-bar {
+    display: none !important;
+  }
+
+
+  /* -----------------------------------------------
+     背景モーダルを通常の文書コンテナに変更
+  ----------------------------------------------- */
+
+  .notice-modal-overlay {
+    position: static !important;
+    inset: auto !important;
+
+    display: block !important;
+
+    width: 100% !important;
+    height: auto !important;
+
+    min-height: 0 !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    overflow: visible !important;
+
+    background: #ffffff !important;
+
+    backdrop-filter: none !important;
+  }
+
+
+  /* -----------------------------------------------
+     モーダル枠を解除
+  ----------------------------------------------- */
+
+  .notice-modal-container {
+    display: block !important;
+
+    width: 100% !important;
+    max-width: none !important;
+
+    height: auto !important;
+    max-height: none !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    overflow: visible !important;
+
+    background: #ffffff !important;
+
+    box-shadow: none !important;
+
+    border-radius: 0 !important;
+  }
+
+
+  /* -----------------------------------------------
+     A4書類本体
+  ----------------------------------------------- */
+
+  .notice-document {
+    display: flex !important;
+    flex-direction: column !important;
+
+    width: 100% !important;
+
+    /*
+      画面表示用のA4比率固定を解除し、
+      実際のA4印刷領域に合わせる
+    */
+    aspect-ratio: auto !important;
+
+    height: auto !important;
+    max-height: none !important;
+
+    min-height: 0 !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    overflow: visible !important;
+
+    box-sizing: border-box !important;
+
+    background: #ffffff !important;
+    color: #000000 !important;
+
+    box-shadow: none !important;
+
+    font-size: 10.5pt !important;
+    line-height: 1.45 !important;
+
+    visibility: visible !important;
+    opacity: 1 !important;
+
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+
+  /* -----------------------------------------------
+     ヘッダー・本文余白の印刷最適化
+  ----------------------------------------------- */
+
+  .doc-header-official {
+    margin-bottom: 10px !important;
+  }
+
+
+  .doc-title-official {
+    margin: 8px 0 16px !important;
+  }
+
+
+  .recipient-official {
+    margin-bottom: 12px !important;
+  }
+
+
+  .main-statement {
+    margin-bottom: 12px !important;
+  }
+
+
+  .ki-title {
+    margin-bottom: 8px !important;
+  }
+
+
+  /* -----------------------------------------------
+     テーブルを印刷時も明確に表示
+  ----------------------------------------------- */
+
+  .official-table {
+    width: 100% !important;
+
+    border-collapse: collapse !important;
+
+    border: 1.2pt solid #000000 !important;
+
+    margin-bottom: 12px !important;
+
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+
+  .official-table th,
+  .official-table td {
+    border: 0.8pt solid #000000 !important;
+
+    padding: 5px 7px !important;
+
+    color: #000000 !important;
+  }
+
+
+  .official-table th.col-label,
+  .skill-table th {
+    background: #f2f2f2 !important;
+
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+
+  /* -----------------------------------------------
+     印刷時の文字サイズ調整
+  ----------------------------------------------- */
+
+  .doc-header-official {
+    font-size: 9.5pt !important;
+  }
+
+
+  .doc-title-official h1 {
+    font-size: 18pt !important;
+  }
+
+
+  .recipient-official {
+    font-size: 11pt !important;
+  }
+
+
+  .main-statement {
+    font-size: 10.5pt !important;
+  }
+
+
+  .ki-title {
+    font-size: 11pt !important;
+  }
+
+
+  .official-table {
+    font-size: 9.5pt !important;
+  }
+
+
+  .col-value.bold-dept {
+    font-size: 10.5pt !important;
+  }
+
+
+  .reason-detail-text {
+    font-size: 9pt !important;
+  }
+
+
+  .sub-table-title {
+    font-size: 9.5pt !important;
+  }
+
+
+  .foot-end {
+    font-size: 10pt !important;
+  }
+}

@@ -1,3 +1,5 @@
+//このファイル名はsrc/app/constants/simulation.constants.tsです。
+
 export const EMPLOYEE_COUNT = 100;
 
 export const TARGET_SALES = 58.0;

@@ -1,4 +1,6 @@
 #これは共通部分です。書き換え不可！
+#このファイル名はbackend/app/csv_loader.pyです。
+
 import csv
 from pathlib import Path
 

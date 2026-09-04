@@ -1,3 +1,5 @@
+//このファイル名はsrc/app/components/summary.tsです。
+
 import { Component, Input } from '@angular/core';
 import { Scenario, Department } from '../../models/scenario.model';
 

@@ -1,0 +1,174 @@
+<!-- src/app/components/management-report/components/report-forecast/report-forecast.html -->
+
+<div class="report-page-preview forecast-page-preview">
+  <div class="page-header">
+    <span>経営会議資料</span>
+    <span>第2号演題：中長期成長予測 (5か年推移)</span>
+  </div>
+
+  <div class="forecast-header-title-row">
+    <h3 class="forecast-header-title">中長期成長予測 ＆ 5か年累計インパクト</h3>
+    @if (snapshot) {
+      <div class="adoption-status-chip">
+        <span class="chip-dot"></span>
+        <span>追加採用 <strong>+{{ snapshot.candidateCount }}名</strong> 適用中 （売上純増 +{{ snapshot.salesDiff | number:'1.1-1' }}億円/年）</span>
+      </div>
+    }
+  </div>
+
+  @if (fiveYearPlans.length > 0) {
+    <div class="forecast-two-column-layout">
+      
+      <!-- 左カラム：メイングラフ（横に長すぎないコンパクト設計） -->
+      <div class="forecast-chart-card">
+        <div class="chart-card-header">
+          <div>
+            <h4>5か年売上推移グラフィック</h4>
+            <span class="chart-subtitle">前期実績（58.0億円）からの成長軌道比較</span>
+          </div>
+
+          <div class="forecast-legend">
+            <span class="legend-item"><span class="legend-line line-primary-add"></span>★ S1 推奨案 (追加採用後)</span>
+            <span class="legend-item"><span class="legend-line line-primary-base"></span>S1 推奨案 (標準)</span>
+            <span class="legend-item"><span class="legend-line line-secondary"></span>S4 対案 (追加採用後)</span>
+          </div>
+        </div>
+
+        <div class="forecast-svg-chart-wrapper">
+          <div class="forecast-y-axis">
+            <span class="num-val">{{ maxForecastSales | number:'1.0-0' }}億</span>
+            <span class="num-val">{{ (maxForecastSales - forecastYAxisStep) | number:'1.0-0' }}億</span>
+            <span class="num-val">{{ (maxForecastSales - forecastYAxisStep * 2) | number:'1.0-0' }}億</span>
+            <span class="num-val">{{ (maxForecastSales - forecastYAxisStep * 3) | number:'1.0-0' }}億</span>
+            <span class="num-val">{{ minForecastSales | number:'1.0-0' }}億</span>
+          </div>
+
+          <div class="forecast-svg-plot">
+            <svg viewBox="0 0 500 180" preserveAspectRatio="none" class="forecast-svg">
+              <!-- グリッド線 -->
+              <line x1="0" y1="20" x2="500" y2="20" class="grid-line" />
+              <line x1="0" y1="57.5" x2="500" y2="57.5" class="grid-line" />
+              <line x1="0" y1="95" x2="500" y2="95" class="grid-line" />
+              <line x1="0" y1="132.5" x2="500" y2="132.5" class="grid-line" />
+              <line x1="0" y1="170" x2="500" y2="170" class="grid-line" />
+
+              <!-- 前期実績 (Year 0) との境界線 -->
+              <line [attr.x1]="getForecastXCoord(0)" y1="0" [attr.x2]="getForecastXCoord(0)" y2="170" class="actual-border-line" />
+
+              @for (plan of fiveYearPlans; track plan.scenarioId) {
+                @if (plan.isPrimary) {
+                  <!-- 1. S1 100名標準ベースライン (濃いグレー破線) -->
+                  <polyline [attr.points]="getScenarioBaseLinePoints(plan)" class="forecast-polyline line-base-grey" />
+
+                  <!-- 2. S1 追加採用後軌道 (太い漆黒実線＋黒丸) -->
+                  <polyline [attr.points]="getScenarioAdoptionLinePoints(plan)" class="forecast-polyline line-primary-black" />
+                  @for (f of plan.forecasts; track f.year; let yIdx = $index) {
+                    <circle [attr.cx]="getForecastXCoord(yIdx)" [attr.cy]="getForecastYCoord(f.adoptionSales)" r="4" class="dot-primary-black" />
+                  }
+                } @else if (plan.isSecondary) {
+                  <!-- 3. S4 対案 (薄いグレー点線) -->
+                  <polyline [attr.points]="getScenarioAdoptionLinePoints(plan)" class="forecast-polyline line-secondary-dotted" />
+                }
+              }
+            </svg>
+
+            <!-- X軸ラベル (Year 0〜5) -->
+            <div class="forecast-x-axis">
+              <span class="x-label-item" [style.left.%]="(getForecastXCoord(0) / 500) * 100">Year 0 <small class="tag-actual">(実績)</small></span>
+              <span class="x-label-item" [style.left.%]="(getForecastXCoord(1) / 500) * 100">Year 1</span>
+              <span class="x-label-item" [style.left.%]="(getForecastXCoord(2) / 500) * 100">Year 2</span>
+              <span class="x-label-item" [style.left.%]="(getForecastXCoord(3) / 500) * 100">Year 3</span>
+              <span class="x-label-item" [style.left.%]="(getForecastXCoord(4) / 500) * 100">Year 4</span>
+              <span class="x-label-item" [style.left.%]="(getForecastXCoord(5) / 500) * 100">Year 5</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右カラム：S1推奨案の5か年成長ハイライト（経営意思決定サポート） -->
+      @let primaryPlan = fiveYearPlans[0];
+      <div class="forecast-summary-card">
+        <div class="summary-card-header">
+          <span class="summary-badge">推奨案ハイライト</span>
+          <h4>第一候補（S1）5か年成長ポテンシャル</h4>
+        </div>
+
+        <div class="summary-metrics-list">
+          <div class="metric-highlight-box">
+            <span class="m-label">5か年累計売上高 (追加採用適用)</span>
+            <div class="m-val-row">
+              <strong class="m-val num-val">{{ primaryPlan.cumulativeSalesAdoption | number:'1.0-0' }}</strong>
+              <span class="m-unit">億円</span>
+              @if (snapshot) {
+                <span class="m-diff-chip num-val">+{{ (primaryPlan.cumulativeSalesAdoption - primaryPlan.cumulativeSalesBase) | number:'1.1-1' }}億円 (純増)</span>
+              }
+            </div>
+          </div>
+
+          <div class="metric-sub-grid">
+            <div class="sub-metric-item">
+              <span class="s-label">Year 5 到達売上</span>
+              <strong class="s-val num-val">{{ primaryPlan.forecasts[5].adoptionSales | number:'1.1-1' }}<small>億円</small></strong>
+            </div>
+            <div class="sub-metric-item">
+              <span class="s-label">5年平均年成長率</span>
+              <strong class="s-val num-val">+{{ (((primaryPlan.forecasts[5].adoptionSales / targetSales) - 1) * 100 / 5) | number:'1.1-1' }}%</strong>
+            </div>
+          </div>
+
+          <div class="summary-eval-text">
+            <strong>【成長の軌跡】</strong>
+            前期実績58.0億円を起点とし、Year 5 には <strong>{{ primaryPlan.forecasts[5].adoptionSales | number:'1.1-1' }}億円</strong> 規模へ拡大。追加採用投資は2年目以降に急速な回収フェーズへ移行します。
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 下部：全4シナリオの比較グリッド（ここで全シナリオを完全網羅） -->
+    <div class="scenario-panels-grid">
+      @for (plan of fiveYearPlans; track plan.scenarioId; let sIdx = $index) {
+        <div class="scenario-detail-card" [class.primary-card]="plan.isPrimary" [class.secondary-card]="plan.isSecondary">
+          <div class="panel-card-header">
+            <span class="panel-scenario-badge" [class.badge-primary]="plan.isPrimary" [class.badge-secondary]="plan.isSecondary">
+              {{ plan.scenarioName }}
+            </span>
+            <span class="panel-growth-rate num-val">
+              5年成長: +{{ (((snapshot ? plan.cumulativeSalesAdoption : plan.cumulativeSalesBase) / targetSales - 1) * 100) | number:'1.0-0' }}%
+            </span>
+          </div>
+
+          <div class="panel-metrics-row">
+            <div class="metric-box">
+              <span class="metric-label">Year 0 (実績)</span>
+              <strong class="metric-value num-val">{{ targetSales | number:'1.0-0' }}<small>億</small></strong>
+            </div>
+            <span class="metric-arrow">➔</span>
+            <div class="metric-box">
+              <span class="metric-label">Year 5 (予測)</span>
+              <strong class="metric-value num-val highlight-value">
+                {{ (snapshot ? plan.forecasts[5].adoptionSales : plan.forecasts[5].baseSales) | number:'1.1-1' }}<small>億</small>
+              </strong>
+            </div>
+          </div>
+
+          <div class="panel-cumulative-box">
+            <div class="cum-item-row">
+              <span class="cum-label">5か年累計売上:</span>
+              <strong class="num-val">{{ (snapshot ? plan.cumulativeSalesAdoption : plan.cumulativeSalesBase) | number:'1.0-0' }}億円</strong>
+            </div>
+            <div class="cum-item-row">
+              <span class="cum-label">5か年累計利益:</span>
+              <strong class="num-val">{{ (snapshot ? plan.cumulativeProfitAdoption : plan.cumulativeProfitBase) | number:'1.1-1' }}億円</strong>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <div class="forecast-note">
+    <strong>【算定前提および補足事項】</strong>
+    <p>Year 0（前期実績 58.0億円）を基準とし、2〜5年目は各事業部の標準年次成長率（年3%）に人材育成熟達度および追加採用（+{{ snapshot?.candidateCount || 0 }}名）のシナジー効果を加算した推計モデルです。</p>
+  </div>
+</div>

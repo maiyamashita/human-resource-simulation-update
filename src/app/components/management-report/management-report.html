@@ -1,0 +1,281 @@
+<!-- src/app/components/management-report/management-report.html -->
+
+<div class="management-report" [class.composition-mode]="reportStep === 'composition'" [class.preview-mode]="reportStep === 'preview'">
+  <header class="report-header no-print">
+    <div class="report-title">
+      <h1>経営会議レポート作成</h1>
+      <p>現在のシミュレーション結果から経営会議用資料を作成・プレゼンテーションします。</p>
+    </div>
+
+    <!-- 2ステップインジケーター -->
+    <div class="report-step-indicator">
+      <span class="step" [class.active]="reportStep === 'composition'"><span>1</span>構成設定</span>
+      <span class="step-line">→</span>
+      <span class="step" [class.active]="reportStep === 'preview'"><span>2</span>レポート表示・印刷</span>
+    </div>
+
+    <button type="button" class="close-button" (click)="closeReport()">✕ 閉じる</button>
+  </header>
+
+  <!-- STEP 1：構成設定 -->
+  @if (reportStep === 'composition') {
+    <section class="report-section composition-section">
+      <!-- 1. 提案シナリオの設定 -->
+      <div class="section-group">
+        <div class="section-heading">
+          <h2>1. 提案シナリオの設定</h2>
+          <p>経営会議で提示する「メイン提案（第一候補）」および「比較対照案（第二候補）」を選択してください。</p>
+        </div>
+
+        <div class="proposal-setting-card">
+          <!-- 第一候補（メイン提案案） -->
+          <div class="proposal-column primary-column">
+            <div class="proposal-column-header">
+              <span class="badge-primary">第一候補（メイン提案）</span>
+              <p>実務者推奨の本命配置シナリオ。補足資料に優先展開されます。</p>
+            </div>
+
+            <div class="scenario-card-options">
+              @for (sc of validScenarios; track sc.id) {
+                <label class="scenario-radio-card" [class.selected]="primaryScenarioId === sc.id">
+                  <input
+                    type="radio"
+                    name="primaryScenario"
+                    [value]="sc.id"
+                    [(ngModel)]="primaryScenarioId"
+                  />
+                  <div class="card-body">
+                    <div class="card-title-row">
+                      <strong>シナリオ{{ sc.id }}：{{ sc.shortName || sc.name }}</strong>
+                    </div>
+                    <div class="card-metrics-row">
+                      <span>売上 <strong class="num-val">{{ sc.totalSales | number:'1.1-1' }}</strong> 億</span>
+                      <span>利益 <strong class="num-val">{{ sc.totalProfit | number:'1.1-1' }}</strong> 億</span>
+                    </div>
+                  </div>
+                </label>
+              }
+            </div>
+          </div>
+
+          <!-- 第二候補（比較対照案） -->
+          <div class="proposal-column secondary-column">
+            <div class="proposal-column-header">
+              <span class="badge-secondary">第二候補（比較対照）</span>
+              <p>経営陣からの質疑に応じるための比較検証用シナリオ。</p>
+            </div>
+
+            <div class="scenario-card-options">
+              @for (sc of validScenarios; track sc.id) {
+                <label class="scenario-radio-card" [class.selected]="secondaryScenarioId === sc.id">
+                  <input
+                    type="radio"
+                    name="secondaryScenario"
+                    [value]="sc.id"
+                    [(ngModel)]="secondaryScenarioId"
+                  />
+                  <div class="card-body">
+                    <div class="card-title-row">
+                      <strong>シナリオ{{ sc.id }}：{{ sc.shortName || sc.name }}</strong>
+                    </div>
+                    <div class="card-metrics-row">
+                      <span>売上 <strong class="num-val">{{ sc.totalSales | number:'1.1-1' }}</strong> 億</span>
+                      <span>利益 <strong class="num-val">{{ sc.totalProfit | number:'1.1-1' }}</strong> 億</span>
+                    </div>
+                  </div>
+                </label>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. 掲載資料の選択 -->
+      <div class="section-group">
+        <div class="section-heading-with-target">
+          <div class="section-heading">
+            <h2>2. 掲載資料の選択</h2>
+            <p>経営会議レポートに含める資料項目を選択してください。</p>
+          </div>
+          <div class="target-sales-chip">
+            全社売上目標: <strong>{{ targetSales | number:'1.1-1' }}</strong> 億円
+          </div>
+        </div>
+
+        <div class="report-options">
+          <div class="report-card">
+            <h3>主要資料</h3>
+            <label class="report-option" [class.selected]="isOptionSelected('comparison')">
+              <input type="checkbox" [checked]="isOptionSelected('comparison')" (change)="toggleOption('comparison')" />
+              <span class="option-content">
+                <strong>4シナリオ比較表</strong>
+                <span>全シナリオの売上・利益・部門別配置人数を一覧比較します。</span>
+              </span>
+            </label>
+            <label class="report-option" [class.selected]="isOptionSelected('forecast')">
+              <input type="checkbox" [checked]="isOptionSelected('forecast')" (change)="toggleOption('forecast')" />
+              <span class="option-content">
+                <strong>中長期業績予測</strong>
+                <span>今後5年間の売上・利益シミュレーション推移を提示します。</span>
+              </span>
+            </label>
+          </div>
+
+          <div class="report-card">
+            <h3>補足資料</h3>
+            <div class="supplementary-grid">
+              <label class="report-option" [class.selected]="isOptionSelected('employeeList')">
+                <input type="checkbox" [checked]="isOptionSelected('employeeList')" (change)="toggleOption('employeeList')" />
+                <span class="option-content">
+                  <strong>社員名簿（第一候補）</strong>
+                  <span>メイン提案における完全配置名簿を掲載。</span>
+                </span>
+              </label>
+              <label class="report-option" [class.selected]="isOptionSelected('calculation')">
+                <input type="checkbox" [checked]="isOptionSelected('calculation')" (change)="toggleOption('calculation')" />
+                <span class="option-content">
+                  <strong>試算ロジック・前提条件</strong>
+                  <span>シミュレーションの計算モデルを掲載。</span>
+                </span>
+              </label>
+
+              <!-- 追加採用シミュレーション ＆ 履歴選択 -->
+              <div class="report-option-group" [class.selected]="isOptionSelected('adoption')">
+                <label class="report-option inner-option">
+                  <input type="checkbox" [checked]="isOptionSelected('adoption')" (change)="toggleOption('adoption')" />
+                  <span class="option-content">
+                    <strong>追加採用シミュレーション</strong>
+                    <span>保存済みの追加採用プラン及びROIを掲載。</span>
+                  </span>
+                </label>
+
+                @if (isOptionSelected('adoption')) {
+                  <div class="snapshot-selector-box">
+                    @if (adoptionSnapshots.length === 0) {
+                      <p class="no-snapshot-warn">［注意］保存されたプランがありません。タブ4で保存してください。</p>
+                    } @else {
+                      <select class="snapshot-select-dropdown" [(ngModel)]="selectedSnapshotId">
+                        @for (sn of adoptionSnapshots; track sn.id) {
+                          <option [value]="sn.id">
+                            追加{{ sn.candidateCount }}名 (売上 {{ sn.salesDiff > 0 ? '+' : '' }}{{ sn.salesDiff | number:'1.1-1' }}億 / 利益 {{ sn.profitDiff > 0 ? '+' : '' }}{{ sn.profitDiff | number:'1.1-1' }}億)
+                          </option>
+                        }
+                      </select>
+                    }
+                  </div>
+                }
+              </div>
+
+              <label class="report-option" [class.selected]="isOptionSelected('skillGap')">
+                <input type="checkbox" [checked]="isOptionSelected('skillGap')" (change)="toggleOption('skillGap')" />
+                <span class="option-content">
+                  <strong>スキルギャップ分析</strong>
+                  <span>各部門のスキル過不足と育成課題を掲載。</span>
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ボトムアクションバー -->
+      <div class="composition-bottom-bar">
+        <div class="bottom-space-filler"></div>
+        <div class="report-actions">
+          <button type="button" class="primary-button" (click)="goToPreview()">レポートを表示する →</button>
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- STEP 2：プレビュー ＆ プレゼン ＆ 印刷実行 統合画面 -->
+  @if (reportStep === 'preview') {
+    <section class="report-section scrollable-section">
+      
+      <!-- プレゼン ＆ 印刷統合コントロールバー（画面表示用・印刷時非表示） -->
+      <div class="preview-control-toolbar no-print">
+        <div class="toolbar-left">
+          <button type="button" class="secondary-button" (click)="goToComposition()">← 構成変更に戻る</button>
+          
+          <!-- レイアウト・用紙サイズ選択（CSS @page へ直接自動連動） -->
+          <div class="layout-preset-group">
+            <span class="preset-label">出力サイズ設定：</span>
+            <select class="preset-select" [(ngModel)]="printStylePreset">
+              <option value="a4-landscape">A4 横向き (推奨・標準)</option>
+              <option value="a4-portrait">A4 縦向き</option>
+              <option value="a3-landscape">A3 横向き (大型プロジェクター / ワイド印刷用)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="toolbar-right">
+          <!-- 🖨️ 印刷実行ボタン -->
+          <button type="button" class="primary-button print-btn" (click)="printReport()">
+            🖨️ 印刷 / PDF出力
+          </button>
+        </div>
+      </div>
+
+      <!-- 選択されたサイズ・向きが直接自動連動するレポート本文領域 -->
+      <div class="report-document-body" [class]="printStylePreset">
+
+        @if (reportOptions.comparison) {
+          <app-report-overview
+            [validScenarios]="validScenarios"
+            [targetSales]="targetSales"
+            [primaryScenarioId]="primaryScenarioId"
+            [secondaryScenarioId]="secondaryScenarioId"
+            [snapshot]="activeSnapshot"
+          ></app-report-overview>
+        }
+
+        @if (reportOptions.forecast) {
+          <app-report-forecast
+            [validScenarios]="validScenarios"
+            [employees]="employees"
+            [snapshot]="activeSnapshot"
+            [primaryScenarioId]="primaryScenarioId"
+            [secondaryScenarioId]="secondaryScenarioId"
+          ></app-report-forecast>
+        }
+
+        @if (hasSupplementaryMaterial) {
+          <div class="report-page-preview supplementary-preview">
+            <div class="page-header"><span>経営会議資料</span><span>補足資料</span></div>
+            <h3>補足資料</h3>
+
+            @if (reportOptions.employeeList) {
+              <app-report-employee-list
+                [validScenarios]="validScenarios"
+                [employees]="employees"
+                [primaryScenarioId]="primaryScenarioId"
+              ></app-report-employee-list>
+            }
+
+            @if (reportOptions.calculation) {
+              <app-report-calculation></app-report-calculation>
+            }
+
+            @if (reportOptions.adoption) {
+              <app-report-adoption
+                [snapshot]="activeSnapshot"
+                [targetSales]="targetSales"
+              ></app-report-adoption>
+            }
+
+            @if (reportOptions.skillGap) {
+              <app-report-skill-gap
+                [validScenarios]="validScenarios"
+                [employees]="employees"
+                [primaryScenarioId]="primaryScenarioId"
+                [totalEmployeeCount]="totalEmployeeCount"
+                [snapshot]="activeSnapshot"
+              ></app-report-skill-gap>
+            }
+          </div>
+        }
+
+      </div>
+    </section>
+  }
+</div>

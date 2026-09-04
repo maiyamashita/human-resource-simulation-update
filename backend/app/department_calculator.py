@@ -1,5 +1,5 @@
 #これは共通部分です。書き換え不可！
-# app/department_calculator.py
+#このファイル名はbackend/app/department_calculator.pyです。
 
 
 # ==================================================

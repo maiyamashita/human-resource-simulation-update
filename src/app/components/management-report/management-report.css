@@ -1,0 +1,610 @@
+:host {
+  display: block;
+  height: 100%;
+  min-height: 0;
+}
+
+/* 全体ベース設定 */
+.management-report {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  padding: 16px 24px;
+  box-sizing: border-box;
+  background: #f8fafc;
+  color: #0f172a;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  overflow: hidden;
+}
+
+.management-report *,
+.management-report *::before,
+.management-report *::after {
+  box-sizing: border-box;
+}
+
+.num-val {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* ヘッダーエリア */
+.report-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.report-title h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.report-title p {
+  margin: 2px 0 0;
+  font-size: 11.5px;
+  color: #475569;
+}
+
+.report-step-indicator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.step {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.step span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.step.active {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.step.active span {
+  background: #0f172a;
+  color: #ffffff;
+}
+
+.step-line {
+  color: #cbd5e1;
+  font-size: 11px;
+}
+
+.close-button {
+  padding: 5px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.close-button:hover {
+  background: #f1f5f9;
+}
+
+/* メインカード領域 */
+.report-section {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.03);
+}
+
+.composition-section {
+  padding: 16px 20px;
+  gap: 12px;
+  overflow: hidden !important;
+  justify-content: space-between;
+}
+
+.scrollable-section {
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.section-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.section-heading h2 {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.section-heading p {
+  margin: 2px 0 0;
+  font-size: 11.5px;
+  color: #475569;
+}
+
+.section-heading-with-target {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.target-sales-chip {
+  font-size: 11.5px;
+  color: #475569;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.target-sales-chip strong {
+  color: #0f172a;
+  font-size: 12.5px;
+}
+
+/* 1. シナリオ選択エリア */
+.proposal-setting-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.proposal-column {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.proposal-column-header p {
+  margin: 2px 0 0;
+  font-size: 10.5px;
+  color: #64748b;
+}
+
+.badge-primary, .badge-secondary {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.badge-primary { background: #2563eb; }
+.badge-secondary { background: #475569; }
+
+.scenario-card-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.scenario-radio-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.scenario-radio-card:hover {
+  border-color: #94a3b8;
+  background: #f1f5f9;
+}
+
+.scenario-radio-card.selected {
+  background: #eff6ff;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px #2563eb;
+}
+
+.card-title-row strong {
+  font-size: 12px;
+  color: #0f172a;
+}
+
+.card-metrics-row {
+  display: flex;
+  gap: 8px;
+  font-size: 10.5px;
+  color: #64748b;
+  margin-top: 1px;
+}
+
+.card-metrics-row strong {
+  color: #0f172a;
+}
+
+/* 2. 資料選択エリア */
+.report-options {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 12px;
+}
+
+.report-card {
+  padding: 10px 12px;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.report-card h3 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.supplementary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.report-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.report-option:hover {
+  border-color: #94a3b8;
+  background: #f1f5f9;
+}
+
+.report-option.selected {
+  background: #eff6ff;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px #2563eb;
+}
+
+.option-content strong {
+  font-size: 11.5px;
+  color: #0f172a;
+  display: block;
+}
+
+.option-content span {
+  display: block;
+  font-size: 10px;
+  color: #64748b;
+  line-height: 1.2;
+}
+
+.report-option-group {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 4px;
+}
+
+.report-option-group.selected {
+  background: #eff6ff;
+  border-color: #2563eb;
+}
+
+.snapshot-selector-box {
+  margin-top: 4px;
+  padding: 2px 4px;
+}
+
+.snapshot-select-dropdown {
+  width: 100%;
+  font-size: 10.5px;
+  padding: 3px 6px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  background: #ffffff;
+}
+
+.no-snapshot-warn {
+  margin: 0;
+  font-size: 9.5px;
+  color: #d97706;
+}
+
+/* ボトムアクションバー */
+.composition-bottom-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.primary-button {
+  padding: 9px 24px;
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.primary-button:hover {
+  background: #1e293b;
+}
+
+.secondary-button {
+  padding: 7px 14px;
+  background: #ffffff;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.secondary-button:hover {
+  background: #f8fafc;
+}
+
+/* コントロールバー */
+.preview-control-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: #1e293b;
+  color: #ffffff;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.1);
+}
+
+.toolbar-left, .toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.layout-preset-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.preset-label {
+  font-size: 11.5px;
+  color: #cbd5e1;
+  font-weight: 500;
+}
+
+.preset-select {
+  background: #334155;
+  color: #ffffff;
+  border: 1px solid #475569;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+}
+
+.preset-select:focus {
+  border-color: #3b82f6;
+}
+
+.print-btn {
+  background: #2563eb !important;
+}
+
+.print-btn:hover {
+  background: #1d4ed8 !important;
+}
+
+/* 補足資料エリア */
+.supplementary-preview {
+  margin-top: 16px;
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.supplementary-preview h3 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #94a3b8;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 4px;
+  margin-bottom: 8px;
+}
+
+/* レポート本文領域（画面表示用） */
+.report-document-body {
+  width: 100%;
+}
+
+/* ==========================================================================
+   ★ 印刷用スタイル (@media print) 空白・改ページ最適化 ★
+   ========================================================================== */
+
+@media print {
+  /* 1. 不要な画面用操作パーツを非表示 */
+  .no-print,
+  .report-header,
+  .preview-control-toolbar,
+  .close-button,
+  .report-step-indicator {
+    display: none !important;
+  }
+
+  /* 2. 親要素のスクロール・Flex構造・高さ固定をすべて解体してフルオープン */
+  html, 
+  body, 
+  :host,
+  .management-report,
+  .report-section,
+  .scrollable-section,
+  .report-document-body {
+    display: block !important;
+    position: static !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    width: 100% !important;
+  }
+
+  /* 3. 子コンポーネントタグを明示的にブロック要素化 */
+  app-report-overview,
+  app-report-forecast,
+  app-report-employee-list,
+  app-report-calculation,
+  app-report-adoption,
+  app-report-skill-gap {
+    display: block !important;
+    position: static !important;
+    height: auto !important;
+    overflow: visible !important;
+    width: 100% !important;
+  }
+
+  /* 4. Canvas・SVG・グラフ要素が印刷モードで破棄・空白化されるのを防ぐ */
+  canvas,
+  svg {
+    max-width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* 5. 主要資料：1ページ内に収まるよう保護し、下部にマージンをとる */
+  app-report-overview,
+  app-report-forecast {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    margin-bottom: 20px !important;
+  }
+
+  /* 6. 補足資料領域：強制改ページを解除し、自然に流す */
+  .supplementary-preview {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    margin-top: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+  }
+
+  /* 見出し類がページの最下部に孤立するのを防止 */
+  .supplementary-preview h3,
+  .page-header,
+  .section-heading,
+  .card-header {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  /* 7. 長い資料（名簿等）はコンポーネント単位の改ページ防止を解除して複数ページへの跨ぎを許可 */
+  app-report-employee-list,
+  app-report-calculation,
+  app-report-adoption,
+  app-report-skill-gap {
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+    margin-bottom: 20px !important;
+  }
+
+  /* テーブルの行や各部門枠単位での崩れを抑える最小限の改ページ保護 */
+  tr, .employee-row, .department-column {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+}
+
+/* @page 用紙定義 */
+@page {
+  margin: 10mm;
+}
+
+@page a4-ls {
+  size: A4 landscape;
+  margin: 10mm;
+}
+
+@page a4-pt {
+  size: A4 portrait;
+  margin: 10mm;
+}
+
+@page a3-ls {
+  size: A3 landscape;
+  margin: 10mm;
+}
+
+/* 用紙設定クラス連動 */
+.report-document-body.a4-landscape { page: a4-ls; }
+.report-document-body.a4-portrait  { page: a4-pt; }
+.report-document-body.a3-landscape  { page: a3-ls; }

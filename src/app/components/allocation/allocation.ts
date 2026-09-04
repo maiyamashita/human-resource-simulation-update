@@ -1,3 +1,5 @@
+// src/app/components/allocation.ts
+
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Scenario, Department } from '../../models/scenario.model';
@@ -22,6 +24,10 @@ export class AllocationComponent {
   readonly deptKeys: Department[] = ['A', 'B', 'C'];
 
   @Input() scenarios: Scenario[] = [];
+
+  // ★ 100名標準時の基準データ（前後比較用）
+  @Input() base100Scenarios: Scenario[] = [];
+
   @Input() employees: Employee[] = [];
   @Input() selectedScenarioId = 1;
   @Input() employeeCount = 100;
@@ -31,6 +37,16 @@ export class AllocationComponent {
     B: 35,
     C: 25
   };
+
+  // 追加採用適用中かどうか
+  get isAdoptionApplied(): boolean {
+    return this.employeeCount > 100;
+  }
+
+  // 追加採用人数
+  get adoptionCount(): number {
+    return Math.max(0, this.employeeCount - 100);
+  }
 
   getAllocationWidth(count: number): number {
     if (!count || !this.employeeCount) return 0;
@@ -42,6 +58,22 @@ export class AllocationComponent {
     return this.scenarios.find(
       scenario => scenario.id === this.selectedScenarioId
     );
+  }
+
+  // 100名標準時の同IDシナリオを取得
+  getBase100Scenario(id: number): Scenario | undefined {
+    return (this.base100Scenarios || []).find(s => s.id === id);
+  }
+
+  // ★ 100名標準時との人数差分を取得
+  getDeptCountDiff(scenario: Scenario, dept: Department): number {
+    if (!this.isAdoptionApplied || !scenario || !scenario.departments?.[dept]) return 0;
+    const baseScenario = this.getBase100Scenario(scenario.id);
+    if (!baseScenario || !baseScenario.departments?.[dept]) return 0;
+
+    const currentCount = scenario.departments[dept]?.count ?? 0;
+    const baseCount = baseScenario.departments[dept]?.count ?? 0;
+    return currentCount - baseCount;
   }
 
   getDepartmentSkillAvg(scenario: Scenario, dept: Department): DepartmentSkillAverage {
@@ -71,6 +103,27 @@ export class AllocationComponent {
       management: Math.round(sum.management / count),
       development: Math.round(sum.development / count),
       training: Math.round(sum.training / count)
+    };
+  }
+
+  // ★ 100名標準時とのスキル平均差分（向上分pt）を取得
+  getDeptSkillAvgDiff(scenario: Scenario, dept: Department): DepartmentSkillAverage {
+    const currentAvg = this.getDepartmentSkillAvg(scenario, dept);
+    if (!this.isAdoptionApplied) {
+      return { sales: 0, management: 0, development: 0, training: 0 };
+    }
+
+    const baseScenario = this.getBase100Scenario(scenario.id);
+    if (!baseScenario) {
+      return { sales: 0, management: 0, development: 0, training: 0 };
+    }
+
+    const baseAvg = this.getDepartmentSkillAvg(baseScenario, dept);
+    return {
+      sales: currentAvg.sales - baseAvg.sales,
+      management: currentAvg.management - baseAvg.management,
+      development: currentAvg.development - baseAvg.development,
+      training: currentAvg.training - baseAvg.training
     };
   }
 }

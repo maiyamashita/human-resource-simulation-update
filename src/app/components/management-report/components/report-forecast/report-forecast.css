@@ -1,0 +1,402 @@
+/* src/app/components/management-report/components/report-forecast/report-forecast.css */
+
+.report-page-preview {
+  padding: 24px 28px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.03);
+  margin-bottom: 24px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans JP", sans-serif;
+  color: #0f172a;
+}
+
+.num-val {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid #0f172a;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #475569;
+  letter-spacing: 0.02em;
+}
+
+.forecast-header-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.forecast-header-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.adoption-status-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 4px;
+  font-size: 11.5px;
+  color: #1e40af;
+}
+
+.chip-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #2563eb;
+}
+
+/* ★ 左右2カラムレイアウト（縦横比の適正化） ★ */
+.forecast-two-column-layout {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.forecast-chart-card {
+  padding: 16px;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.chart-card-header h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.chart-subtitle {
+  display: block;
+  margin-top: 3px;
+  font-size: 10.5px;
+  color: #64748b;
+}
+
+.forecast-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 10.5px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #334155;
+  font-weight: 600;
+}
+
+.legend-line {
+  display: inline-block;
+  width: 18px;
+  height: 3px;
+  border-radius: 1px;
+}
+
+.line-primary-add { background-color: #0f172a; height: 3.5px; }
+.line-primary-base { background-color: #64748b; border-bottom: 1px dashed #64748b; }
+.line-secondary { background-color: #cbd5e1; }
+
+.forecast-svg-chart-wrapper {
+  display: flex;
+  width: 100%;
+  height: 190px;
+  padding-bottom: 22px;
+  box-sizing: border-box;
+}
+
+.forecast-y-axis {
+  width: 36px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-right: 6px;
+  text-align: right;
+  font-size: 10px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.forecast-svg-plot {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  border-left: 1px solid #94a3b8;
+  border-bottom: 1px solid #94a3b8;
+}
+
+.forecast-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.grid-line { stroke: #e2e8f0; stroke-width: 1; }
+.actual-border-line { stroke: #0f172a; stroke-width: 1.5; stroke-dasharray: 2 2; }
+
+.forecast-polyline { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+/* 3本の線の白黒判別デザイン */
+.line-primary-black { stroke: #0f172a; stroke-width: 3.5; }
+.dot-primary-black { fill: #0f172a; stroke: #ffffff; stroke-width: 1.5; }
+
+.line-base-grey { stroke: #64748b; stroke-width: 2; stroke-dasharray: 4 3; }
+.line-secondary-dotted { stroke: #cbd5e1; stroke-width: 2; stroke-dasharray: 2 2; }
+
+.forecast-x-axis {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -22px;
+  height: 20px;
+  pointer-events: none;
+}
+
+.x-label-item {
+  position: absolute;
+  transform: translateX(-50%);
+  text-align: center;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #334155;
+  white-space: nowrap;
+}
+
+.tag-actual { display: block; font-size: 9px; color: #0f172a; font-weight: 800; }
+
+/* 右カラム：サマリーカード */
+.forecast-summary-card {
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-left: 4px solid #0f172a;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.summary-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.summary-badge {
+  align-self: flex-start;
+  padding: 2px 6px;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  border-radius: 2px;
+}
+
+.summary-card-header h4 {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.metric-highlight-box {
+  padding: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+}
+
+.m-label { font-size: 10.5px; color: #64748b; font-weight: 600; display: block; }
+.m-val-row { display: flex; align-items: baseline; gap: 4px; margin-top: 2px; flex-wrap: wrap; }
+.m-val { font-size: 22px; font-weight: 900; color: #0f172a; }
+.m-unit { font-size: 11px; color: #334155; font-weight: 700; }
+.m-diff-chip { font-size: 10.5px; font-weight: 800; color: #0284c7; margin-left: 4px; }
+
+.metric-sub-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.sub-metric-item {
+  padding: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+}
+
+.s-label { font-size: 9.5px; color: #64748b; }
+.s-val { font-size: 13.5px; font-weight: 800; color: #0f172a; margin-top: 2px; }
+.s-val small { font-size: 9.5px; }
+
+.summary-eval-text {
+  font-size: 11px;
+  color: #334155;
+  line-height: 1.45;
+  padding-top: 8px;
+  border-top: 1px dashed #cbd5e1;
+}
+
+.summary-eval-text strong { color: #0f172a; }
+
+/* 下部4カードグリッド */
+.scenario-panels-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.scenario-detail-card {
+  padding: 12px 14px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.scenario-detail-card.primary-card {
+  background: #f0f6ff;
+  border: 1.5px solid #0f172a;
+}
+
+.scenario-detail-card.secondary-card {
+  background: #f8fafc;
+  border: 1px solid #475569;
+}
+
+.panel-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.panel-scenario-badge {
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: #64748b;
+  color: #ffffff;
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.panel-scenario-badge.badge-primary { background: #0f172a; }
+.panel-scenario-badge.badge-secondary { background: #475569; }
+
+.panel-growth-rate {
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.panel-metrics-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+}
+
+.metric-box { display: flex; flex-direction: column; }
+.metric-label { font-size: 9.5px; color: #64748b; font-weight: 600; }
+.metric-value { font-size: 13px; font-weight: 800; color: #0f172a; }
+.metric-value.highlight-value { color: #0f172a; font-size: 13.5px; font-weight: 900; }
+.metric-value small { font-size: 9.5px; }
+.metric-arrow { font-size: 10px; color: #94a3b8; }
+
+.panel-cumulative-box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 6px;
+  border-top: 1px dashed #cbd5e1;
+  font-size: 10.5px;
+}
+
+.cum-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cum-label { color: #64748b; font-size: 10px; }
+
+.forecast-note {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-left: 4px solid #0f172a;
+  border-radius: 4px;
+}
+
+.forecast-note strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 11.5px;
+  color: #0f172a;
+}
+
+.forecast-note p {
+  margin: 0;
+  font-size: 11px;
+  color: #475569;
+  line-height: 1.4;
+}
+
+/* ★ 白黒印刷（@media print）補正 ★ */
+@media print {
+  .report-page-preview {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+
+  .line-primary-black { stroke: #000000 !important; stroke-width: 4 !important; }
+  .line-base-grey { stroke: #52525b !important; }
+  .line-secondary-dotted { stroke: #a1a1aa !important; }
+
+  .scenario-detail-card.primary-card {
+    border: 2px solid #000000 !important;
+    background: #ffffff !important;
+  }
+
+  .forecast-summary-card,
+  .forecast-note {
+    border-left-color: #000000 !important;
+    background: #ffffff !important;
+  }
+}

@@ -1,0 +1,223 @@
+/* src/app/components/management-report/components/report-calculation/report-calculation.css */
+
+.calculation-report-card {
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-top: 16px;
+  page-break-inside: avoid;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.calculation-header {
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #0f172a;
+}
+
+.report-section-badge {
+  display: inline-block;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+  border: 1px solid #cbd5e1;
+}
+
+.calculation-header h4 {
+  margin: 0;
+  font-size: 15px;
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.calculation-sub {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* --- 上段：数式カード (高さ強制一致) --- */
+.top-formula-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+  align-items: stretch; /* 左右の高さを完全に揃える */
+}
+
+.formula-card {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.formula-card.highlight-card {
+  background: #f0f6ff;
+  border-color: #bfdbfe;
+}
+
+.card-header-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.card-tag {
+  font-size: 10px;
+  font-weight: 700;
+  color: #475569;
+  background: #e2e8f0;
+  padding: 2px 6px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.card-tag.highlight {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.formula-card h5 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.card-desc {
+  margin: 0 0 10px 0;
+  font-size: 11px;
+  color: #475569;
+  line-height: 1.4;
+}
+
+.formula-display {
+  margin-top: auto; /* 下部に固定して高さを美しく見せる */
+  background: #ffffff;
+  border: 1px dashed #cbd5e1;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 11px;
+  color: #0f172a;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.f-label {
+  font-weight: 700;
+  color: #2563eb;
+}
+
+/* --- 下段：左右2分割 (高さ完全一致 50%:50%) --- */
+.bottom-spec-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: stretch; /* 高さ一致 */
+}
+
+.spec-box {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.box-title {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* テーブルスタイル (フラット・すっきり) */
+.guide-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.guide-table th,
+.guide-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: center;
+}
+
+.guide-table th {
+  background: #f1f5f9;
+  color: #334155;
+  font-weight: 700;
+  font-size: 10px;
+}
+
+.guide-table td {
+  color: #1e293b;
+}
+
+.text-left { text-align: left !important; }
+
+.w-bold {
+  font-weight: 800;
+  color: #1d4ed8;
+}
+
+/* ルールリスト（横ラインで整列） */
+.rules-flex {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  justify-content: space-between;
+}
+
+.rule-row {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 8px 10px;
+  display: flex;
+
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rule-row.danger-row { border-left: 3px solid #ef4444; }
+.rule-row.warning-row { border-left: 3px solid #f59e0b; }
+.rule-row.info-row { border-left: 3px solid #3b82f6; }
+
+.r-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: #64748b;
+}
+
+.r-val {
+  font-size: 10.5px;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+@media print {
+  .top-formula-grid,
+  .bottom-spec-grid {
+    display: grid !important;
+  }
+}

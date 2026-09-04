@@ -1,130 +1,195 @@
 .diff-section {
-  margin-bottom: 24px;
+  margin-bottom: 0;
 }
 
+/* カード全体：パディングと青青しい境界線を引締め */
 .diff-card {
   background: #ffffff;
-  border: 1px solid #3b82f6;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 12px 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 280px; /* 1-Screenで右側と高さを綺麗に合わせる */
+}
+
+/* ヘッダー周り */
+.diff-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
 }
 
 .diff-badge {
-  background: #eff6ff;
-  color: #2563eb;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 4px 8px;
-  border-radius: 4px;
-  text-transform: uppercase;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #1d4ed8;
 }
 
 .diff-header h3 {
-  margin: 6px 0 2px 0;
-  font-size: 18px;
+  margin: 2px 0 1px 0;
+  font-size: 0.88rem;
+  font-weight: 800;
   color: #0f172a;
 }
 
 .diff-sub {
-  font-size: 12px;
+  font-size: 0.68rem;
   color: #64748b;
-  margin: 0 0 18px 0;
+  margin: 0;
 }
 
-/* KPIグリッド */
+/* ステータスバッジ（丸ドット廃止、フォーマル化） */
+.status-pill {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #cbd5e1;
+}
+
+.status-pill.active {
+  background: #f0fdf4;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+
+/* 未試算（初期状態）のガイド表示ボックス */
+.placeholder-guide-box {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 6px;
+  padding: 24px 20px;
+  text-align: left;
+}
+
+.guide-badge {
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #1d4ed8;
+  background: #eff6ff;
+  padding: 2px 6px;
+  border-radius: 3px;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+
+.guide-content strong {
+  font-size: 0.85rem;
+  color: #0f172a;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.guide-steps {
+  margin: 0 0 10px 0;
+  padding-left: 18px;
+  font-size: 0.7rem;
+  color: #334155;
+  line-height: 1.6;
+}
+
+.guide-note {
+  font-size: 0.65rem;
+  color: #64748b;
+  margin: 0;
+  border-top: 1px dashed #e2e8f0;
+  padding-top: 6px;
+}
+
+/* KPI 3ピラーグリッド（コンパクト化） */
 .diff-kpi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
 }
 
 .kpi-box {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 16px;
+  border-radius: 6px;
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
 }
 
 .kpi-box.highlight {
   background: #f0fdf4;
-  border-color: #86efac;
+  border-color: #bbf7d0;
+}
+
+.kpi-box.negative-box {
+  background: #fef2f2;
+  border-color: #fca5a5;
 }
 
 .kpi-label {
-  font-size: 12px;
+  font-size: 0.62rem;
   color: #475569;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .kpi-val-group {
   display: flex;
   align-items: baseline;
-  gap: 8px;
-  margin: 6px 0;
+  gap: 4px;
+  margin: 2px 0;
 }
 
 .kpi-value {
-  font-size: 24px;
+  font-size: 0.98rem; /* 24pxから引締め */
   font-weight: 800;
   color: #0f172a;
-  line-height: 1.2;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 .kpi-value.warning {
-  color: #d97706;
+  color: #c2410c;
 }
 
 .kpi-value.negative {
   color: #dc2626;
 }
 
-.diff-tag {
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 4px;
-  white-space: nowrap;
-}
-
-.diff-tag.positive {
-  background: #dcfce7;
-  color: #15803d;
-}
-
-.diff-tag.negative {
-  background: #fee2e2;
-  color: #b91c1c;
-}
-
 .diff-tag.cost {
-  background: #fef3c7;
-  color: #b45309;
+  font-size: 0.6rem;
+  font-weight: 700;
+  background: #fff7ed;
+  color: #c2410c;
+  padding: 1px 4px;
+  border-radius: 3px;
 }
 
 .kpi-note {
-  font-size: 11px;
+  font-size: 0.58rem;
   color: #94a3b8;
 }
 
-/* 比較テーブル */
+/* 事業部別比較テーブル */
 .dept-diff-table-container h4 {
-  margin: 0 0 12px 0;
-  font-size: 14px;
-  color: #1e293b;
+  margin: 0 0 6px 0;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #0f172a;
 }
 
 .diff-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: 0.7rem;
 }
 
-.diff-table th, .diff-table td {
-  padding: 10px 12px;
+.diff-table th, 
+.diff-table td {
+  padding: 4px 6px; /* 余白を10pxから4pxへ引締め */
   text-align: left;
   border-bottom: 1px solid #f1f5f9;
   vertical-align: middle;
@@ -133,80 +198,33 @@
 .diff-table th {
   background: #f8fafc;
   color: #475569;
-  font-weight: 600;
-}
-
-/* 右揃えクラス */
-.diff-table .text-right {
-  text-align: right;
-}
-
-/* 人数・バッジ表記エリア */
-.count-badge-group {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  font-weight: 700;
 }
 
 .count-badge {
-  background: #e0f2fe;
-  color: #0369a1;
+  background: #eff6ff;
+  color: #1d4ed8;
   font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-}
-
-.count-added-sub {
-  font-size: 11px;
-  color: #0284c7;
-  font-weight: 600;
-  background: #f0f9ff;
-  padding: 2px 6px;
-  border-radius: 4px;
-  border: 1px solid #bae6fd;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 0.68rem;
 }
 
 .rate-bar-wrapper {
   display: flex;
   align-items: center;
-  gap: 8px;
-  width: 140px;
+  gap: 6px;
+  width: 100px;
 }
 
 .rate-bar {
-  height: 8px;
+  height: 6px;
   background: #2563eb;
-  border-radius: 4px;
-  max-width: 100%;
+  border-radius: 3px;
 }
 
 .rate-text {
-  font-size: 11px;
+  font-size: 0.65rem;
   font-weight: 700;
   color: #334155;
 }
-.status-pill {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.75rem;
-  padding: 4px 10px;
-  border-radius: 20px;
-  background: #f1f5f9;
-  color: #64748b;
-}
-
-.status-pill.active {
-  background: #dcfce7;
-  color: #15803d;
-  font-weight: bold;
-}
-
-.dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-.dot.green { background-color: #22c55e; }
-.dot.grey { background-color: #94a3b8; }

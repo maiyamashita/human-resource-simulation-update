@@ -1,3 +1,5 @@
+#このファイル名はbackend/app/feasibility_checker.pyです。
+
 from app.department_calculator import calculate_department_status
 from app.department_calculator import calculate_sales
 

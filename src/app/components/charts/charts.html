@@ -1,161 +1,356 @@
 <section class="charts-section">
 
-  <!-- ================================================== -->
-  <!-- 1. 単年度比較グラフ (タブ1用: showForecastOnly が false の時) -->
-  <!-- ================================================== -->
+  <!-- 1. 単年度比較（タブ1） -->
   @if (!showForecastOnly) {
-    <div class="charts-grid-vertical">
+    <div class="chart-card-single-wide">
       
-      <!-- 全社売上比較（縦型） -->
-      <div class="chart-card-vertical">
-        <div class="chart-header">
-  <div>
-    <h3>全社売上比較（単年度）</h3>
-    <p>単位：億円（差異強調スケール）</p>
-  </div>
-</div>
+      <div class="chart-header">
+        <div>
+          <h3>全社売上・事業部配属構成 ＆ 収益性比較</h3>
+          <p>単位：億円（バー直下に事業部別の利益額および利益率を明示）</p>
+        </div>
 
-        <div class="column-chart-container">
-          <!-- 目標ライン（赤色破線） -->
-          <div class="target-line-horizontal" [style.bottom.%]="getTargetSalesHeightPercent()">
-            <span class="target-line-label">目標 {{ targetSales }}億</span>
-          </div>
-
-          <div class="column-chart-body">
-            @for (scenario of scenarios; track scenario.id) {
-              <div 
-                class="column-item" 
-                [class.selected]="scenario.id === selectedScenarioId"
-              >
-                @if (scenario.id === selectedScenarioId) {
-                  <span class="active-column-badge">選択中</span>
-                }
-                <span class="col-value" [class.highlight-text]="scenario.id === selectedScenarioId">
-                  {{ formatVal(scenario.totalSales) }}億
-                </span>
-                <div class="col-track">
-                  <div 
-                    class="col-fill sales-fill" 
-                    [class.active-fill]="scenario.id === selectedScenarioId"
-                    [style.height.%]="getSalesColumnHeight(scenario)"
-                  ></div>
-                </div>
-                <strong class="col-name" [class.selected-name]="scenario.id === selectedScenarioId">
-                  S{{ scenario.id }}
-                </strong>
-              </div>
-            }
-          </div>
+        <div class="chart-legend-box">
+          <span class="legend-item"><span class="legend-color dept-a"></span>A事業部</span>
+          <span class="legend-item"><span class="legend-color dept-b"></span>B事業部</span>
+          <span class="legend-item"><span class="legend-color dept-c"></span>C事業部</span>
+          @if (isAdoptionApplied) {
+            <span class="legend-item striped-legend"><span class="legend-color striped-dot"></span>斜線: 追加採用効果</span>
+          }
         </div>
       </div>
 
-      <!-- 全社利益比較（縦型） -->
-      <div class="chart-card-vertical">
-        <div class="chart-header">
-          <div>
-            <h3>全社利益比較（単年度）</h3>
-            <p>単位：億円（差異強調スケール）</p>
-          </div>
-        </div>
+      <div class="horizontal-chart-container">
+        @for (scenario of scenarios; track scenario.id) {
+          @let deptA = scenario.departments?.['A'];
+          @let deptB = scenario.departments?.['B'];
+          @let deptC = scenario.departments?.['C'];
+          @let isSelected = scenario.id === selectedScenarioId;
 
-        <div class="column-chart-container">
-          <div class="column-chart-body">
-            @for (scenario of scenarios; track scenario.id) {
-              <div 
-                class="column-item" 
-                [class.selected]="scenario.id === selectedScenarioId"
-              >
-                @if (scenario.id === selectedScenarioId) {
-                  <span class="active-column-badge">選択中</span>
-                }
-                <span class="col-value" [class.highlight-text]="scenario.id === selectedScenarioId">
-                  {{ formatVal(scenario.totalProfit) }}億
-                </span>
-                <div class="col-track">
-                  <div 
-                    class="col-fill profit-fill" 
-                    [class.active-fill]="scenario.id === selectedScenarioId"
-                    [style.height.%]="getProfitColumnHeight(scenario)"
-                  ></div>
+          <div 
+            class="horizontal-row-item-stacked"
+            [class.selected]="isSelected"
+          >
+            <div class="top-bar-line">
+              <div class="row-label-group">
+                <div class="badge-title-row">
+                  <span class="sc-badge" [class.selected-badge]="isSelected">
+                    S{{ scenario.id }}
+                  </span>
+                  @if (isSelected) {
+                    <span class="selected-tag">選択中</span>
+                  }
                 </div>
-                <strong class="col-name" [class.selected-name]="scenario.id === selectedScenarioId">
-                  S{{ scenario.id }}
-                </strong>
+
+                <div class="total-val-group">
+                  <strong class="total-val" [class.highlight]="isSelected">
+                    {{ formatVal(scenario.totalSales) }}<small>億</small>
+                  </strong>
+                  
+                  @if (isSelected) {
+                    <span class="base-label">（基準）</span>
+                  } @else {
+                    <span 
+                      class="diff-tag" 
+                      [class.plus]="isSalesPlusFromSelected(scenario)" 
+                      [class.minus]="!isSalesPlusFromSelected(scenario)"
+                    >
+                      {{ isSalesPlusFromSelected(scenario) ? '+' : '▲ ' }}{{ getAbsSalesDiffFromSelected(scenario) }}億
+                    </span>
+                  }
+                </div>
               </div>
-            }
+
+              <div class="horizontal-bar-track-full">
+                <!-- A事業部 -->
+                <div 
+                  class="hbar-segment dept-a" 
+                  [style.width.%]="getDeptBaseSalesWidth(scenario, 'A')"
+                  [title]="'【A事業部 100名ベース】\n配属：' + getDeptBaseEmployeeCount(scenario, 'A') + '名 | 売上：' + (getDeptBaseSales(scenario, 'A') | number:'1.2-2') + '億円 | 利益：' + (getDeptBaseProfit(scenario, 'A') | number:'1.2-2') + '億円 (利益率 ' + getDeptBaseProfitMargin(scenario, 'A') + '%)'"
+                >
+                  @if (getDeptBaseSalesWidth(scenario, 'A') >= 8) {
+                    <span class="bar-inner-text">A: {{ getDeptBaseSales(scenario, 'A') | number:'1.1-1' }}億 ({{ getDeptBaseEmployeeCount(scenario, 'A') }}名)</span>
+                  }
+                </div>
+                @if (isAdoptionApplied && getDeptDiffSalesWidth(scenario, 'A') > 0) {
+                  <div 
+                    class="hbar-segment dept-a striped" 
+                    [style.width.%]="getDeptDiffSalesWidth(scenario, 'A')"
+                    [title]="'【A事業部 追加採用効果】\n追加配属：+' + getDeptDiffEmployeeCount(scenario, 'A') + '名\n売上増：+' + getDeptDiffSales(scenario, 'A') + '億円\n利益増：+' + getDeptDiffProfit(scenario, 'A') + '億円 (限界利益率 ' + getDeptDiffProfitMargin(scenario, 'A') + '%)\n(A事業部合計: ' + (deptA?.sales | number:'1.2-2') + '億円 / ' + getDeptEmployeeCount(scenario, 'A') + '名)'"
+                  >
+                    @if (getDeptDiffSalesWidth(scenario, 'A') >= 3) {
+                      <span class="bar-inner-text diff-text">+{{ getDeptDiffSales(scenario, 'A') | number:'1.1-1' }}億</span>
+                    }
+                  </div>
+                }
+
+                <!-- B事業部 -->
+                <div 
+                  class="hbar-segment dept-b" 
+                  [style.width.%]="getDeptBaseSalesWidth(scenario, 'B')"
+                  [title]="'【B事業部 100名ベース】\n配属：' + getDeptBaseEmployeeCount(scenario, 'B') + '名 | 売上：' + (getDeptBaseSales(scenario, 'B') | number:'1.2-2') + '億円 | 利益：' + (getDeptBaseProfit(scenario, 'B') | number:'1.2-2') + '億円 (利益率 ' + getDeptBaseProfitMargin(scenario, 'B') + '%)'"
+                >
+                  @if (getDeptBaseSalesWidth(scenario, 'B') >= 8) {
+                    <span class="bar-inner-text">B: {{ getDeptBaseSales(scenario, 'B') | number:'1.1-1' }}億 ({{ getDeptBaseEmployeeCount(scenario, 'B') }}名)</span>
+                  }
+                </div>
+                @if (isAdoptionApplied && getDeptDiffSalesWidth(scenario, 'B') > 0) {
+                  <div 
+                    class="hbar-segment dept-b striped" 
+                    [style.width.%]="getDeptDiffSalesWidth(scenario, 'B')"
+                    [title]="'【B事業部 追加採用効果】\n追加配属：+' + getDeptDiffEmployeeCount(scenario, 'B') + '名\n売上増：+' + getDeptDiffSales(scenario, 'B') + '億円\n利益増：+' + getDeptDiffProfit(scenario, 'B') + '億円 (限界利益率 ' + getDeptDiffProfitMargin(scenario, 'B') + '%)\n(B事業部合計: ' + (deptB?.sales | number:'1.2-2') + '億円 / ' + getDeptEmployeeCount(scenario, 'B') + '名)'"
+                  >
+                    @if (getDeptDiffSalesWidth(scenario, 'B') >= 3) {
+                      <span class="bar-inner-text diff-text">+{{ getDeptDiffSales(scenario, 'B') | number:'1.1-1' }}億</span>
+                    }
+                  </div>
+                }
+
+                <!-- C事業部 -->
+                <div 
+                  class="hbar-segment dept-c" 
+                  [style.width.%]="getDeptBaseSalesWidth(scenario, 'C')"
+                  [title]="'【C事業部 100名ベース】\n配属：' + getDeptBaseEmployeeCount(scenario, 'C') + '名 | 売上：' + (getDeptBaseSales(scenario, 'C') | number:'1.2-2') + '億円 | 利益：' + (getDeptBaseProfit(scenario, 'C') | number:'1.2-2') + '億円 (利益率 ' + getDeptBaseProfitMargin(scenario, 'C') + '%)'"
+                >
+                  @if (getDeptBaseSalesWidth(scenario, 'C') >= 6) {
+                    <span class="bar-inner-text">C: {{ getDeptBaseSales(scenario, 'C') | number:'1.1-1' }}億 ({{ getDeptBaseEmployeeCount(scenario, 'C') }}名)</span>
+                  }
+                </div>
+                @if (isAdoptionApplied && getDeptDiffSalesWidth(scenario, 'C') > 0) {
+                  <div 
+                    class="hbar-segment dept-c striped" 
+                    [style.width.%]="getDeptDiffSalesWidth(scenario, 'C')"
+                    [title]="'【C事業部 追加採用効果】\n追加配属：+' + getDeptDiffEmployeeCount(scenario, 'C') + '名\n売上増：+' + getDeptDiffSales(scenario, 'C') + '億円\n利益増：+' + getDeptDiffProfit(scenario, 'C') + '億円 (限界利益率 ' + getDeptDiffProfitMargin(scenario, 'C') + '%)\n(C事業部合計: ' + (deptC?.sales | number:'1.2-2') + '億円 / ' + getDeptEmployeeCount(scenario, 'C') + '名)'"
+                  >
+                    @if (getDeptDiffSalesWidth(scenario, 'C') >= 3) {
+                      <span class="bar-inner-text diff-text">+{{ getDeptDiffSales(scenario, 'C') | number:'1.1-1' }}億</span>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+
+            <div class="bottom-dept-margins-line">
+              <span class="sub-line-label">事業部収益性:</span>
+
+              <div class="dept-margin-card dept-a-card">
+                <span class="dept-name">A事業部</span>
+                <span class="profit-num">利益 {{ deptA?.profit | number:'1.1-1' }}億</span>
+                <span class="margin-percent">利益率 {{ getDeptBaseProfitMargin(scenario, 'A') }}%</span>
+              </div>
+
+              <div class="dept-margin-card dept-b-card">
+                <span class="dept-name">B事業部</span>
+                <span class="profit-num">利益 {{ deptB?.profit | number:'1.1-1' }}億</span>
+                <span class="margin-percent">利益率 {{ getDeptBaseProfitMargin(scenario, 'B') }}%</span>
+              </div>
+
+              <div class="dept-margin-card dept-c-card">
+                <span class="dept-name">C事業部</span>
+                <span class="profit-num">利益 {{ deptC?.profit | number:'1.1-1' }}億</span>
+                <span class="margin-percent">利益率 {{ getDeptBaseProfitMargin(scenario, 'C') }}%</span>
+              </div>
+            </div>
+
           </div>
-        </div>
+        }
       </div>
 
     </div>
   }
 
-  <!-- ================================================== -->
-  <!-- 2. 5か年成長シミュレーション (タブ2用) -->
-  <!-- ================================================== -->
+  <!-- 2. ★ 5か年成長シミュレーション (タブ2用：縦幅大幅拡大 ＆ スリムカード) ★ -->
   @if (showForecastOnly) {
     @if (fiveYearPlans && fiveYearPlans.length > 0) {
-      <div class="forecast-card">
-        <div class="forecast-header">
-          <div>
-            <span class="forecast-badge">📈 中長期成長予測</span>
-            <h3>シナリオ別 5か年売上推移（事業部別内訳）</h3>
+      <div class="forecast-card-v2">
+        
+        <!-- 上段：ゆったりサイズの折れ線比較 ＆ ハイライトサマリー -->
+        <div class="forecast-top-split">
+          
+          <!-- 左側：5か年成長軌道 折れ線グラフ -->
+          <div class="trend-chart-box">
+            <div class="trend-header">
+              <div class="title-area">
+                <span class="forecast-badge">📈 中長期成長軌道</span>
+                <h3>5か年全社売上推移グラフィック</h3>
+              </div>
+              
+              <div class="compare-selector">
+                <label>比較対案:</label>
+                <select [value]="compareScenarioId" (change)="onCompareScenarioChange($event)">
+                  <option value="0">なし (メイン案のみ)</option>
+                  @for (sc of scenarios; track sc.id) {
+                    @if (sc.id !== selectedScenarioId) {
+                      <option [value]="sc.id">S{{ sc.id }}: {{ sc.shortName || sc.name }}</option>
+                    }
+                  }
+                </select>
+              </div>
+            </div>
+
+            <!-- 縦幅250pxのダイナミックSVG折れ線 -->
+            <div class="svg-container">
+              <svg [attr.viewBox]="'0 0 ' + svgChartWidth + ' ' + svgChartHeight" class="trend-svg">
+                <!-- Y軸グリッド線 ＆ ラベル -->
+                <line x1="45" y1="25" x2="520" y2="25" class="grid-line" />
+                <text x="40" y="29" class="axis-label">105億</text>
+
+                <line x1="45" y1="72" x2="520" y2="72" class="grid-line" />
+                <text x="40" y="76" class="axis-label">90億</text>
+
+                <line x1="45" y1="119" x2="520" y2="119" class="grid-line" />
+                <text x="40" y="123" class="axis-label">75億</text>
+
+                <line x1="45" y1="166" x2="520" y2="166" class="grid-line" />
+                <text x="40" y="170" class="axis-label">60億</text>
+
+                <line x1="45" y1="215" x2="520" y2="215" class="axis-line" />
+
+                <!-- X軸ラベル -->
+                <text [attr.x]="getSvgX(0)" y="234" class="x-axis-label">Year 0 (58億)</text>
+                <text [attr.x]="getSvgX(1)" y="234" class="x-axis-label">1年目</text>
+                <text [attr.x]="getSvgX(2)" y="234" class="x-axis-label">2年目</text>
+                <text [attr.x]="getSvgX(3)" y="234" class="x-axis-label">3年目</text>
+                <text [attr.x]="getSvgX(4)" y="234" class="x-axis-label">4年目</text>
+                <text [attr.x]="getSvgX(5)" y="234" class="x-axis-label">5年目</text>
+
+                <!-- 1. 対案標準線 -->
+                @if (compareBase100Plan && isAdoptionApplied) {
+                  <path [attr.d]="getPointsPath(compareBase100Plan)" class="line-compare-base" />
+                }
+
+                <!-- 2. 対案線 (青破線) -->
+                @if (comparePlan) {
+                  <path [attr.d]="getPointsPath(comparePlan)" class="line-compare" />
+                  @for (pt of getPlanPoints(comparePlan); track pt.year) {
+                    <circle [attr.cx]="pt.x" [attr.cy]="pt.y" r="4" class="dot-compare" />
+                    <!-- 対案数値ラベル (点の下に配置して重なり防止) -->
+                    <text [attr.x]="pt.x" [attr.y]="pt.y + 14" class="pt-val-text compare-val-txt">{{ pt.val | number:'1.1-1' }}億</text>
+                  }
+                }
+
+                <!-- 3. メイン案標準線 -->
+                @if (selectedBase100Plan && isAdoptionApplied) {
+                  <path [attr.d]="getPointsPath(selectedBase100Plan)" class="line-main-base" />
+                }
+
+                <!-- 4. メイン案 (黒太線) -->
+                @if (selectedPlan) {
+                  <path [attr.d]="getPointsPath(selectedPlan)" class="line-main" />
+                  @for (pt of getPlanPoints(selectedPlan); track pt.year) {
+                    <circle [attr.cx]="pt.x" [attr.cy]="pt.y" r="5" class="dot-main" />
+                    <!-- メイン数値ラベル (点の上に配置) -->
+                    <text [attr.x]="pt.x" [attr.y]="pt.y - 8" class="pt-val-text main-val-txt">{{ pt.val | number:'1.1-1' }}億</text>
+                  }
+                }
+              </svg>
+            </div>
+
+            <div class="trend-legend-row">
+              <span class="legend-item"><span class="line-sample main-sample"></span>★ S{{ selectedScenarioId }} 推奨案 {{ isAdoptionApplied ? '(追加適用後)' : '' }}</span>
+              @if (isAdoptionApplied) {
+                <span class="legend-item"><span class="line-sample main-base-sample"></span>S{{ selectedScenarioId }} (標準100名)</span>
+              }
+              @if (comparePlan) {
+                <span class="legend-item"><span class="line-sample compare-sample"></span>◆ S{{ compareScenarioId }} 対案 {{ isAdoptionApplied ? '(追加適用後)' : '' }}</span>
+              }
+            </div>
+
           </div>
-          <div class="dept-legend">
-            <span class="legend-item"><span class="color-dot dept-a"></span>A事業部（飽和）</span>
-            <span class="legend-item"><span class="color-dot dept-b"></span>B事業部（成長）</span>
-            <span class="legend-item"><span class="color-dot dept-c"></span>C事業部（新規）</span>
+
+          <!-- 右側：選択中シナリオ ハイライトサマリー -->
+          <div class="summary-highlight-panel">
+            <div class="panel-header-line">
+              <span class="panel-tag">推奨案ハイライト</span>
+              <span class="sc-cagr-badge">CAGR {{ selectedPlan?.cagr }}</span>
+            </div>
+
+            <h4 class="panel-title">
+              S{{ selectedScenarioId }}：全社売上 5か年ポテンシャル
+            </h4>
+
+            <div class="kpi-card-big">
+              <small>5か年累計売上高 {{ isAdoptionApplied ? '(追加採用適用)' : '' }}</small>
+              <strong class="kpi-num">{{ selectedPlan?.cumulativeSales | number:'1.1-1' }} <small>億円</small></strong>
+              @if (isAdoptionApplied && selectedPlan?.cumulativeSalesDiff) {
+                <span class="diff-badge-green">100名比 +{{ selectedPlan?.cumulativeSalesDiff }}億円</span>
+              }
+            </div>
+
+            <div class="kpi-row-two">
+              <div class="kpi-mini">
+                <small>Year 5 到達売上</small>
+                <strong>{{ selectedPlan?.forecasts?.[4]?.deptSales?.total | number:'1.1-1' }} 億円</strong>
+              </div>
+              <div class="kpi-mini">
+                <small>5年目純増成長</small>
+                <strong class="cagr-num">{{ selectedPlan?.growthRate }}</strong>
+              </div>
+            </div>
+
+            <p class="story-text">
+              💡 <strong>【成長の軌跡】</strong> 前期目標58.0億円を起点とし、5年目には 
+              <strong>{{ selectedPlan?.forecasts?.[4]?.deptSales?.total | number:'1.1-1' }}億円</strong> 規模へ拡大。
+              @if (isAdoptionApplied) {
+                追加採用（+{{ adoptionCount }}名）による投資は2年目以降に急速な回収フェーズへ移行します。
+              }
+            </p>
+
+            @if (comparePlan) {
+              <div class="vs-compare-box">
+                <span class="vs-tag">vs S{{ compareScenarioId }}対案 5年後ギャップ:</span>
+                <strong class="vs-val">
+                  {{ ((selectedPlan?.forecasts?.[4]?.deptSales?.total || 0) - (comparePlan?.forecasts?.[4]?.deptSales?.total || 0)) >= 0 ? '+' : '' }}
+                  {{ ((selectedPlan?.forecasts?.[4]?.deptSales?.total || 0) - (comparePlan?.forecasts?.[4]?.deptSales?.total || 0)) | number:'1.1-1' }} 億円
+                </strong>
+              </div>
+            }
           </div>
+
         </div>
 
-        <div class="forecast-grid">
+        <!-- 下段：コンパクト（スリム化）された4シナリオカード一覧 -->
+        <div class="forecast-grid-v2">
           @for (plan of fiveYearPlans; track plan.scenarioId) {
-            <div class="scenario-trend-box">
-              <div class="box-header">
-                <strong>SCENARIO {{ plan.scenarioId }}</strong>
-                <span class="sc-name">{{ plan.scenarioName }}</span>
+            @let isSelected = plan.scenarioId === selectedScenarioId;
+            @let isCompare = plan.scenarioId === compareScenarioId;
+
+            <div 
+              class="scenario-card-5y-slim" 
+              [class.selected-card]="isSelected"
+              [class.compare-card]="isCompare"
+            >
+              <div class="sc-card-top-row">
+                <div class="header-badge-group">
+                  <span class="sc-id-badge" [class.selected]="isSelected">S{{ plan.scenarioId }}</span>
+                  <span class="sc-name-txt">{{ plan.scenarioName }}</span>
+                </div>
+                <span class="growth-tag">{{ plan.growthRate }}</span>
               </div>
 
-              <div class="yearly-bars">
-                @for (f of plan.forecasts; track f.year) {
-                  <div class="y-bar-col" [title]="f.year + '年目: 計' + f.deptSales.total + '億円'">
-                    <div class="stacked-bar-wrapper">
-                      <div 
-                        class="bar-segment dept-a" 
-                        [style.height.%]="(f.deptSales.A / maxForecastSales) * 100"
-                      ></div>
-                      <div 
-                        class="bar-segment dept-b" 
-                        [style.height.%]="(f.deptSales.B / maxForecastSales) * 100"
-                      ></div>
-                      <div 
-                        class="bar-segment dept-c" 
-                        [style.height.%]="(f.deptSales.C / maxForecastSales) * 100"
-                      ></div>
-                    </div>
-                    <span class="y-label">{{ f.year }}年目</span>
-                    <span class="y-val">{{ f.deptSales.total | number:'1.1-1' }}億</span>
+              <div class="sc-card-mid-row">
+                <span class="flow-txt">Year 0: 58億 ➔ Year 5: <strong>{{ plan.forecasts[4]?.deptSales?.total | number:'1.1-1' }}億</strong></span>
+              </div>
+
+              <div class="sc-card-bottom-row">
+                <div class="kpi-inline-item">
+                  <small>5年累計売上:</small>
+                  <strong>{{ plan.cumulativeSales | number:'1.1-1' }}億</strong>
+                </div>
+                <div class="kpi-inline-item profit">
+                  <small>利益:</small>
+                  <strong>{{ plan.cumulativeProfit | number:'1.1-1' }}億</strong>
+                </div>
+                @if (isAdoptionApplied && plan.cumulativeSalesDiff) {
+                  <div class="kpi-inline-item diff">
+                    <span class="diff-txt">(100名比 +{{ plan.cumulativeSalesDiff }}億)</span>
                   </div>
                 }
-              </div>
-
-              <div class="cumulative-summary">
-                <div class="cum-item">
-                  <small>5年累計売上</small>
-                  <strong>{{ plan.cumulativeSales | number:'1.1-1' }} 億円</strong>
-                </div>
-                <div class="cum-item profit">
-                  <small>5年累計利益</small>
-                  <strong>{{ plan.cumulativeProfit | number:'1.1-1' }} 億円</strong>
-                </div>
               </div>
             </div>
           }
         </div>
 
-        <p class="forecast-note">
-          💡 各事業部の成長率には、配属された社員の「平均育成力」による成長加算ボーナス（最大+5%）が反映されています。
-        </p>
       </div>
     } @else {
       <div class="forecast-card empty-state">

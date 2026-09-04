@@ -1,0 +1,85 @@
+<!-- src/app/components/management-report/components/report-employee-list/report-employee-list.html -->
+
+<div class="employee-list-report-card">
+  <div class="employee-list-header">
+    <div>
+      <span class="report-section-badge">第一候補（推奨案）専用資料</span>
+      <h4>社員配属名簿（{{ getScenarioName(selectedEmployeeScenario) }}）</h4>
+      <p class="employee-list-sub">メイン提案シナリオにおける完全配置名簿一覧（計 {{ employees.length }}名）</p>
+    </div>
+  </div>
+
+  @if (selectedEmployeeScenario) {
+    <div class="employee-depts-grid">
+      
+      <!-- 各事業部ループ -->
+      @for (dept of depts; track dept) {
+        @let assignedEmps = getAssignedEmployees(selectedEmployeeScenario, dept);
+        
+        <div class="dept-employee-box" [ngClass]="'dept-' + dept.toLowerCase() + '-box'">
+          
+          <!-- 事業部ヘッダー -->
+          <div class="dept-box-header">
+            <div class="dept-title-group">
+              <h5>{{ dept }}事業部</h5>
+              <span class="badge">{{ assignedEmps.length }}名</span>
+            </div>
+          </div>
+
+          <!-- テーブル部分 -->
+          <div class="table-scroll-container">
+            <table class="emp-table">
+              <thead>
+                <tr>
+                  <th class="col-id">ID</th>
+                  <th class="text-left col-name">氏名</th>
+                  <th class="col-skill">営業</th>
+                  <th class="col-skill">管理</th>
+                  <th class="col-skill">開拓</th>
+                  <th class="col-skill">育成</th>
+                  <th class="text-right col-cost">人件費</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (emp of assignedEmps; track emp.id) {
+                  @let maxAbility = Math.max(emp.salesAbility, emp.managementAbility, emp.developmentAbility, emp.trainingAbility);
+                  
+                  <tr>
+                    <!-- ★ 独立した社員番号列 -->
+                    <td class="col-id emp-id-cell">#{{ emp.id }}</td>
+
+                    <!-- 氏名列 -->
+                    <td class="text-left emp-name-cell">
+                      <strong class="emp-name-text">{{ emp.name || ('#' + emp.id) }}</strong>
+                    </td>
+                    
+                    <!-- 営業力 -->
+                    <td class="num-val" [class.top-skill]="emp.salesAbility === maxAbility && emp.salesAbility >= 4">
+                      {{ emp.salesAbility }}
+                    </td>
+                    <!-- 管理力 -->
+                    <td class="num-val" [class.top-skill]="emp.managementAbility === maxAbility && emp.managementAbility >= 4">
+                      {{ emp.managementAbility }}
+                    </td>
+                    <!-- 開拓力 -->
+                    <td class="num-val" [class.top-skill]="emp.developmentAbility === maxAbility && emp.developmentAbility >= 4">
+                      {{ emp.developmentAbility }}
+                    </td>
+                    <!-- 育成力 -->
+                    <td class="num-val" [class.top-skill]="emp.trainingAbility === maxAbility && emp.trainingAbility >= 4">
+                      {{ emp.trainingAbility }}
+                    </td>
+
+                    <td class="text-right num-val cost-cell">{{ emp.personnelCost | number:'1.0-0' }}万</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      }
+
+    </div>
+  }
+</div>

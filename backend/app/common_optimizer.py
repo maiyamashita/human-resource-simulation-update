@@ -1,3 +1,5 @@
+#このファイル名はbackend/app/common_optimizer.pyです。
+
 from ortools.sat.python import cp_model
 
 from app.department_calculator import (

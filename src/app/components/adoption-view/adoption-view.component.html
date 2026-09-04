@@ -1,0 +1,135 @@
+<div class="adoption-executive-dashboard">
+
+  <!-- 【最上部】保存済み試算プラン管理バー -->
+  @if ((adoptionMode === 'adoption' && candidateEmployees.length > 0) || snapshots.length > 0) {
+    <div class="top-snapshot-sticky-bar" [class.is-dirty-bar]="isDirty">
+      
+      @if (adoptionMode === 'adoption' && candidateEmployees.length > 0) {
+        <div class="snapshot-save-inline">
+          <div class="save-status-indicator">
+            @if (isDirty) {
+              <span class="status-badge dirty">未保存の試算条件</span>
+            } @else {
+              <span class="status-badge active">試算結果 適用中</span>
+            }
+          </div>
+
+          <div class="inline-input-group">
+            <input
+              type="text"
+              class="inline-snapshot-name-input"
+              placeholder="試算プラン名を入力（例: 営業5名強化案）"
+              [(ngModel)]="newSnapshotName"
+            />
+            <button
+              type="button"
+              class="inline-save-btn"
+              (click)="saveCurrentSnapshot()"
+            >
+              確定保存
+            </button>
+          </div>
+        </div>
+      }
+
+      @if (snapshots.length > 0) {
+        <div class="snapshot-history-chips-container">
+          <span class="history-chip-label">保存済みプラン一覧:</span>
+          <div class="history-chips-scroll">
+            @for (sn of snapshots; track sn.id) {
+              <div 
+                class="history-chip-item" 
+                [class.active]="sn.id === activeSnapshotId && adoptionMode === 'adoption'"
+              >
+                <button type="button" class="btn-chip-apply" (click)="applySnapshot(sn)">
+                  <span class="chip-title">{{ sn.name }}</span>
+                  <span class="chip-metric">
+                    +{{ sn.candidateCount }}名 / 改善効果: {{ sn.profitDiff > 0 ? '+' : '' }}{{ sn.profitDiff | number:'1.2-2' }}億円
+                  </span>
+                </button>
+                <button type="button" class="btn-chip-delete" title="削除" (click)="deleteSnapshot(sn.id)">✕</button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+    </div>
+  }
+
+  <!-- メイン2カラム構造 -->
+  <div class="adoption-main-grid">
+
+    <!-- 左カラム：試算前後の優先度自動切替（試算後は改善効果が左上へ昇格） -->
+    <div class="adoption-col-main-results">
+
+      @if (isAdoptionCalculated) {
+        <!-- 【試算実行後】：主役（改善効果分析）を左上に配置 -->
+        <app-adoption-diff
+          [mode]="adoptionMode"
+          [scenario]="selectedScenario"
+          [baseScenario]="selectedBase100Scenario"
+          [candidates]="candidateEmployees"
+        ></app-adoption-diff>
+
+        <!-- 脇役（推奨ペルソナ）は左下へコンパクト配置 -->
+        <div class="persona-sub-container">
+          <app-adoption-threshold
+            [baseScenarios]="base100Scenarios"
+            [targetSales]="targetSales"
+            (applyPersona)="onApplyPersona($event)"
+          ></app-adoption-threshold>
+        </div>
+      } @else {
+        <!-- 【試算実行前（初期表示）】：主役（推奨ペルソナ）を左上に配置 -->
+        <div class="persona-main-container">
+          <app-adoption-threshold
+            [baseScenarios]="base100Scenarios"
+            [targetSales]="targetSales"
+            (applyPersona)="onApplyPersona($event)"
+          ></app-adoption-threshold>
+        </div>
+
+        <!-- 試算結果（未試算ガイド）を左下に配置 -->
+        <app-adoption-diff
+          [mode]="adoptionMode"
+          [scenario]="selectedScenario"
+          [baseScenario]="selectedBase100Scenario"
+          [candidates]="candidateEmployees"
+        ></app-adoption-diff>
+      }
+
+    </div>
+
+    <!-- 右カラム：設定・候補者入力（条件設定および手動実行ボタン） -->
+    <div class="adoption-col-side-controls">
+      <app-adoption-control
+        [mode]="adoptionMode"
+        (modeChange)="onModeChange($event)"
+        (candidatesChange)="onCandidatesChange($event)"
+      ></app-adoption-control>
+    </div>
+
+  </div>
+
+  <!-- 下部：社員マスタアップデート -->
+  <div class="csv-update-section">
+    <div class="csv-card">
+      <div class="csv-header-text">
+        <strong>社員マスタデータの変更・再読み込み</strong>
+        <span>最新の100名組織データ（CSV）をシステムへ再インポートします</span>
+      </div>
+      <div class="csv-action-row">
+        <input
+          id="csv-file-reupload"
+          type="file"
+          accept=".csv,text/csv"
+          (change)="onCsvFileChange($event)"
+          class="csv-file-input"
+        />
+        <span class="success-message">適用中の既存社員マスタ: <strong>{{ employees.length }} 名</strong></span>
+      </div>
+    </div>
+  </div>
+
+</div>

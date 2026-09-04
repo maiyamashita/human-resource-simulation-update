@@ -1,0 +1,364 @@
+<!-- src/app/components/employee-notice/employee-notice.component.html -->
+
+<div
+  class="notice-modal-overlay"
+  (click)="onClose()"
+>
+
+  <!-- ==================================================
+       モーダル本体
+  ================================================== -->
+
+  <div
+    class="notice-modal-container"
+    (click)="$event.stopPropagation()"
+  >
+
+    <!-- ==================================================
+         操作バー
+         ・画面表示のみ
+         ・印刷時は非表示
+    ================================================== -->
+
+    <div class="modal-control-bar no-print">
+
+      <!-- 社員切り替え -->
+      <div class="nav-btn-group">
+
+        <button
+          type="button"
+          class="btn-nav"
+          (click)="onPrev()"
+          title="前の社員へ"
+        >
+          ◄ 前の社員
+        </button>
+
+        <button
+          type="button"
+          class="btn-nav"
+          (click)="onNext()"
+          title="次の社員へ"
+        >
+          次の社員 ►
+        </button>
+
+      </div>
+
+
+      <!-- 印刷・閉じる -->
+      <div class="action-btn-group">
+
+        <button
+          type="button"
+          class="btn-print"
+          (click)="printNotice()"
+          title="配属通知書を印刷またはPDF保存"
+        >
+          🖨️ 印刷 / PDF保存
+        </button>
+
+        <button
+          type="button"
+          class="btn-close"
+          (click)="onClose()"
+          title="閉じる"
+        >
+          ✕ 閉じる
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         A4 配属通知書
+
+         この要素が「実際の書類」。
+         画面表示時はA4比率で表示。
+         印刷時はこの部分だけを印刷対象にする。
+    ================================================== -->
+
+    <div
+      class="notice-document"
+      *ngIf="employee && scenario"
+    >
+
+      <!-- ==================================================
+           文書ヘッダー
+      ================================================== -->
+
+      <div class="doc-header-official">
+
+        <!-- 左：文書番号・取扱区分 -->
+        <div class="doc-header-left">
+
+          <div class="doc-no">
+            発 第 2026-{{ employee.id }} 号
+          </div>
+
+          <div class="confidential-mark">
+            【社内取扱注意】
+          </div>
+
+        </div>
+
+
+        <!-- 右：発令元情報 -->
+        <div class="doc-meta-official">
+
+          <p class="issue-date">
+            発令年月日：{{ issueDate }}
+          </p>
+
+          <p class="company-name">
+            株式会社 NEXUSホールディングス
+          </p>
+
+          <div class="issuer-row">
+
+            <span class="issuer-title">
+              代表取締役社長 執行役員CEO
+            </span>
+
+            <div class="official-seal">
+              <span>NEXUS</span>
+              <span>社印</span>
+            </div>
+
+          </div>
+
+          <p class="sub-issuer">
+            人事最高責任者（CHRO）人事企画本部
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <!-- ==================================================
+           文書タイトル
+      ================================================== -->
+
+      <div class="doc-title-official">
+
+        <h1>
+          配 属 通 知 書
+        </h1>
+
+      </div>
+
+
+      <!-- ==================================================
+           宛名
+
+           employeeDisplayName に表示ロジックを集約
+      ================================================== -->
+
+      <div class="recipient-official">
+
+        <p class="employee-id-name">
+
+          <strong>
+            {{ employeeDisplayName }}
+          </strong>
+
+          <span
+            class="emp-id-sub"
+            *ngIf="employee.name"
+          >
+            （社員番号：#{{ employee.id }}）
+          </span>
+
+        </p>
+
+      </div>
+
+
+      <!-- ==================================================
+           主文
+      ================================================== -->
+
+      <div class="main-statement">
+
+        <p>
+          2026年度組織再編計画に基づき、審議の結果、
+          貴殿の配属先及び業務担当について
+          下記のとおり決定いたしましたので通知いたします。
+        </p>
+
+      </div>
+
+
+      <!-- ==================================================
+           記
+      ================================================== -->
+
+      <div class="ki-title">
+        記
+      </div>
+
+
+      <!-- ==================================================
+           配属決定事項
+      ================================================== -->
+
+      <table class="official-table assignment-table">
+
+        <tbody>
+
+          <!-- 配属先 -->
+          <tr>
+
+            <th class="col-label">
+              決定配属先
+            </th>
+
+            <td class="col-value bold-dept">
+
+              {{ departmentInfo.name }}
+
+              <span class="pref-badge-official">
+                （{{ rationaleData?.preferenceLabel }}）
+              </span>
+
+            </td>
+
+          </tr>
+
+
+          <!-- 所管業務 -->
+          <tr>
+
+            <th class="col-label">
+              事業部所管業務
+            </th>
+
+            <td class="col-value">
+              {{ departmentInfo.mission }}
+            </td>
+
+          </tr>
+
+
+          <!-- 選定理由 -->
+          <tr>
+
+            <th class="col-label">
+              配属選定理由
+            </th>
+
+            <td class="col-value">
+
+              <div class="official-reason-body">
+
+                <p class="reason-summary-bold">
+                  【選定趣旨】
+                  {{ rationaleData?.headline }}
+                </p>
+
+                <p class="reason-detail-text">
+                  {{ rationaleData?.reasonText }}
+                </p>
+
+              </div>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+
+      <!-- ==================================================
+           個人能力評価
+      ================================================== -->
+
+      <div class="sub-table-title">
+        【参考：個人能力評価データ】
+      </div>
+
+
+      <table class="official-table skill-table">
+
+        <thead>
+
+          <tr>
+
+            <th>
+              評価項目
+            </th>
+
+            <th>
+              営業力
+            </th>
+
+            <th>
+              管理力
+            </th>
+
+            <th>
+              開拓力
+            </th>
+
+            <th>
+              育成力
+            </th>
+
+          </tr>
+
+        </thead>
+
+
+        <tbody>
+
+          <tr>
+
+            <th>
+              評価スコア
+            </th>
+
+            <td>
+              {{ employee.salesAbility }} pt
+            </td>
+
+            <td>
+              {{ employee.managementAbility }} pt
+            </td>
+
+            <td>
+              {{ employee.developmentAbility }} pt
+            </td>
+
+            <td>
+              {{ employee.trainingAbility }} pt
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+
+      <!-- ==================================================
+           文書末尾
+      ================================================== -->
+
+      <div class="doc-footer-official">
+
+        <p class="foot-end">
+          以 上
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

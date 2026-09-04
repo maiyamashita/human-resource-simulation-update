@@ -1,0 +1,301 @@
+.report-skill-gap-card {
+  padding: 18px 20px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-top: 16px;
+  page-break-inside: avoid;
+  break-inside: avoid;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.skill-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #0f172a;
+}
+
+.report-section-badge {
+  display: inline-block;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+  border: 1px solid #cbd5e1;
+}
+
+.skill-card-header h4 {
+  margin: 0;
+  font-size: 15px;
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.skill-card-sub {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.adoption-status-tag {
+  padding: 3px 10px;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #1e293b;
+  white-space: nowrap;
+}
+
+/* 全社配置積み上げバー */
+.overall-allocation-bar-box {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+}
+
+.bar-header-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  margin-bottom: 6px;
+  color: #334155;
+}
+
+.bar-title {
+  font-weight: 700;
+}
+
+.bar-total-count strong {
+  color: #0f172a;
+}
+
+.stacked-bar-track {
+  display: flex;
+  height: 22px;
+  width: 100%;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #f1f5f9;
+  border: 1px solid #94a3b8;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
+
+.seg {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  transition: width 0.3s ease;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
+
+/* ==========================================================================
+   ★ トーン（明度差）による色調設計（パターン無しのソリッドカラー） ★
+   ========================================================================== */
+
+/* A事業部（高濃度）：深いネイビー → モノクロ時: 濃いグレー */
+.seg.dept-a {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+}
+
+/* B事業部（中濃度）：ミディアムブルー → モノクロ時: 中間グレー */
+.seg.dept-b {
+  background-color: #475569 !important;
+  color: #ffffff !important;
+}
+
+/* C事業部（低濃度）：ライトグレーブルー → モノクロ時: 明るいグレー */
+.seg.dept-c {
+  background-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+/* 3事業部詳細カードグリッド */
+.dept-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.dept-report-box {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.dept-report-box.box-a { border-top: 4px solid #1e293b; }
+.dept-report-box.box-b { border-top: 4px solid #475569; }
+.dept-report-box.box-c { border-top: 4px solid #94a3b8; }
+
+.dept-box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.dept-title-name {
+  font-size: 12.5px;
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.dept-count-badge {
+  font-size: 12px;
+  color: #0f172a;
+}
+
+.dept-count-badge small {
+  font-size: 10px;
+  color: #64748b;
+}
+
+/* スキル分析エリア */
+.skill-analysis-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skill-analysis-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.skill-rows-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.s-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.s-label {
+  width: 52px;
+  color: #64748b;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.focus-tag {
+  font-size: 9px;
+  font-weight: 800;
+  color: #0f172a;
+  background: #f1f5f9;
+  padding: 0 4px;
+  border-radius: 2px;
+  border: 1px solid #94a3b8;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
+
+.s-bg {
+  flex: 1;
+  height: 8px;
+  background: #f1f5f9;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #cbd5e1;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
+
+/* 標準のスキルバー（ライトグレー） */
+.s-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: #cbd5e1 !important;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
+
+/* 重点能力のみ（ダークスレート）：白黒・カラーともにハッキリ目立たせる */
+.s-row.is-focus .s-label {
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.s-row.is-focus .s-fill {
+  background: #1e293b !important;
+}
+
+.s-val {
+  width: 24px;
+  text-align: right;
+  font-weight: 700;
+  color: #0f172a;
+  font-variant-numeric: tabular-nums;
+  font-size: 10.5px;
+}
+
+/* ==========================================================================
+   ★ 印刷専用スタイル (@media print) ★
+   ========================================================================== */
+@media print {
+  .report-skill-gap-card {
+    border: 1px solid #cbd5e1 !important;
+    background: #ffffff !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    margin-top: 10px !important;
+    padding: 12px 14px !important;
+  }
+
+  .dept-detail-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .dept-report-box {
+    border: 1px solid #94a3b8 !important;
+    background: #ffffff !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .dept-report-box.box-a { border-top: 4px solid #1e293b !important; }
+  .dept-report-box.box-b { border-top: 4px solid #475569 !important; }
+  .dept-report-box.box-c { border-top: 4px solid #94a3b8 !important; }
+
+  /* 背景トーン（濃淡）の印刷維持 */
+  *,
+  .s-bg,
+  .s-fill,
+  .stacked-bar-track,
+  .seg,
+  .focus-tag {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
