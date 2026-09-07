@@ -509,7 +509,7 @@ def create_solver():
 
     # ★ 高速化設定
     # 1. タイムアウトを 3 秒に短縮（3秒以内でその時点の最良解を返す）
-    solver.parameters.max_time_in_seconds = 3.0
+    solver.parameters.max_time_in_seconds = 30.0
 
     # 2. 再現性を優先し、シングルスレッド・固定シードを基本とする
     #    （AddElement化によりモデルが大幅に軽量化されたため、
