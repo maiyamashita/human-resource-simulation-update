@@ -4,12 +4,12 @@
    0. 経営会議 Executive Light デザインシステム変数
 ================================================== */
 :root {
-  /* 背景・カードベース (明るく品のあるトーン) */
-  --exec-bg-app: #f8fafc;              /* アプリ全体ベース（上品なオフホワイト） */
-  --exec-bg-surface: #ffffff;          /* カード・コンテナ背景（ピュアホワイト） */
-  --exec-bg-surface-elevated: #f1f5f9; /* ホバー・サブコンテナ */
-  --exec-border-color: #e2e8f0;        /* 繊細で品のある境界線 */
-  --exec-border-focus: #2563eb;        /* 選択中・フォーカス（クラシックブルー） */
+  /* 背景・カードベース (スタート画面調トーン) */
+  --exec-bg-app: #f1f5f9;              /* ベースグレー */
+  --exec-bg-surface: #ffffff;          /* ピュアホワイト */
+  --exec-bg-surface-elevated: #f8fafc; /* ホバー・サブコンテナ */
+  --exec-border-color: #cbd5e1;        /* 繊細で品のある境界線 */
+  --exec-border-focus: #1e3a8a;        /* 選択中・フォーカス */
 
   /* テキスト・タイポグラフィ */
   --exec-text-primary: #0f172a;       /* 重厚感のあるスチールブラック */
@@ -17,7 +17,7 @@
   --exec-text-muted: #94a3b8;         /* キャプション・注釈 */
 
   /* シグナルカラー (財務・経営業績用) */
-  --exec-accent-blue: #2563eb;        /* メイン強調・選択 */
+  --exec-accent-blue: #1e3a8a;        /* メイン強調（スタート画面ボタンの深紺） */
   --exec-accent-green: #15803d;       /* 利益・目標達成（フォレストグリーン） */
   --exec-accent-orange: #d97706;      /* 成長・注意 */
   --exec-accent-red: #be123c;         /* 未達・アラート（ディープローズ） */
@@ -28,17 +28,29 @@
 }
 
 /* ==================================================
-   1. 全体・ベース（1画面固定 Viewport）
+   1. 全体・ベース（縦横スクロール完全防止・100%幅固定）
 ================================================== */
+
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 100vh !important;
+  width: 100% !important; /* 100vwによる横スクロール発生を回避 */
+  overflow: hidden !important; /* ブラウザ外枠の縦横スクロールバーを完全遮断 */
+}
 
 :host {
   display: block;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
 }
 
 .app-layout {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  width: 100%;
   overflow: hidden;
   background-color: var(--exec-bg-app);
   color: var(--exec-text-primary);
@@ -53,24 +65,28 @@
 }
 
 /* ==================================================
-   2. タブナビゲーションバー (Executive Light・コンパクト設計)
+   2. タブナビゲーションバー (フラット＆シック設計)
 ================================================== */
 
 .tab-navigation {
   display: flex;
   gap: 6px;
   background-color: #ffffff;
-  padding: 2px 16px 0 16px;
+  padding: 0 16px;
   border-bottom: 1px solid var(--exec-border-color);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
   z-index: 10;
+  height: 32px;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .tab-btn {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 14px;
+  padding: 4px 12px;
+  height: 100%;
   background: transparent;
   border: none;
   border-bottom: 2.5px solid transparent;
@@ -97,65 +113,86 @@
   color: inherit !important;
 }
 
+/* 絵文字アイコンを非表示にしてビジネスライクに統一 */
 .tab-icon {
-  font-size: 0.9rem;
+  display: none;
 }
 
 /* ==================================================
-   3. メインコンテンツエリア（上下余白最適化）
+   3. メインコンテンツエリア（縦横スクロールバーを完全遮断）
 ================================================== */
 
 .main-content-view {
   flex: 1;
-  overflow-y: auto;
-  padding: 8px 16px 8px; /* 1画面収容のために余白をスリム化 */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden !important; /* 通常タブ表示時の縦横スクロールをカット */
+  padding: 4px 12px;
+  min-height: 0;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .tab-pane {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  max-width: 1440px;
+  gap: 6px;
+  max-width: 100%;
   margin: 0 auto;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden; /* ★追加: 子要素が1画面縦幅を突破するのを強力に阻止 */
 }
 
 .tab-pane.dashboard-grid {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
+  height: 100%;
+  min-height: 0;
 }
 
 .dashboard-section-card {
   background: var(--exec-bg-surface);
   border: 1px solid var(--exec-border-color);
-  border-radius: 8px;
-  padding: 10px 14px; /* 縦幅の圧縮 */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  border-radius: 6px;
+  padding: 6px 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 0 !important;
 }
 
 .dashboard-section-title {
-  margin: 0 0 8px 0;
-  padding-bottom: 6px;
+  margin: 0 0 4px 0;
+  padding-bottom: 4px;
   border-bottom: 1px solid #f1f5f9;
 }
 
 .dashboard-section-title h2 {
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   font-weight: 700;
   color: #0f172a;
   margin: 0;
 }
 
 .dashboard-section-title p {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: #64748b;
-  margin: 2px 0 0 0;
+  margin: 1px 0 0 0;
 }
 
 .dashboard-bottom-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 8px;
   align-items: start;
 }
 
@@ -163,7 +200,7 @@
 .grid-right {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 /* ==================================================
@@ -172,32 +209,35 @@
 
 .sticky-scenario-bar {
   position: sticky;
-  top: -8px;
+  top: 0;
   z-index: 100;
   background: #0f172a;
   color: #ffffff;
-  padding: 6px 16px;
-  margin: -8px -16px 8px -16px;
-  border-radius: 0 0 6px 6px;
+  padding: 4px 12px;
+  margin: 0 0 4px 0;
+  border-radius: 4px;
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .sticky-inner {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: #ffffff;
 }
 
 .sc-title {
   color: #ffffff;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 700;
 }
 
 .active-badge {
-  background: #2563eb;
+  background: #1e3a8a;
   color: #ffffff;
   font-size: 0.65rem;
   padding: 2px 6px;
@@ -216,12 +256,12 @@
 
 .sc-kpis strong {
   color: #ffffff;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
 }
 
 .profit-txt { 
   color: #4ade80; 
-  font-size: 0.85rem;
+  font-size: 0.82rem;
 }
 
 .sep { color: #64748b; }
@@ -231,19 +271,19 @@
 ================================================== */
 
 section {
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .section-title {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .section-title h2 {
   margin: 0;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: #0f172a;
 }
@@ -255,41 +295,41 @@ section {
 }
 
 .csv-card {
-  padding: 12px 16px;
+  padding: 10px 14px;
   background: #ffffff;
-  border: 1px solid #e8e8e8;
-  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .csv-card label {
   display: block;
-  margin-bottom: 8px;
-  font-size: 13px;
+  margin-bottom: 6px;
+  font-size: 12px;
   font-weight: 600;
   color: #334155;
 }
 
 .csv-card input[type="file"] {
-  font-size: 13px;
+  font-size: 12px;
   color: #475569;
 }
 
 .success-message,
 .csv-success {
-  margin-top: 10px;
+  margin-top: 8px;
   margin-bottom: 0;
   color: #15803d;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
 }
 
 .error-message,
 .csv-error {
-  margin-top: 10px;
+  margin-top: 8px;
   margin-bottom: 0;
   color: #dc2626;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
 }
 
@@ -300,14 +340,14 @@ section {
 .loading-overlay-card {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   background: #ffffff;
-  border: 1px solid #bfdbfe;
-  border-left: 4px solid #2563eb;
-  border-radius: 8px;
-  padding: 12px 16px;
-  margin-bottom: 10px;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
+  border: 1px solid #cbd5e1;
+  border-left: 4px solid #1e3a8a;
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 8px rgba(30, 58, 138, 0.08);
 }
 
 .spinner-container {
@@ -317,10 +357,10 @@ section {
 }
 
 .spinner {
-  width: 28px;
-  height: 28px;
-  border: 3px solid #e0f2fe;
-  border-top-color: #2563eb;
+  width: 24px;
+  height: 24px;
+  border: 3px solid #f1f5f9;
+  border-top-color: #1e3a8a;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -335,20 +375,20 @@ section {
 
 .loading-content h3 {
   margin: 0 0 2px 0;
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: #1e293b;
 }
 
 .loading-content p {
-  margin: 0 0 6px 0;
-  font-size: 0.75rem;
+  margin: 0 0 4px 0;
+  font-size: 0.72rem;
   color: #64748b;
 }
 
 .progress-bar-track {
   width: 100%;
-  height: 6px;
+  height: 5px;
   background: #f1f5f9;
   border-radius: 3px;
   overflow: hidden;
@@ -357,7 +397,7 @@ section {
 .progress-bar-fill {
   height: 100%;
   width: 100%;
-  background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+  background: linear-gradient(90deg, #1e3a8a, #2563eb);
   border-radius: 3px;
   animation: shimmer 1.8s infinite ease-in-out;
 }
@@ -376,75 +416,80 @@ section {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
-  background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 100%);
+  padding: 16px;
+  background: #f1f5f9;
+  overflow: hidden;
 }
 
 .welcome-card {
   width: 100%;
-  max-width: 480px;
+  max-width: 500px;
   background: #ffffff;
-  border-radius: 12px;
-  padding: 30px 24px;
-  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.06);
-  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 28px 24px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+  border: 1px solid #cbd5e1;
   text-align: center;
-}
-
-.welcome-icon {
-  font-size: 2.5rem;
-  margin-bottom: 8px;
 }
 
 .welcome-header h2 {
   margin: 0 0 8px 0;
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   color: #0f172a;
   font-weight: 800;
+  letter-spacing: 0.02em;
 }
 
 .welcome-header p {
-  margin: 0 0 20px 0;
-  font-size: 0.8rem;
-  color: #64748b;
-  line-height: 1.5;
+  margin: 0 0 18px 0;
+  font-size: 0.82rem;
+  color: #475569;
+  line-height: 1.6;
 }
 
 .upload-drop-area {
   position: relative;
-  border: 2px dashed #3b82f6;
-  background-color: #eff6ff;
-  border-radius: 10px;
+  border: 2px dashed #94a3b8;
+  background-color: #f8fafc;
+  border-radius: 6px;
   padding: 24px 16px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .upload-drop-area:hover {
-  background-color: #dbeafe;
-  border-color: #2563eb;
+  background-color: #eff6ff;
+  border-color: #1e3a8a;
 }
 
 .upload-label {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   cursor: pointer;
 }
 
-.upload-btn-icon {
-  font-size: 1.6rem;
+.upload-label strong {
+  display: inline-block;
+  background-color: #1e3a8a;
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 8px 22px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(30, 58, 138, 0.2);
+  transition: background-color 0.15s ease;
 }
 
-.upload-label strong {
-  font-size: 0.9rem;
-  color: #1d4ed8;
+.upload-drop-area:hover .upload-label strong {
+  background-color: #1d4ed8;
 }
 
 .upload-label small {
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   color: #64748b;
+  margin-top: 4px;
 }
 
 .file-input-hidden {
@@ -467,28 +512,29 @@ section {
 
 .welcome-loading p {
   font-size: 0.8rem;
-  color: #2563eb;
-  font-weight: bold;
+  color: #1e3a8a;
+  font-weight: 700;
 }
 
 .error-box {
   margin-top: 14px;
-  padding: 8px 10px;
+  padding: 8px 12px;
   background-color: #fef2f2;
   border: 1px solid #fecaca;
-  border-radius: 6px;
+  border-radius: 4px;
   color: #dc2626;
   font-size: 0.75rem;
 }
 
 /* ==================================================
-   8. 経営会議レポート表示エリア
+   8. 経営会議レポート表示エリア (ここだけ縦スクロール許可)
 ================================================== */
 
 .management-report-view {
   flex: 1;
   min-height: 0;
-  overflow: hidden;
+  overflow-y: auto !important; /* レポート表示時のみ縦スクロールバーを出力 */
+  overflow-x: hidden !important;
 }
 
 /* ==================================================
@@ -498,14 +544,14 @@ section {
 .adoption-compact-dashboard {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding-bottom: 16px;
+  gap: 10px;
+  padding-bottom: 10px;
 }
 
 .adoption-main-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 10px;
   align-items: start;
 }
 
@@ -513,50 +559,50 @@ section {
 .adoption-col-right {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .snapshot-save-card {
-  padding: 12px 14px;
+  padding: 10px 12px;
   background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .snapshot-header h4 {
   margin: 0;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: #0f172a;
 }
 
 .snapshot-header p {
-  margin: 2px 0 10px;
-  font-size: 11px;
+  margin: 2px 0 8px;
+  font-size: 10px;
   color: #64748b;
 }
 
 .snapshot-input-row {
   display: flex;
   gap: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .snapshot-name-input {
   flex: 1;
-  padding: 6px 10px;
+  padding: 5px 8px;
   border: 1px solid #cbd5e1;
-  border-radius: 5px;
+  border-radius: 4px;
   font-size: 11px;
 }
 
 .save-snapshot-btn {
-  padding: 6px 14px;
-  background: #2563eb;
+  padding: 5px 12px;
+  background: #1e3a8a;
   color: #ffffff;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   font-size: 11px;
   font-weight: 700;
   cursor: pointer;
@@ -568,7 +614,7 @@ section {
 }
 
 .snapshot-history-list h5 {
-  margin: 0 0 6px;
+  margin: 0 0 4px;
   font-size: 11px;
   color: #334155;
   border-bottom: 1px solid #f1f5f9;
@@ -576,7 +622,7 @@ section {
 }
 
 .empty-history-text {
-  font-size: 11px;
+  font-size: 10px;
   color: #94a3b8;
   margin: 0;
 }
@@ -584,8 +630,8 @@ section {
 .snapshot-items {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  max-height: 160px;
+  gap: 4px;
+  max-height: 140px;
   overflow-y: auto;
 }
 
@@ -593,10 +639,10 @@ section {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 8px;
+  padding: 5px 8px;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-radius: 5px;
+  border-radius: 4px;
 }
 
 .snapshot-info {
@@ -620,36 +666,36 @@ section {
 }
 
 .btn-apply-sn {
-  padding: 3px 6px;
+  padding: 2px 5px;
   background: #eff6ff;
-  color: #2563eb;
+  color: #1e3a8a;
   border: 1px solid #bfdbfe;
-  border-radius: 4px;
+  border-radius: 3px;
   font-size: 10px;
   font-weight: 700;
   cursor: pointer;
 }
 
 .btn-delete-sn {
-  padding: 3px 5px;
+  padding: 2px 4px;
   background: #fff;
   color: #ef4444;
   border: 1px solid #fca5a5;
-  border-radius: 4px;
+  border-radius: 3px;
   font-size: 10px;
   cursor: pointer;
 }
 
 .adoption-accordion-section {
   background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
   overflow: hidden;
 }
 
 .accordion-header {
-  padding: 10px 14px;
-  font-size: 12px;
+  padding: 8px 12px;
+  font-size: 11px;
   font-weight: 700;
   color: #334155;
   cursor: pointer;
@@ -657,7 +703,7 @@ section {
 }
 
 .accordion-content {
-  padding: 12px 14px;
+  padding: 10px 12px;
   border-top: 1px solid #e2e8f0;
 }
 
@@ -674,7 +720,7 @@ section {
   .loading-overlay-card {
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
+    gap: 8px;
   }
 }
 
@@ -682,13 +728,11 @@ section {
    11. 印刷時 (@media print) のルート・レイアウト解放設定
 ================================================== */
 @media print {
-  /* 印刷ページの用紙設定 */
   @page {
     size: A4 portrait;
     margin: 8mm 10mm;
   }
 
-  /* アプリ全体の高さ・固定表示を解除 */
   html, body, app-root, .app-layout, .management-report-view, .main-content-view {
     display: block !important;
     position: static !important;
@@ -700,7 +744,6 @@ section {
     margin: 0 !important;
   }
 
-  /* アプリ画面側の非印刷エリアを非表示 */
   app-header, 
   .tab-navigation, 
   .sticky-scenario-bar,
@@ -716,31 +759,29 @@ app-employee-notice {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   z-index: 1000;
 }
+
 /* ==================================================
-   11. 印刷時 (@media print) 完全分離（通知書のみ出力）
+   13. 印刷時 (@media print) 完全分離（通知書のみ出力）
 ================================================== */
 @media print {
   @page {
     size: A4 portrait;
-    margin: 0; /* 余白は内部のnotice-document側で制御 */
+    margin: 0;
   }
 
-  /* 画面全体の要素を印刷から完全に隠蔽 */
   body * {
     visibility: hidden !important;
   }
 
-  /* 通知書モーダルとその内部要素だけを可視化 */
   app-employee-notice,
   app-employee-notice * {
     visibility: visible !important;
   }
 
-  /* モーダルを紙面一番上に絶対配置して背景画面を排除 */
   app-employee-notice {
     position: absolute !important;
     top: 0 !important;
@@ -750,7 +791,6 @@ app-employee-notice {
     background: #ffffff !important;
   }
 
-  /* レイアウトの高さ・固定を解除 */
   html, body, app-root, .app-layout, .main-content-view {
     height: auto !important;
     overflow: visible !important;
@@ -761,13 +801,13 @@ app-employee-notice {
 }
 
 /* ==================================================
-   12. 画面表示時（プレビュー）モーダル配置
+   14. 画面表示時（プレビュー）モーダル配置
 ================================================== */
 app-employee-notice {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   z-index: 9999;
 }

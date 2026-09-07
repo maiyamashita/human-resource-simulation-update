@@ -1,21 +1,21 @@
-.diff-section {
-  margin-bottom: 0;
+/* src/app/components/adoption-diff/adoption-diff.component.css */
+
+.diff-section { 
+  margin-bottom: 0; 
 }
 
-/* カード全体：パディングと青青しい境界線を引締め */
 .diff-card {
   background: #ffffff;
   border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  padding: 12px 14px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  border-radius: 6px;
+  padding: 8px 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  min-height: 280px; /* 1-Screenで右側と高さを綺麗に合わせる */
+  gap: 6px;
+  /* min-height 指定を完全に除去してコンテンツサイズに自然フィットさせる */
 }
 
-/* ヘッダー周り */
 .diff-header {
   display: flex;
   justify-content: space-between;
@@ -23,13 +23,13 @@
 }
 
 .diff-badge {
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   font-weight: 800;
-  color: #1d4ed8;
+  color: #1e3a8a;
 }
 
 .diff-header h3 {
-  margin: 2px 0 1px 0;
+  margin: 1px 0 0 0;
   font-size: 0.88rem;
   font-weight: 800;
   color: #0f172a;
@@ -41,11 +41,10 @@
   margin: 0;
 }
 
-/* ステータスバッジ（丸ドット廃止、フォーマル化） */
 .status-pill {
   font-size: 0.65rem;
   font-weight: 700;
-  padding: 2px 8px;
+  padding: 2px 6px;
   border-radius: 4px;
   background: #f1f5f9;
   color: #64748b;
@@ -53,130 +52,40 @@
 }
 
 .status-pill.active {
-  background: #f0fdf4;
-  color: #15803d;
-  border-color: #bbf7d0;
+  background: #ecfdf5;
+  color: #059669;
+  border-color: #a7f3d0;
 }
 
-/* 未試算（初期状態）のガイド表示ボックス */
-.placeholder-guide-box {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f8fafc;
-  border: 1px dashed #cbd5e1;
-  border-radius: 6px;
-  padding: 24px 20px;
-  text-align: left;
-}
-
-.guide-badge {
-  font-size: 0.62rem;
-  font-weight: 800;
-  color: #1d4ed8;
-  background: #eff6ff;
-  padding: 2px 6px;
-  border-radius: 3px;
-  display: inline-block;
-  margin-bottom: 6px;
-}
-
-.guide-content strong {
-  font-size: 0.85rem;
-  color: #0f172a;
-  display: block;
-  margin-bottom: 8px;
-}
-
-.guide-steps {
-  margin: 0 0 10px 0;
-  padding-left: 18px;
-  font-size: 0.7rem;
-  color: #334155;
-  line-height: 1.6;
-}
-
-.guide-note {
-  font-size: 0.65rem;
-  color: #64748b;
-  margin: 0;
-  border-top: 1px dashed #e2e8f0;
-  padding-top: 6px;
-}
-
-/* KPI 3ピラーグリッド（コンパクト化） */
 .diff-kpi-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  gap: 6px;
 }
 
 .kpi-box {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  padding: 8px 10px;
+  border-radius: 4px;
+  padding: 5px 8px;
   display: flex;
   flex-direction: column;
 }
 
-.kpi-box.highlight {
-  background: #f0fdf4;
-  border-color: #bbf7d0;
-}
+.kpi-box.highlight { background: #ecfdf5; border-color: #a7f3d0; }
+.kpi-box.negative-box { background: #fef2f2; border-color: #fca5a5; }
 
-.kpi-box.negative-box {
-  background: #fef2f2;
-  border-color: #fca5a5;
-}
+.kpi-label { font-size: 0.65rem; color: #475569; font-weight: 700; }
+.kpi-val-group { display: flex; align-items: baseline; gap: 4px; margin: 1px 0; }
+.kpi-value { font-size: 0.95rem; font-weight: 800; color: #0f172a; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+.kpi-value.warning { color: #c2410c; }
+.kpi-value.negative { color: #dc2626; }
+.diff-tag.cost { font-size: 0.6rem; font-weight: 700; background: #fff7ed; color: #c2410c; padding: 1px 4px; border-radius: 3px; }
+.kpi-note { font-size: 0.6rem; color: #94a3b8; }
 
-.kpi-label {
-  font-size: 0.62rem;
-  color: #475569;
-  font-weight: 700;
-}
-
-.kpi-val-group {
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-  margin: 2px 0;
-}
-
-.kpi-value {
-  font-size: 0.98rem; /* 24pxから引締め */
-  font-weight: 800;
-  color: #0f172a;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-}
-
-.kpi-value.warning {
-  color: #c2410c;
-}
-
-.kpi-value.negative {
-  color: #dc2626;
-}
-
-.diff-tag.cost {
-  font-size: 0.6rem;
-  font-weight: 700;
-  background: #fff7ed;
-  color: #c2410c;
-  padding: 1px 4px;
-  border-radius: 3px;
-}
-
-.kpi-note {
-  font-size: 0.58rem;
-  color: #94a3b8;
-}
-
-/* 事業部別比較テーブル */
 .dept-diff-table-container h4 {
-  margin: 0 0 6px 0;
-  font-size: 0.75rem;
+  margin: 2px 0 2px 0;
+  font-size: 0.78rem;
   font-weight: 800;
   color: #0f172a;
 }
@@ -189,42 +98,14 @@
 
 .diff-table th, 
 .diff-table td {
-  padding: 4px 6px; /* 余白を10pxから4pxへ引締め */
+  padding: 3px 6px;
   text-align: left;
   border-bottom: 1px solid #f1f5f9;
   vertical-align: middle;
 }
 
-.diff-table th {
-  background: #f8fafc;
-  color: #475569;
-  font-weight: 700;
-}
-
-.count-badge {
-  background: #eff6ff;
-  color: #1d4ed8;
-  font-weight: 700;
-  padding: 1px 6px;
-  border-radius: 3px;
-  font-size: 0.68rem;
-}
-
-.rate-bar-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  width: 100px;
-}
-
-.rate-bar {
-  height: 6px;
-  background: #2563eb;
-  border-radius: 3px;
-}
-
-.rate-text {
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: #334155;
-}
+.diff-table th { background: #f8fafc; color: #475569; font-weight: 700; }
+.count-badge { background: #f0f4ff; color: #1e3a8a; font-weight: 700; padding: 1px 5px; border-radius: 3px; font-size: 0.68rem; }
+.rate-bar-wrapper { display: flex; align-items: center; gap: 6px; width: 85px; }
+.rate-bar { height: 5px; background: #1e3a8a; border-radius: 3px; }
+.rate-text { font-size: 0.65rem; font-weight: 700; color: #334155; }

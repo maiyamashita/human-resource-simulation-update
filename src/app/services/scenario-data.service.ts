@@ -7,7 +7,10 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Scenario } from '../models/scenario.model';
-import { CandidateEmployee } from '../components/adoption-control/adoption-control.component';
+import {
+  CandidateEmployee,
+  AdoptionOptimizationMode
+} from '../components/adoption-control/adoption-control.component';
 
 // ==================================================
 // ★ 手動調整（What-if）用インターフェース
@@ -131,14 +134,22 @@ export class ScenarioDataService {
 
   // 100名 通常モード用API URL
   private readonly apiUrl = `${this.baseUrl}/api/scenarios`;
+
   // 追加採用 モード用API URL
-  private readonly adoptionApiUrl = `${this.baseUrl}/api/scenarios/with-adoption`;
+  private readonly adoptionApiUrl =
+    `${this.baseUrl}/api/scenarios/with-adoption`;
+
   // 手動調整・リアルタイム再計算用API URL
-  private readonly recalculateApiUrl = `${this.baseUrl}/api/scenarios/recalculate`;
+  private readonly recalculateApiUrl =
+    `${this.baseUrl}/api/scenarios/recalculate`;
+
   // 目標売上動的再最適化用API URL
-  private readonly reoptimizeApiUrl = `${this.baseUrl}/api/scenarios/reoptimize`;
+  private readonly reoptimizeApiUrl =
+    `${this.baseUrl}/api/scenarios/reoptimize`;
+
   // 必要人材の目安（4ペルソナ x 4シナリオ）試算用API URL
-  private readonly adoptionThresholdApiUrl = `${this.baseUrl}/api/scenarios/adoption-threshold`;
+  private readonly adoptionThresholdApiUrl =
+    `${this.baseUrl}/api/scenarios/adoption-threshold`;
 
   // inject 関数を使用して確実に依存注入（NG2003 エラー回避）
   private http = inject(HttpClient);
@@ -148,30 +159,75 @@ export class ScenarioDataService {
   /**
    * 既存の100名用 API呼び出し (通常モード)
    */
-  postCsvAndGetScenarios(file: File): Observable<Scenario[]> {
+  postCsvAndGetScenarios(
+    file: File
+  ): Observable<Scenario[]> {
     const formData = new FormData();
-    formData.append('file', file, file.name);
+
+    formData.append(
+      'file',
+      file,
+      file.name
+    );
 
     return this.http
-      .post<ScenarioResponse>(this.apiUrl, formData)
+      .post<ScenarioResponse>(
+        this.apiUrl,
+        formData
+      )
       .pipe(
-        map((response: any) => response.scenarios)
+        map(
+          (response: any) =>
+            response.scenarios
+        )
       );
   }
 
   /**
    * 追加採用用 (101〜110名可変) API呼び出し
-   * CSVファイルと、画面で設定した追加候補者データを同時に送信します
+   *
+   * CSVファイルと、画面で設定した追加候補者データ、
+   * 追加採用後の最適化方式を同時に送信します。
+   *
+   * optimizationMode:
+   *   all   = 既存100名 + 追加採用者を一括最適化
+   *   fixed = 既存100名の配置を固定し、追加採用者のみ配置
    */
-  postAdoptionScenarios(file: File, candidates: CandidateEmployee[]): Observable<Scenario[]> {
+  postAdoptionScenarios(
+    file: File,
+    candidates: CandidateEmployee[],
+    optimizationMode: AdoptionOptimizationMode
+  ): Observable<Scenario[]> {
+
     const formData = new FormData();
-    formData.append('file', file, file.name);
-    formData.append('candidates_json', JSON.stringify(candidates));
+
+    formData.append(
+      'file',
+      file,
+      file.name
+    );
+
+    formData.append(
+      'candidates_json',
+      JSON.stringify(candidates)
+    );
+
+    // ★ 追加採用後の最適化方式をバックエンドへ送信
+    formData.append(
+      'optimization_mode',
+      optimizationMode
+    );
 
     return this.http
-      .post<ScenarioResponse>(this.adoptionApiUrl, formData)
+      .post<ScenarioResponse>(
+        this.adoptionApiUrl,
+        formData
+      )
       .pipe(
-        map((response: any) => response.scenarios)
+        map(
+          (response: any) =>
+            response.scenarios
+        )
       );
   }
 
@@ -181,11 +237,17 @@ export class ScenarioDataService {
    * @param targetSales ユーザーが設定した目標売上（デフォルト: 58.0）
    * @returns 再計算された Scenario オブジェクトと警告（alerts）等のメタ情報
    */
-  recalculateManualAssignment(employees: ManualEmployeeInput[], targetSales = 58.0): Observable<RecalculateResponse> {
-    return this.http.post<RecalculateResponse>(this.recalculateApiUrl, {
-      employees,
-      target_sales: targetSales
-    });
+  recalculateManualAssignment(
+    employees: ManualEmployeeInput[],
+    targetSales = 58.0
+  ): Observable<RecalculateResponse> {
+    return this.http.post<RecalculateResponse>(
+      this.recalculateApiUrl,
+      {
+        employees,
+        target_sales: targetSales
+      }
+    );
   }
 
   /**
@@ -194,14 +256,23 @@ export class ScenarioDataService {
    * @param employees 現在の全社員データ
    * @returns 再最適化された4つのシナリオ一覧
    */
-  reoptimizeWithTargetSales(targetSales: number, employees: any[]): Observable<Scenario[]> {
+  reoptimizeWithTargetSales(
+    targetSales: number,
+    employees: any[]
+  ): Observable<Scenario[]> {
     return this.http
-      .post<ScenarioResponse>(this.reoptimizeApiUrl, {
-        target_sales: targetSales,
-        employees
-      })
+      .post<ScenarioResponse>(
+        this.reoptimizeApiUrl,
+        {
+          target_sales: targetSales,
+          employees
+        }
+      )
       .pipe(
-        map((response: any) => response.scenarios)
+        map(
+          (response: any) =>
+            response.scenarios
+        )
       );
   }
 
@@ -216,9 +287,12 @@ export class ScenarioDataService {
     baselineScenarios: AdoptionThresholdBaselineScenario[],
     targetSales: number
   ): Observable<AdoptionThresholdResponse> {
-    return this.http.post<AdoptionThresholdResponse>(this.adoptionThresholdApiUrl, {
-      baseline_scenarios: baselineScenarios,
-      target_sales: targetSales
-    });
+    return this.http.post<AdoptionThresholdResponse>(
+      this.adoptionThresholdApiUrl,
+      {
+        baseline_scenarios: baselineScenarios,
+        target_sales: targetSales
+      }
+    );
   }
 }

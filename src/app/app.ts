@@ -24,6 +24,7 @@ import { ScenarioDetailComponent } from './components/scenario-detail/scenario-d
 
 import {
   AdoptionMode,
+  AdoptionOptimizationMode,
   CandidateEmployee
 } from './components/adoption-control/adoption-control.component';
 
@@ -88,6 +89,15 @@ export class App {
   };
 
   adoptionMode: AdoptionMode = 'standard';
+
+  /**
+   * 追加採用時の最適化方式
+   *
+   * all   : 既存100名 + 追加採用者をまとめて再配置
+   * fixed : 既存100名の配置を固定し、追加採用者のみ配置
+   */
+  adoptionOptimizationMode: AdoptionOptimizationMode = 'all';
+
   candidateEmployees: CandidateEmployee[] = [];
 
   adoptionSnapshots: AdoptionSnapshot[] = [];
@@ -103,9 +113,21 @@ export class App {
   get headerSnapshots(): SnapshotItem[] {
     return (this.adoptionSnapshots || []).map(sn => {
       let timeStr = '';
+
       if (sn.createdAt) {
         const d = new Date(sn.createdAt);
-        timeStr = isNaN(d.getTime()) ? '' : d.toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+        timeStr = isNaN(d.getTime())
+          ? ''
+          : d.toLocaleDateString(
+              'ja-JP',
+              {
+                month: 'numeric',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              }
+            );
       }
 
       return {
@@ -125,14 +147,33 @@ export class App {
     const selectedSc = this.selectedScenario;
     const baseSc = this.selectedBase100Scenario;
 
-    const salesDiff = (selectedSc && baseSc) ? Number(((selectedSc.totalSales || 0) - (baseSc.totalSales || 0)).toFixed(2)) : 0;
-    const profitDiff = (selectedSc && baseSc) ? Number(((selectedSc.totalProfit || 0) - (baseSc.totalProfit || 0)).toFixed(2)) : 0;
+    const salesDiff =
+      (selectedSc && baseSc)
+        ? Number(
+            (
+              (selectedSc.totalSales || 0) -
+              (baseSc.totalSales || 0)
+            ).toFixed(2)
+          )
+        : 0;
+
+    const profitDiff =
+      (selectedSc && baseSc)
+        ? Number(
+            (
+              (selectedSc.totalProfit || 0) -
+              (baseSc.totalProfit || 0)
+            ).toFixed(2)
+          )
+        : 0;
 
     const newSnapshot: AdoptionSnapshot = {
       id: 'sn_' + Date.now(),
       name,
       createdAt: new Date(),
-      candidates: JSON.parse(JSON.stringify(this.candidateEmployees)),
+      candidates: JSON.parse(
+        JSON.stringify(this.candidateEmployees)
+      ),
       candidateCount: this.candidateEmployees.length,
       salesDiff,
       profitDiff,
@@ -140,32 +181,72 @@ export class App {
     };
 
     const snAny = newSnapshot as any;
-    snAny.scenarios = JSON.parse(JSON.stringify(this.scenarios));
+
+    snAny.scenarios =
+      JSON.parse(JSON.stringify(this.scenarios));
+
     snAny.targetSales = this.targetSales;
     snAny.selectedScenarioId = this.selectedScenarioId;
     snAny.adoptionMode = this.adoptionMode;
 
-    this.adoptionSnapshots = [newSnapshot, ...this.adoptionSnapshots];
+    // ★ 追加採用時の最適化方式も保存
+    snAny.adoptionOptimizationMode =
+      this.adoptionOptimizationMode;
+
+    this.adoptionSnapshots = [
+      newSnapshot,
+      ...this.adoptionSnapshots
+    ];
+
     this.selectedSnapshotId = newSnapshot.id;
+
     this.cdr.detectChanges();
   }
 
   onLoadSnapshotFromHeader(snapshotId: string): void {
-    const target = this.adoptionSnapshots.find(s => s.id === snapshotId);
-    if (!target) return;
+    const target =
+      this.adoptionSnapshots.find(
+        s => s.id === snapshotId
+      );
+
+    if (!target) {
+      return;
+    }
 
     const targetAny = target as any;
 
     this.selectedSnapshotId = target.id;
-    if (targetAny.targetSales) this.targetSales = targetAny.targetSales;
-    if (targetAny.selectedScenarioId) this.selectedScenarioId = targetAny.selectedScenarioId;
-    
+
+    if (targetAny.targetSales) {
+      this.targetSales = targetAny.targetSales;
+    }
+
+    if (targetAny.selectedScenarioId) {
+      this.selectedScenarioId =
+        targetAny.selectedScenarioId;
+    }
+
     if (targetAny.adoptionMode) {
-      this.adoptionMode = targetAny.adoptionMode;
+      this.adoptionMode =
+        targetAny.adoptionMode;
+    }
+
+    // ★ 保存されている場合のみ復元
+    // 古いスナップショットにはこの値がないため、
+    // その場合は現在の初期値 'all' を維持する。
+    if (
+      targetAny.adoptionOptimizationMode === 'all' ||
+      targetAny.adoptionOptimizationMode === 'fixed'
+    ) {
+      this.adoptionOptimizationMode =
+        targetAny.adoptionOptimizationMode;
     }
 
     if (target.candidates) {
-      this.candidateEmployees = JSON.parse(JSON.stringify(target.candidates));
+      this.candidateEmployees =
+        JSON.parse(
+          JSON.stringify(target.candidates)
+        );
     }
 
     if (this.adoptionMode === 'adoption') {
@@ -191,28 +272,47 @@ export class App {
   ) {}
 
   get selectedScenario(): Scenario | null {
-    if (!this.scenarios || this.scenarios.length === 0) {
+    if (
+      !this.scenarios ||
+      this.scenarios.length === 0
+    ) {
       return null;
     }
 
     // ★ 手動調整実行中の場合はS99の試算結果を最優先で返す（追従バーにも即時反映）
-    if (this.isCustomActive && this.customScenarioResult) {
+    if (
+      this.isCustomActive &&
+      this.customScenarioResult
+    ) {
       return this.customScenarioResult;
     }
 
-    return this.scenarios.find(
-      scenario => scenario && scenario.id === this.selectedScenarioId
-    ) ?? this.scenarios[0] ?? null;
+    return (
+      this.scenarios.find(
+        scenario =>
+          scenario &&
+          scenario.id === this.selectedScenarioId
+      ) ??
+      this.scenarios[0] ??
+      null
+    );
   }
 
   get selectedBase100Scenario(): Scenario | null {
-    if (!this.base100Scenarios || this.base100Scenarios.length === 0) {
+    if (
+      !this.base100Scenarios ||
+      this.base100Scenarios.length === 0
+    ) {
       return null;
     }
 
-    return this.base100Scenarios.find(
-      scenario => scenario && scenario.id === this.selectedScenarioId
-    ) ?? null;
+    return (
+      this.base100Scenarios.find(
+        scenario =>
+          scenario &&
+          scenario.id === this.selectedScenarioId
+      ) ?? null
+    );
   }
 
   selectScenario(id: number): void {
@@ -225,12 +325,19 @@ export class App {
     this.isCustomActive = false;
     this.customScenarioResult = null;
     this.customAlerts = [];
-    this.customAssignments = { A: [], B: [], C: [] };
+    this.customAssignments = {
+      A: [],
+      B: [],
+      C: []
+    };
     this.movedEmployeeIds.clear();
   }
 
   onTargetSalesChange(newTargetSales: number): void {
-    if (!newTargetSales || newTargetSales <= 0) {
+    if (
+      !newTargetSales ||
+      newTargetSales <= 0
+    ) {
       return;
     }
 
@@ -249,9 +356,12 @@ export class App {
         this.base100Scenarios &&
         this.base100Scenarios.length > 0
       ) {
-        this.scenarios = JSON.parse(
-          JSON.stringify(this.base100Scenarios)
-        );
+        this.scenarios =
+          JSON.parse(
+            JSON.stringify(
+              this.base100Scenarios
+            )
+          );
 
         this.cdr.detectChanges();
       } else {
@@ -259,6 +369,20 @@ export class App {
       }
     }
   }
+
+  /**
+   * 追加採用時の最適化方式変更
+   *
+   * 方式を変更した時点では結果を直接変更せず、
+   * 現在の候補者条件を使って再シミュレーションする。
+   */
+  onOptimizationModeChange(
+  mode: AdoptionOptimizationMode
+): void {
+  this.adoptionOptimizationMode = mode;
+  this.resetCustomState();
+  this.cdr.detectChanges();
+}
 
   resetAdoptionToStandard(): void {
     this.onModeChange('standard');
@@ -269,7 +393,9 @@ export class App {
   ): void {
     this.candidateEmployees = candidates;
 
-    if (this.adoptionMode === 'adoption') {
+    if (
+      this.adoptionMode === 'adoption'
+    ) {
       this.reRunSimulation();
     }
   }
@@ -302,7 +428,9 @@ export class App {
   }
 
   onCsvSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
+    const input =
+      event.target as HTMLInputElement;
+
     const file = input.files?.[0];
 
     if (!file) {
@@ -317,6 +445,11 @@ export class App {
     this.base100Scenarios = [];
     this.employees = [];
     this.selectedScenarioId = 1;
+
+    // ★ 新しいCSVを読み込んだ場合は
+    // 追加採用の最適化方式を既定の「一括最適化」に戻す
+    this.adoptionOptimizationMode = 'all';
+
     this.resetCustomState();
 
     this.employeeDataService
@@ -326,18 +459,26 @@ export class App {
         this.loadScenarios(file);
       })
       .catch(error => {
-        console.error('CSV解析エラー:', error);
+        console.error(
+          'CSV解析エラー:',
+          error
+        );
+
         this.loadScenarios(file);
       });
   }
 
   private reRunSimulation(): void {
     if (this.currentFile) {
-      this.loadScenarios(this.currentFile);
+      this.loadScenarios(
+        this.currentFile
+      );
     }
   }
 
-  private loadScenarios(file: File | null): void {
+  private loadScenarios(
+    file: File | null
+  ): void {
     if (!file) {
       return;
     }
@@ -346,12 +487,14 @@ export class App {
     this.scenarioError = '';
     this.cdr.detectChanges();
 
-    const isAdoption = this.adoptionMode === 'adoption';
+    const isAdoption =
+      this.adoptionMode === 'adoption';
 
     const request$ = isAdoption
       ? this.scenarioDataService.postAdoptionScenarios(
           file,
-          this.candidateEmployees
+          this.candidateEmployees,
+          this.adoptionOptimizationMode
         )
       : this.scenarioDataService.postCsvAndGetScenarios(
           file
@@ -359,13 +502,14 @@ export class App {
 
     request$.subscribe({
       next: (scenarios: Scenario[]) => {
-        const validScenarios = (scenarios || [])
-          .filter(
-            (s): s is Scenario =>
-              !!s &&
-              s.id !== undefined &&
-              s.id !== null
-          );
+        const validScenarios =
+          (scenarios || [])
+            .filter(
+              (s): s is Scenario =>
+                !!s &&
+                s.id !== undefined &&
+                s.id !== null
+            );
 
         if (isAdoption && validScenarios) {
           validScenarios.forEach(s => {
@@ -373,19 +517,26 @@ export class App {
           });
         }
 
-        this.scenarios = validScenarios;
+        this.scenarios =
+          validScenarios;
 
         if (
           !isAdoption &&
           validScenarios.length > 0
         ) {
-          this.base100Scenarios = JSON.parse(
-            JSON.stringify(validScenarios)
-          );
+          this.base100Scenarios =
+            JSON.parse(
+              JSON.stringify(
+                validScenarios
+              )
+            );
         }
 
-        if (validScenarios.length > 0) {
-          this.selectedScenarioId = validScenarios[0].id;
+        if (
+          validScenarios.length > 0
+        ) {
+          this.selectedScenarioId =
+            validScenarios[0].id;
 
           this.applyDynamicCountsFromScenario(
             validScenarios[0]
@@ -403,7 +554,10 @@ export class App {
         );
 
         this.scenarios = [];
-        this.scenarioError = '最適化結果を取得できませんでした。';
+
+        this.scenarioError =
+          '最適化結果を取得できませんでした。';
+
         this.loading = false;
         this.cdr.detectChanges();
       }

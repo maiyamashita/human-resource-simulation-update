@@ -105,7 +105,9 @@
     <div class="adoption-col-side-controls">
       <app-adoption-control
         [mode]="adoptionMode"
+        [optimizationMode]="optimizationMode"
         (modeChange)="onModeChange($event)"
+        (optimizationModeChange)="onOptimizationModeChange($event)"
         (candidatesChange)="onCandidatesChange($event)"
       ></app-adoption-control>
     </div>

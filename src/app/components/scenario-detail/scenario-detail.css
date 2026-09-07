@@ -102,8 +102,41 @@
   gap: 12px;
 }
 
+/* What-if 試算差分バッジ & ピル */
+.whatif-diff-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.diff-pill-light {
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    monospace;
+}
+
+.diff-pill-light.pos {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.diff-pill-light.neg {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+}
+
 /* ==================================================
-   数値試算結果カード
+   数値試算結果カード (互換性維持)
 ================================================== */
 
 .whatif-stats-card {
@@ -143,7 +176,7 @@
 }
 
 /* ==================================================
-   アクションボタン群
+   アクションボタン群 (HTMLのクラス名 btn-action-light に対応修正)
 ================================================== */
 
 .action-btn-group {
@@ -154,7 +187,7 @@
   padding-left: 12px;
 }
 
-.btn-control {
+.btn-action-light {
   background: #ffffff;
   border: 1px solid #cbd5e1;
   color: #334155;
@@ -166,26 +199,39 @@
   transition: all 0.15s ease;
 }
 
-.btn-control:hover {
+.btn-action-light:hover {
   background: #f8fafc;
   border-color: #94a3b8;
 }
 
-.btn-control.reset {
+.btn-action-light.reset {
   background: #ef4444;
   border-color: #ef4444;
   color: #ffffff;
 }
 
-.btn-control.reset:hover {
+.btn-action-light.reset:hover {
   background: #dc2626;
 }
 
-.btn-control.mask.active {
+.btn-action-light.mask.active {
   background: #eff6ff;
   border-color: #2563eb;
   color: #1d4ed8;
   font-weight: 800;
+}
+
+/* 旧クラス名互換用 */
+.btn-control {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 /* ==================================================
@@ -564,29 +610,9 @@
 
 /* ==================================================
    3. 配属通知書の印刷制御
-   ==================================================
-   画面表示：
-     ・シナリオ詳細画面を通常表示
-     ・配属通知書はモーダルとして表示
-
-   印刷時：
-     ・シナリオ詳細画面の他要素を非表示
-     ・app-employee-notice だけを表示
-     ・通知書を通常の印刷フローへ戻す
-
-   ※ app-employee-notice の通常時の
-      position: fixed はここでは指定しない。
-      モーダル側(employee-notice.component.css)
-      が画面表示を担当する。
 ================================================== */
 
 @media print {
-
-  /* -----------------------------------------------
-     シナリオ詳細画面そのものは印刷フローに残す
-     （通知書がこの中に存在するため）
-  ----------------------------------------------- */
-
   .scenario-detail-section {
     display: block !important;
     width: 100% !important;
@@ -596,30 +622,17 @@
     overflow: visible !important;
   }
 
-
-  /* -----------------------------------------------
-     通知書以外の直接の子要素をすべて非表示
-  ----------------------------------------------- */
-
   .scenario-detail-section > *:not(app-employee-notice) {
     display: none !important;
   }
 
-
-  /* -----------------------------------------------
-     通知書コンポーネントを印刷対象として表示
-  ----------------------------------------------- */
-
   .scenario-detail-section > app-employee-notice {
     display: block !important;
     position: static !important;
-
     width: 100% !important;
     height: auto !important;
-
     margin: 0 !important;
     padding: 0 !important;
-
     overflow: visible !important;
   }
 }

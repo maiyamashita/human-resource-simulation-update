@@ -1,3 +1,5 @@
+// src/app/components/adoption-diff/adoption-diff.component.ts
+
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Scenario } from '../../models/scenario.model';
@@ -94,7 +96,7 @@ type DeptKey = 'A' | 'B' | 'C';
             </div>
           }
         } @else {
-          <!-- 未試算ガイド表示（ゆったり仕様） -->
+          <!-- 未試算ガイド表示 -->
           <div class="placeholder-guide-box">
             <div class="guide-inner">
               <strong class="guide-title">追加採用シミュレーション未実行</strong>
@@ -109,59 +111,7 @@ type DeptKey = 'A' | 'B' | 'C';
       </div>
     </section>
   `,
-  styles: [`
-    .diff-section { margin-bottom: 0; }
-    .diff-card {
-      background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px;
-      padding: 14px 16px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
-      display: flex; flex-direction: column; gap: 12px; min-height: 240px;
-    }
-
-    .diff-header { display: flex; justify-content: space-between; align-items: flex-start; }
-    .diff-badge { font-size: 0.72rem; font-weight: 800; color: #1d4ed8; }
-    .diff-header h3 { margin: 2px 0 2px 0; font-size: 1rem; font-weight: 800; color: #0f172a; }
-    .diff-sub { font-size: 0.75rem; color: #64748b; margin: 0; }
-
-    .status-pill {
-      font-size: 0.72rem; font-weight: 700; padding: 3px 8px; border-radius: 4px;
-      background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1;
-    }
-    .status-pill.active { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
-
-    /* 未試算ガイド表示 */
-    .placeholder-guide-box {
-      flex: 1; display: flex; align-items: center; justify-content: center;
-      background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 24px;
-      text-align: center;
-    }
-    .guide-inner { max-width: 480px; margin: 0 auto; }
-    .guide-title { font-size: 0.92rem; font-weight: 800; color: #0f172a; display: block; margin-bottom: 8px; }
-    .guide-desc { font-size: 0.82rem; color: #475569; margin: 0; line-height: 1.6; }
-
-    .diff-kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .kpi-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 12px; display: flex; flex-direction: column; }
-    .kpi-box.highlight { background: #f0fdf4; border-color: #bbf7d0; }
-    .kpi-box.negative-box { background: #fef2f2; border-color: #fca5a5; }
-
-    .kpi-label { font-size: 0.72rem; color: #475569; font-weight: 700; }
-    .kpi-val-group { display: flex; align-items: baseline; gap: 6px; margin: 4px 0; }
-    .kpi-value { font-size: 1.1rem; font-weight: 800; color: #0f172a; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
-    .kpi-value.warning { color: #c2410c; }
-    .kpi-value.negative { color: #dc2626; }
-
-    .diff-tag.cost { font-size: 0.68rem; font-weight: 700; background: #fff7ed; color: #c2410c; padding: 1px 5px; border-radius: 3px; }
-    .kpi-note { font-size: 0.68rem; color: #94a3b8; }
-
-    .dept-diff-table-container h4 { margin: 0 0 8px 0; font-size: 0.85rem; font-weight: 800; color: #0f172a; }
-    .diff-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
-    .diff-table th, .diff-table td { padding: 6px 8px; text-align: left; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
-    .diff-table th { background: #f8fafc; color: #475569; font-weight: 700; }
-
-    .count-badge { background: #eff6ff; color: #1d4ed8; font-weight: 700; padding: 2px 6px; border-radius: 3px; font-size: 0.75rem; }
-    .rate-bar-wrapper { display: flex; align-items: center; gap: 6px; width: 110px; }
-    .rate-bar { height: 6px; background: #2563eb; border-radius: 3px; }
-    .rate-text { font-size: 0.72rem; font-weight: 700; color: #334155; }
-  `]
+  styleUrl: './adoption-diff.component.css' // ★ styles: [...] を消して外部CSS参照に変更
 })
 export class AdoptionDiffComponent {
   @Input() mode: 'standard' | 'adoption' = 'standard';

@@ -47,16 +47,31 @@ def _calculate_max_bounds_for_common_model(employees):
     max_raw_sales = {}
 
     for department in DEPARTMENTS:
-        # 貢献度を100倍した値をソートして、上位N名の合計を取得
-        contributions_scaled = sorted(
-            [
-                int(round(emp["contributions"][department] * 100))
-                for emp in employees
-            ],
-            reverse=True
+        # 貢献度を100倍した値を取得
+        contributions_scaled = [
+            int(round(emp["contributions"][department] * 100))
+            for emp in employees
+        ]
+
+                # 他事業部の最低人数を確保した場合に、
+        # この事業部へ配置可能な最大人数を計算
+        minimum_counts = {
+            d: DEPARTMENT_SETTINGS[d]["minimum_count"]
+            for d in DEPARTMENTS
+        }
+
+        max_assignable_count = len(employees) - sum(
+            minimum_counts[d]
+            for d in DEPARTMENTS
+            if d != department
         )
-        appropriate = DEPARTMENT_SETTINGS[department]["appropriate_count"]
-        max_ability = sum(contributions_scaled[:appropriate])
+
+        # 配置可能な最大人数分の貢献度を上限とする
+        contributions_scaled.sort(reverse=True)
+
+        max_ability = sum(
+            contributions_scaled[:max_assignable_count]
+        )
 
         # 基準売上（円）と成長率を計算
         base_sales_yen = int(

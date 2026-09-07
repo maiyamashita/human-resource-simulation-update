@@ -6,8 +6,8 @@
       
       <div class="chart-header">
         <div>
-          <h3>全社売上・事業部配属構成 ＆ 収益性比較</h3>
-          <p>単位：億円（バー直下に事業部別の利益額および利益率を明示）</p>
+          <h3 class="executive-title">全社売上・事業部配属構成 ＆ 収益性比較</h3>
+          <p class="executive-subtitle">単位：億円（バー直下に事業部別の利益額および利益率を明示）</p>
         </div>
 
         <div class="chart-legend-box">
@@ -159,12 +159,12 @@
     </div>
   }
 
-  <!-- 2. ★ 5か年成長シミュレーション (タブ2用：縦幅大幅拡大 ＆ スリムカード) ★ -->
+  <!-- 2. ★ 5か年成長シミュレーション (タブ2用) ★ -->
   @if (showForecastOnly) {
     @if (fiveYearPlans && fiveYearPlans.length > 0) {
       <div class="forecast-card-v2">
         
-        <!-- 上段：ゆったりサイズの折れ線比較 ＆ ハイライトサマリー -->
+        <!-- 上段：折れ線比較 ＆ ハイライトサマリー -->
         <div class="forecast-top-split">
           
           <!-- 左側：5か年成長軌道 折れ線グラフ -->
@@ -188,7 +188,7 @@
               </div>
             </div>
 
-            <!-- 縦幅250pxのダイナミックSVG折れ線 -->
+            <!-- SVG折れ線 -->
             <div class="svg-container">
               <svg [attr.viewBox]="'0 0 ' + svgChartWidth + ' ' + svgChartHeight" class="trend-svg">
                 <!-- Y軸グリッド線 ＆ ラベル -->
@@ -219,12 +219,11 @@
                   <path [attr.d]="getPointsPath(compareBase100Plan)" class="line-compare-base" />
                 }
 
-                <!-- 2. 対案線 (青破線) -->
+                <!-- 2. 対案線 (深紺破線) -->
                 @if (comparePlan) {
                   <path [attr.d]="getPointsPath(comparePlan)" class="line-compare" />
                   @for (pt of getPlanPoints(comparePlan); track pt.year) {
                     <circle [attr.cx]="pt.x" [attr.cy]="pt.y" r="4" class="dot-compare" />
-                    <!-- 対案数値ラベル (点の下に配置して重なり防止) -->
                     <text [attr.x]="pt.x" [attr.y]="pt.y + 14" class="pt-val-text compare-val-txt">{{ pt.val | number:'1.1-1' }}億</text>
                   }
                 }
@@ -239,20 +238,38 @@
                   <path [attr.d]="getPointsPath(selectedPlan)" class="line-main" />
                   @for (pt of getPlanPoints(selectedPlan); track pt.year) {
                     <circle [attr.cx]="pt.x" [attr.cy]="pt.y" r="5" class="dot-main" />
-                    <!-- メイン数値ラベル (点の上に配置) -->
                     <text [attr.x]="pt.x" [attr.y]="pt.y - 8" class="pt-val-text main-val-txt">{{ pt.val | number:'1.1-1' }}億</text>
                   }
                 }
               </svg>
             </div>
 
+            <!-- 凡例エリア（4つの要素を完全網羅） -->
             <div class="trend-legend-row">
-              <span class="legend-item"><span class="line-sample main-sample"></span>★ S{{ selectedScenarioId }} 推奨案 {{ isAdoptionApplied ? '(追加適用後)' : '' }}</span>
+              <span class="legend-item">
+                <span class="line-sample main-sample"></span>
+                ★ S{{ selectedScenarioId }} 推奨案 {{ isAdoptionApplied ? '(追加適用後)' : '' }}
+              </span>
+
               @if (isAdoptionApplied) {
-                <span class="legend-item"><span class="line-sample main-base-sample"></span>S{{ selectedScenarioId }} (標準100名)</span>
+                <span class="legend-item">
+                  <span class="line-sample main-base-sample"></span>
+                  S{{ selectedScenarioId }} (標準100名)
+                </span>
               }
+
               @if (comparePlan) {
-                <span class="legend-item"><span class="line-sample compare-sample"></span>◆ S{{ compareScenarioId }} 対案 {{ isAdoptionApplied ? '(追加適用後)' : '' }}</span>
+                <span class="legend-item">
+                  <span class="line-sample compare-sample"></span>
+                  ◆ S{{ compareScenarioId }} 対案 {{ isAdoptionApplied ? '(追加適用後)' : '' }}
+                </span>
+              }
+
+              @if (compareBase100Plan && isAdoptionApplied) {
+                <span class="legend-item">
+                  <span class="line-sample compare-base-sample"></span>
+                  S{{ compareScenarioId }} (標準100名)
+                </span>
               }
             </div>
 
@@ -309,7 +326,7 @@
 
         </div>
 
-        <!-- 下段：コンパクト（スリム化）された4シナリオカード一覧 -->
+        <!-- 下段：4シナリオカード一覧 -->
         <div class="forecast-grid-v2">
           @for (plan of fiveYearPlans; track plan.scenarioId) {
             @let isSelected = plan.scenarioId === selectedScenarioId;

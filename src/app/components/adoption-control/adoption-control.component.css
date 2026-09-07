@@ -1,372 +1,218 @@
 /* src/app/components/adoption-control.component.css */
 
-/* モード切替エリア */
 .mode-selection-section {
-  margin-bottom: 24px;
+  margin-bottom: 0;
 }
 
 .mode-card {
   background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 8px 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
 }
 
 .mode-header {
-  margin-bottom: 16px;
+  margin-bottom: 4px;
 }
 
 .mode-header .mode-label {
-  font-size: 11px;
+  font-size: 0.65rem;
   font-weight: 700;
-  color: #2563eb;
+  color: #1e3a8a;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .mode-header h3 {
-  margin: 2px 0 0 0;
-  font-size: 16px;
-  font-weight: 700;
-  color: #1e293b;
+  margin: 1px 0 0 0;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #0f172a;
 }
 
 .mode-toggle-group {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 6px;
 }
 
 .mode-btn {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 14px 16px;
+  padding: 5px 8px;
   background: #f8fafc;
-  border: 2px solid #e2e8f0;
-  border-radius: 10px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   text-align: left;
-}
-
-.mode-btn:hover {
-  border-color: #cbd5e1;
-  background: #f1f5f9;
 }
 
 .mode-btn.active {
-  border-color: #2563eb;
-  background: #eff6ff;
+  border-color: #1e3a8a;
+  background: #f0f4ff;
 }
 
 .mode-btn .badge {
-  font-size: 10px;
+  font-size: 0.6rem;
   font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 1px 5px;
+  border-radius: 3px;
   background: #e2e8f0;
   color: #475569;
-  margin-bottom: 6px;
+  margin-bottom: 2px;
 }
 
-.mode-btn .badge.highlight {
-  background: #dbeafe;
-  color: #1d4ed8;
-}
+.mode-btn .badge.highlight { background: #dbeafe; color: #1e3a8a; }
+.mode-btn.active .badge.highlight { background: #1e3a8a; color: #ffffff; }
 
-.mode-btn.active .badge.highlight {
-  background: #2563eb;
-  color: #ffffff;
-}
+.mode-btn strong { font-size: 0.78rem; color: #0f172a; font-weight: 800; }
+.mode-btn small { font-size: 0.62rem; color: #64748b; margin-top: 1px; }
 
-.mode-btn strong {
-  font-size: 14px;
-  color: #0f172a;
-}
-
-.mode-btn small {
-  font-size: 11px;
-  color: #64748b;
-  margin-top: 2px;
-}
-
-/* 追加採用詳細パネル */
 .adoption-detail-panel {
-  margin-top: 18px;
-  padding-top: 16px;
-  border-top: 1px solid #f1f5f9;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed #cbd5e1;
 }
 
-/* 人数設定コントロールバー (数値入力ボックス版) */
-.count-selector-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 12px;
-  background: #f8fafc;
-  padding: 10px 16px;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-}
+/* ==================================================
+   追加採用時の配置方法（セグメント制御スイッチ）
+================================================== */
 
-.count-selector-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.count-label {
-  font-size: 13px;
-  font-weight: 700;
-  color: #334155;
-}
-
-/* 数値入力ボックス (+ N 名) - 上下矢印にゆとりを持たせた幅設計 */
-.input-count-wrapper {
-  display: inline-flex;
-  align-items: center;
-  background: #ffffff;
-  border: 1.5px solid #2563eb;
+.optimization-mode-section {
+  margin-bottom: 6px;
+  padding: 5px 8px;
+  background: #f1f5f9;
   border-radius: 6px;
-  padding: 2px 8px;
-  box-shadow: 0 1px 2px rgba(37, 99, 235, 0.08);
-}
-
-.input-count-wrapper .prefix {
-  font-size: 14px;
-  font-weight: 700;
-  color: #2563eb;
-  margin-right: 2px;
-}
-
-.input-count-number {
-  width: 58px; /* 2桁数字＋上下スピンボタンが綺麗に収まるゆとり幅 */
-  font-size: 14px;
-  font-weight: 700;
-  color: #1e293b;
-  border: none;
-  outline: none;
-  text-align: center;
-  padding: 2px 0;
-  background: transparent;
-}
-
-.input-count-wrapper .unit {
-  font-size: 12px;
-  font-weight: 600;
-  color: #475569;
-  margin-left: 2px;
-}
-
-.count-total-info {
-  font-size: 12px;
-  color: #64748b;
-}
-
-/* 折りたたみボタン（閉じた状態でもわかりやすいボタンスタイル） */
-.btn-toggle-detail {
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  color: #2563eb;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 6px 12px;
-  border-radius: 6px;
-  transition: all 0.15s ease;
-  display: inline-flex;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
   gap: 4px;
 }
 
-.btn-toggle-detail:hover {
-  background: #eff6ff;
-  border-color: #2563eb;
-  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.1);
-}
-
-/* 候補者テーブルエリア（デフォルト表示） */
-.candidates-table-wrapper {
-  margin-top: 12px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  overflow: hidden;
-  background: #ffffff;
-}
-
-.table-header-title {
-  padding: 10px 14px;
-  background: #f8fafc;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.table-header-title h4 {
-  margin: 0;
-  font-size: 12px;
-  font-weight: 700;
-  color: #475569;
-}
-
-.candidates-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
-  text-align: left;
-}
-
-.candidates-table th {
-  background: #f1f5f9;
-  color: #475569;
-  font-weight: 700;
-  padding: 8px 10px;
-  border-bottom: 1px solid #e2e8f0;
-  white-space: nowrap;
-}
-
-.candidates-table td {
-  padding: 6px 10px;
-  border-bottom: 1px solid #f1f5f9;
-  vertical-align: middle;
-}
-
-.candidates-table tr:last-child td {
-  border-bottom: none;
-}
-
-.candidates-table tr:hover {
-  background: #f8fafc;
-}
-
-/* テーブル各列の幅定義と入力制御 */
-.col-id {
-  width: 70px;
-  text-align: center;
-}
-
-.candidate-badge {
-  font-size: 11px;
-  font-weight: 700;
-  color: #1e40af;
-  background: #dbeafe;
-  padding: 2px 6px;
-  border-radius: 4px;
-  display: inline-block;
-}
-
-.col-name {
-  min-width: 130px;
-}
-
-.input-name {
-  width: 100%;
-  box-sizing: border-box;
-  font-size: 12px;
-  padding: 4px 8px;
-  border: 1px solid #cbd5e1;
-  border-radius: 4px;
-  outline: none;
-}
-
-.input-name:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
-}
-
-.col-skill {
-  width: 70px;
-  text-align: center;
-}
-
-.input-skill {
-  width: 54px;
-  padding: 4px 4px;
-  font-size: 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 4px;
-  text-align: right;
-  outline: none;
-}
-
-.input-skill:focus {
-  border-color: #2563eb;
-}
-
-.col-cost {
-  width: 80px;
-  text-align: center;
-  background: #faf5ff;
-}
-
-.candidates-table th.col-cost {
-  background: #f3e8ff;
-  color: #6b21a8;
-}
-
-.input-cost {
-  width: 58px;
-  padding: 4px 4px;
-  font-size: 12px;
-  border: 1px solid #c084fc;
-  border-radius: 4px;
-  text-align: right;
-  background: #ffffff;
-  font-weight: 700;
-  color: #6b21a8;
-  outline: none;
-}
-
-.input-cost:focus {
-  border-color: #9333ea;
-  box-shadow: 0 0 0 2px rgba(147, 51, 234, 0.15);
-}
-
-/* 再シミュレーション実行ボタンエリア */
-.execution-action-area {
-  margin-top: 18px;
-  padding-top: 14px;
-  border-top: 1px solid #f1f5f9;
-  text-align: center;
-}
-
-.btn-execute-simulation {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-  color: #ffffff;
-  font-weight: 700;
-  font-size: 14px;
-  padding: 10px 24px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
-  transition: all 0.2s ease;
-  display: inline-flex;
+.optimization-mode-header {
+  display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
-.btn-execute-simulation:hover {
-  background: linear-gradient(135deg, #1d4ed8, #1e40af);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.3);
+.optimization-title {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #334155;
 }
 
-.btn-execute-simulation:active {
-  transform: translateY(0);
+.optimization-desc {
+  font-size: 0.6rem;
+  color: #64748b;
 }
 
-@media (max-width: 640px) {
-  .mode-toggle-group {
-    grid-template-columns: 1fr;
-  }
-  .count-selector-container {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .candidates-table-wrapper {
-    overflow-x: auto;
-  }
+.segment-control {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: #e2e8f0;
+  padding: 2px;
+  border-radius: 5px;
+  gap: 2px;
 }
+
+.segment-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px 6px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #64748b;
+  transition: all 0.15s ease;
+}
+
+.segment-btn strong {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #475569;
+}
+
+.segment-btn small {
+  font-size: 0.6rem;
+  color: #64748b;
+}
+
+.segment-btn.active {
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1);
+}
+
+.segment-btn.active strong {
+  color: #1e3a8a;
+  font-weight: 800;
+}
+
+.segment-btn.active small {
+  color: #1e3a8a;
+}
+
+/* 人数選択 & 実行ボタンエリア */
+.count-selector-container {
+  display: flex; 
+  flex-direction: column; 
+  gap: 5px;
+  background: #f8fafc; 
+  padding: 5px 8px; 
+  border-radius: 6px; 
+  border: 1px solid #e2e8f0;
+}
+
+.count-selector-top-row { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+.count-selector-left { display: flex; align-items: center; gap: 6px; }
+.count-label { font-size: 0.72rem; font-weight: 700; color: #334155; }
+
+.input-count-wrapper {
+  display: inline-flex; align-items: center; background: #ffffff;
+  border: 1.5px solid #1e3a8a; border-radius: 4px; padding: 1px 4px;
+}
+
+.input-count-wrapper .prefix { font-size: 0.75rem; font-weight: 700; color: #1e3a8a; margin-right: 2px; }
+.input-count-number { width: 40px; font-size: 0.75rem; font-weight: 700; color: #1e293b; border: none; outline: none; text-align: center; }
+.input-count-wrapper .unit { font-size: 0.68rem; font-weight: 600; color: #475569; }
+.count-total-info { font-size: 0.68rem; color: #64748b; }
+
+.btn-toggle-detail {
+  background: #ffffff; border: 1px solid #cbd5e1; color: #1e3a8a;
+  font-size: 0.65rem; font-weight: 700; cursor: pointer; padding: 2px 6px; border-radius: 4px;
+}
+
+.btn-execute-simulation-primary {
+  width: 100%; background: #1e3a8a; color: #ffffff; font-weight: 800;
+  font-size: 0.75rem; padding: 5px 8px; border: none; border-radius: 4px; cursor: pointer;
+}
+
+/* 候補者テーブル */
+.candidates-table-wrapper {
+  margin-top: 5px; border: 1px solid #cbd5e1; border-radius: 6px; overflow: hidden; background: #ffffff;
+}
+
+.table-header-title { padding: 3px 6px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
+.table-header-title h4 { margin: 0; font-size: 0.68rem; font-weight: 800; color: #475569; }
+
+.table-scroll-container {
+  max-height: 110px;
+  overflow-y: auto;
+}
+
+.candidates-table { width: 100%; border-collapse: collapse; font-size: 0.68rem; }
+.candidates-table th { background: #f1f5f9; color: #475569; font-weight: 700; padding: 3px 5px; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 1; }
+.candidates-table td { padding: 2px 5px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+
+.col-id { width: 48px; text-align: center; }
+.candidate-badge { font-size: 0.6rem; font-weight: 700; color: #1e3a8a; background: #f0f4ff; padding: 1px 4px; border-radius: 3px; }
+.col-name { min-width: 85px; }
+.input-name { width: 100%; font-size: 0.68rem; padding: 2px 4px; border: 1px solid #cbd5e1; border-radius: 3px; outline: none; }
+.col-skill { width: 48px; text-align: center; }
+.input-skill { width: 40px; padding: 2px 2px; font-size: 0.68rem; border: 1px solid #cbd5e1; border-radius: 3px; text-align: right; outline: none; }
+.col-cost { width: 50px; text-align: center; background: #faf5ff; }
+.candidates-table th.col-cost { background: #f3e8ff; color: #6b21a8; }
+.input-cost { width: 40px; padding: 2px 2px; font-size: 0.68rem; border: 1px solid #c084fc; border-radius: 3px; text-align: right; background: #ffffff; font-weight: 700; color: #6b21a8; outline: none; }

@@ -5,27 +5,26 @@
     <main class="welcome-container">
       <div class="welcome-card">
         <div class="welcome-header">
-          <div class="welcome-icon">📁</div>
           <h2>人材配置シミュレーション</h2>
           <p>
-            はじめに、シミュレーションに使用する社員データ（CSV）を読み込んでください。
+            社員データ（CSV）を読み込むと、各事業部の最適化配置および業績試算を<br />開始します。
           </p>
         </div>
 
         <div class="upload-drop-area">
+          <!-- labelで要素全体を包み、内部にinputを配置することで発火を確実に保護 -->
           <label for="csv-file-welcome" class="upload-label">
-            <span class="upload-btn-icon">📤</span>
             <strong>CSVファイルを選択</strong>
-            <small>またはファイルをここにドロップ (100名用データ)</small>
-          </label>
+            <small>またはファイルをここにドラッグ＆ドロップ</small>
 
-          <input
-            id="csv-file-welcome"
-            type="file"
-            accept=".csv,text/csv"
-            (change)="onCsvSelected($event)"
-            class="file-input-hidden"
-          />
+            <input
+              id="csv-file-welcome"
+              type="file"
+              accept=".csv,text/csv"
+              (change)="onCsvSelected($event)"
+              class="file-input-hidden"
+            />
+          </label>
         </div>
 
         @if (loading) {
@@ -134,9 +133,17 @@
             <div class="sticky-inner">
 
               <!-- インタラクティブなシナリオ切替スイッチボタン群 -->
-              <div class="scenario-switch-group" style="display: flex; gap: 6px; align-items: center;">
-                <span class="active-badge" style="margin-right: 4px;">シナリオ切替:</span>
-                
+              <div
+                class="scenario-switch-group"
+                style="display: flex; gap: 6px; align-items: center;"
+              >
+                <span
+                  class="active-badge"
+                  style="margin-right: 4px;"
+                >
+                  シナリオ切替:
+                </span>
+
                 @for (sc of scenarios; track sc.id) {
                   <button
                     type="button"
@@ -156,7 +163,10 @@
                 }
               </div>
 
-              <strong class="sc-title" style="margin-left: 8px;">
+              <strong
+                class="sc-title"
+                style="margin-left: 8px;"
+              >
                 {{ selectedScenario?.shortName || selectedScenario?.name }}
               </strong>
 
@@ -270,10 +280,12 @@
               [targetSales]="targetSales"
               [employees]="employees"
               [adoptionMode]="adoptionMode"
+              [optimizationMode]="adoptionOptimizationMode"
               [candidateEmployees]="candidateEmployees"
               [snapshots]="adoptionSnapshots"
               (snapshotsChange)="onSnapshotsChange($event)"
               (modeChange)="onModeChange($event)"
+              (optimizationModeChange)="onOptimizationModeChange($event)"
               (candidatesChange)="onCandidatesChange($event)"
               (csvSelected)="onCsvSelected($event)"
             ></app-adoption-view>

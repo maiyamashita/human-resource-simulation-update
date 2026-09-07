@@ -108,68 +108,72 @@ import {
     .threshold-card {
       background: #ffffff;
       border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      padding: 14px 16px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+      border-radius: 6px;
+      padding: 8px 12px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
     }
 
     .threshold-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
     }
 
     .header-titles h3 {
       margin: 0;
-      font-size: 0.95rem;
+      font-size: 0.88rem;
       font-weight: 800;
       color: #0f172a;
     }
 
     .threshold-sub {
-      margin: 2px 0 0 0;
-      font-size: 0.75rem;
+      margin: 1px 0 0 0;
+      font-size: 0.68rem;
       color: #64748b;
     }
 
     .btn-run-threshold {
-      background: #f8fafc;
-      color: #334155;
+      background: #ffffff;
+      color: #1e3a8a;
       border: 1px solid #cbd5e1;
-      border-radius: 5px;
-      padding: 4px 12px;
-      font-size: 0.75rem;
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 0.7rem;
       font-weight: 700;
       cursor: pointer;
+      transition: all 0.15s ease;
     }
-    .btn-run-threshold:hover:not(:disabled) { background: #e2e8f0; }
+    .btn-run-threshold:hover:not(:disabled) { 
+      background: #f0f4ff; 
+      border-color: #1e3a8a;
+    }
 
     .threshold-loading {
-      display: flex; align-items: center; gap: 8px; padding: 10px; background: #f8fafc; border-radius: 6px;
+      display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #f8fafc; border-radius: 4px;
     }
-    .threshold-loading p { margin: 0; font-size: 0.78rem; color: #475569; }
+    .threshold-loading p { margin: 0; font-size: 0.72rem; color: #475569; }
     .spinner {
-      width: 14px; height: 14px; border: 2px solid #cbd5e1; border-top-color: #1d4ed8; border-radius: 50%;
+      width: 12px; height: 12px; border: 2px solid #cbd5e1; border-top-color: #1e3a8a; border-radius: 50%;
       animation: threshold-spin 0.8s linear infinite;
     }
     @keyframes threshold-spin { to { transform: rotate(360deg); } }
 
     .error-box {
-      margin-top: 8px; padding: 6px 10px; background: #fef2f2;
-      color: #991b1b; border-radius: 4px; font-size: 0.75rem;
+      margin-top: 6px; padding: 4px 8px; background: #fef2f2;
+      color: #991b1b; border-radius: 4px; font-size: 0.7rem;
     }
 
-    .recommendation-container { display: flex; flex-direction: column; gap: 10px; }
+    .recommendation-container { display: flex; flex-direction: column; gap: 6px; }
 
     .hero-recommendation-card {
       background: #f8fafc;
-      border: 1px solid #2563eb;
+      border: 1px solid #1e3a8a;
       border-radius: 6px;
-      padding: 10px 14px;
+      padding: 6px 10px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 4px;
     }
 
     .hero-main-line {
@@ -181,47 +185,48 @@ import {
     .hero-type-badge {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
 
     .badge-label {
-      background: #1d4ed8;
+      background: #1e3a8a;
       color: #ffffff;
-      font-size: 0.68rem;
+      font-size: 0.62rem;
       font-weight: 800;
-      padding: 2px 6px;
-      border-radius: 4px;
+      padding: 1px 5px;
+      border-radius: 3px;
     }
 
     .persona-name {
-      font-size: 0.95rem;
+      font-size: 0.85rem;
       font-weight: 800;
       color: #0f172a;
     }
 
     .impact-txt {
-      font-size: 0.78rem;
-      color: #15803d;
-      background: #dcfce7;
-      padding: 2px 8px;
-      border-radius: 4px;
+      font-size: 0.72rem;
+      color: #059669;
+      background: #ecfdf5;
+      padding: 1px 6px;
+      border-radius: 3px;
       font-weight: 700;
+      border: 1px solid #a7f3d0;
     }
 
     .hero-params-line {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 12px;
-      padding-top: 6px;
+      gap: 8px;
+      padding-top: 4px;
       border-top: 1px solid #e2e8f0;
     }
 
     .params-group {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-size: 0.78rem;
+      gap: 8px;
+      font-size: 0.72rem;
       color: #334155;
     }
 
@@ -229,32 +234,33 @@ import {
       background: #f3e8ff;
       color: #6b21a8;
       font-weight: 700;
-      padding: 1px 6px;
+      padding: 1px 5px;
       border-radius: 3px;
-      font-size: 0.72rem;
+      font-size: 0.65rem;
     }
 
     .btn-apply-hero {
-      background: #1d4ed8;
+      background: #1e3a8a;
       color: #ffffff;
       border: none;
-      border-radius: 5px;
-      padding: 5px 14px;
-      font-size: 0.78rem;
+      border-radius: 4px;
+      padding: 3px 10px;
+      font-size: 0.72rem;
       font-weight: 800;
       cursor: pointer;
       white-space: nowrap;
+      transition: background 0.15s ease;
     }
-    .btn-apply-hero:hover { background: #1e40af; }
+    .btn-apply-hero:hover { background: #1d4ed8; }
 
     .sub-personas-row {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
 
     .sub-label {
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       color: #64748b;
       font-weight: 700;
       white-space: nowrap;
@@ -263,7 +269,7 @@ import {
     .sub-chips {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
       flex-wrap: wrap;
     }
 
@@ -271,17 +277,17 @@ import {
       background: #ffffff;
       border: 1px solid #cbd5e1;
       color: #1e293b;
-      font-size: 0.72rem;
+      font-size: 0.65rem;
       font-weight: 600;
-      padding: 3px 8px;
-      border-radius: 4px;
+      padding: 2px 6px;
+      border-radius: 3px;
       cursor: pointer;
       transition: all 0.15s ease;
     }
     .btn-sub-chip:hover {
-      border-color: #1d4ed8;
-      color: #1d4ed8;
-      background: #eff6ff;
+      border-color: #1e3a8a;
+      color: #1e3a8a;
+      background: #f0f4ff;
     }
   `]
 })

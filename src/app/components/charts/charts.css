@@ -1,5 +1,10 @@
 /* src/app/components/charts/charts.css */
 
+:host {
+  display: block;
+  width: 100%;
+}
+
 .charts-section {
   display: flex;
   flex-direction: column;
@@ -11,35 +16,37 @@
    1. タブ1用：単一全幅ワイドカード構造
 ================================================== */
 .chart-card-single-wide {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 12px 18px;
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 8px !important;
+  padding: 10px 16px !important;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
   box-sizing: border-box;
 }
 
 .chart-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 10px;
+  align-items: center;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #f1f5f9;
 }
 
-.chart-header h3 {
+.executive-title {
   margin: 0;
-  font-size: 0.92rem;
-  font-weight: 700;
-  color: #0f172a;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #0f172a !important;
 }
 
-.chart-header p {
-  margin: 1px 0 0;
-  font-size: 0.68rem;
-  color: #64748b;
+.executive-subtitle {
+  margin: 2px 0 0;
+  font-size: 0.72rem;
+  color: #64748b !important;
 }
 
 .chart-legend-box,
@@ -47,8 +54,9 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 0.68rem;
-  color: #475569;
+  font-size: 0.75rem;
+  color: #334155;
+  font-weight: 600;
 }
 
 .legend-item {
@@ -64,52 +72,59 @@
   border-radius: 2px;
 }
 
-.legend-color.dept-a, .color-dot.dept-a, .hbar-segment.dept-a, .bar-segment.dept-a { background-color: #1e3a8a; } 
-.legend-color.dept-b, .color-dot.dept-b, .hbar-segment.dept-b, .bar-segment.dept-b { background-color: #059669; } 
-.legend-color.dept-c, .color-dot.dept-c, .hbar-segment.dept-c, .bar-segment.dept-c { background-color: #d97706; } 
+/* 経営会議向け重厚トーン */
+.legend-color.dept-a, .color-dot.dept-a, .hbar-segment.dept-a, .bar-segment.dept-a { 
+  background-color: #1e3a8a !important; 
+} 
+.legend-color.dept-b, .color-dot.dept-b, .hbar-segment.dept-b, .bar-segment.dept-b { 
+  background-color: #059669 !important; 
+} 
+.legend-color.dept-c, .color-dot.dept-c, .hbar-segment.dept-c, .bar-segment.dept-c { 
+  background-color: #d97706 !important; 
+} 
 
 .hbar-segment.dept-a.striped {
-  background-color: #2563eb;
-  background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.25) 3px, transparent 3px, transparent 7px);
+  background-color: #1d4ed8 !important;
+  background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.25) 3px, transparent 3px, transparent 7px) !important;
 }
 
 .hbar-segment.dept-b.striped {
-  background-color: #10b981;
-  background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.25) 3px, transparent 3px, transparent 7px);
+  background-color: #10b981 !important;
+  background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.25) 3px, transparent 3px, transparent 7px) !important;
 }
 
 .hbar-segment.dept-c.striped {
-  background-color: #f59e0b;
-  background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.25) 3px, transparent 3px, transparent 7px);
+  background-color: #f59e0b !important;
+  background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.25) 3px, transparent 3px, transparent 7px) !important;
 }
 
 .striped-legend .striped-dot {
-  background-color: #475569;
-  background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4) 2px, transparent 2px, transparent 4px);
+  background-color: #475569 !important;
+  background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4) 2px, transparent 2px, transparent 4px) !important;
 }
 
 .horizontal-chart-container {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
 }
 
 .horizontal-row-item-stacked {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 8px 12px;
+  gap: 4px;
+  padding: 6px 12px;
   border-radius: 6px;
-  background-color: #f8fafc;
-  border: 1px solid #f1f5f9;
+  background-color: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
   transition: all 0.15s ease;
 }
 
 .horizontal-row-item-stacked.selected {
-  background-color: #eff6ff;
-  border-color: #bfdbfe;
-  box-shadow: 0 1px 4px rgba(37, 99, 235, 0.08);
+  background-color: #f0f4ff !important;
+  border-color: #1e3a8a !important;
+  box-shadow: 0 1px 4px rgba(30, 58, 138, 0.12) !important;
 }
 
 .top-bar-line {
@@ -134,27 +149,27 @@
 }
 
 .sc-badge {
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: #64748b;
-  background: #e2e8f0;
-  padding: 1px 5px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #475569 !important;
+  background: #e2e8f0 !important;
+  padding: 1px 6px;
   border-radius: 3px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .sc-badge.selected-badge {
-  background: #2563eb;
-  color: #ffffff;
+  background: #1e3a8a !important;
+  color: #ffffff !important;
 }
 
 .selected-tag {
-  font-size: 0.6rem;
-  font-weight: 700;
-  color: #2563eb;
-  background: #dbeafe;
-  padding: 0 4px;
-  border-radius: 2px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #ffffff !important;
+  background: #1e3a8a !important;
+  padding: 1px 5px;
+  border-radius: 3px;
 }
 
 .total-val-group {
@@ -164,33 +179,33 @@
 }
 
 .total-val {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: #0f172a;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #0f172a !important;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   line-height: 1;
 }
 
-.total-val.highlight { color: #1e3a8a; }
-.total-val small { font-size: 0.62rem; font-weight: normal; }
+.total-val.highlight { color: #1e3a8a !important; }
+.total-val small { font-size: 0.65rem; font-weight: normal; }
 .base-label { font-size: 0.62rem; color: #64748b; font-weight: 600; }
 
 .diff-tag {
-  font-size: 0.62rem;
-  font-weight: 700;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.65rem;
+  font-weight: 800;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
-.diff-tag.plus { color: #059669; }
-.diff-tag.minus { color: #be123c; }
+.diff-tag.plus { color: #059669 !important; }
+.diff-tag.minus { color: #be123c !important; }
 
 .horizontal-bar-track-full {
   flex: 1;
-  height: 24px;
+  height: 22px;
   display: flex;
   border-radius: 4px;
   overflow: hidden;
-  background-color: #e2e8f0;
+  background-color: #cbd5e1 !important;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
@@ -205,20 +220,20 @@
   cursor: pointer;
 }
 
-.hbar-segment:hover { filter: brightness(1.1); }
+.hbar-segment:hover { filter: brightness(1.08); }
 
 .bar-inner-text {
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #ffffff !important;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
   padding: 0 4px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .bar-inner-text.diff-text {
-  color: #ffffff;
-  background: rgba(0, 0, 0, 0.25);
+  color: #ffffff !important;
+  background: rgba(0, 0, 0, 0.25) !important;
   padding: 0 3px;
   border-radius: 2px;
 }
@@ -226,11 +241,11 @@
 .bottom-dept-margins-line {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   padding-left: 139px;
 }
 
-.sub-line-label { font-size: 0.62rem; color: #64748b; font-weight: 600; }
+.sub-line-label { font-size: 0.65rem; color: #64748b; font-weight: 700; }
 
 .dept-margin-card {
   display: flex;
@@ -238,22 +253,21 @@
   gap: 6px;
   padding: 2px 8px;
   border-radius: 4px;
-  font-size: 0.65rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.72rem;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   border: 1px solid transparent;
 }
 
-.dept-a-card { background-color: #eff6ff; border-color: #bfdbfe; color: #1e3a8a; }
-.dept-b-card { background-color: #ecfdf5; border-color: #a7f3d0; color: #065f46; }
-.dept-c-card { background-color: #fffbeb; border-color: #fde68a; color: #92400e; }
+.dept-a-card { background-color: #f0f4ff !important; border-color: #bfdbfe !important; color: #1e3a8a !important; }
+.dept-b-card { background-color: #ecfdf5 !important; border-color: #a7f3d0 !important; color: #065f46 !important; }
+.dept-c-card { background-color: #fffbeb !important; border-color: #fde68a !important; color: #92400e !important; }
 
-.dept-name { font-weight: 700; }
+.dept-name { font-weight: 800; }
 .profit-num { font-weight: 600; }
-.margin-percent { font-weight: 700; background: rgba(255, 255, 255, 0.7); padding: 0 4px; border-radius: 2px; }
-
+.margin-percent { font-weight: 800; background: rgba(255, 255, 255, 0.7); padding: 0 4px; border-radius: 2px; }
 
 /* ==================================================
-   2. ★ タブ2用：レポーティング仕様 V3 (ダイナミック拡張) ★
+   2. タブ2用：5か年予測
 ================================================== */
 .forecast-card-v2 {
   display: flex;
@@ -269,11 +283,10 @@
   width: 100%;
 }
 
-/* 折れ線グラフエリア (高さを250pxへ拡大) */
 .trend-chart-box {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 8px !important;
   padding: 12px 16px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   display: flex;
@@ -294,19 +307,19 @@
 }
 
 .forecast-badge {
-  background: #eff6ff;
-  color: #1d4ed8;
+  background: #f0f4ff !important;
+  color: #1e3a8a !important;
   font-size: 0.68rem;
   font-weight: bold;
   padding: 1px 6px;
   border-radius: 3px;
-  border: 1px solid #bfdbfe;
+  border: 1px solid #bfdbfe !important;
 }
 
 .trend-header h3 {
   margin: 0;
   font-size: 0.92rem;
-  color: #0f172a;
+  color: #0f172a !important;
   font-weight: 700;
 }
 
@@ -322,18 +335,17 @@
   height: 24px;
   font-size: 0.72rem;
   font-weight: 600;
-  color: #0f172a;
-  border: 1px solid #cbd5e1;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
   border-radius: 4px;
   padding: 0 6px;
   outline: none;
   background: #f8fafc;
 }
 
-/* 250px 高さのSVG容器 */
 .svg-container {
   width: 100%;
-  height: 250px;
+  height: 240px;
 }
 
 .trend-svg {
@@ -346,10 +358,11 @@
 .axis-line { stroke: #cbd5e1; stroke-width: 1; }
 
 .axis-label {
-  font-size: 10px;
-  fill: #94a3b8;
+  font-size: 11px !important;
+  fill: #475569 !important;
+  font-weight: 600 !important;
   text-anchor: end;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .x-axis-label {
@@ -361,7 +374,7 @@
 
 .line-main {
   fill: none;
-  stroke: #0f172a;
+  stroke: #0f172a !important;
   stroke-width: 3.5;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -369,37 +382,38 @@
 
 .line-main-base {
   fill: none;
-  stroke: #94a3b8;
+  stroke: #94a3b8 !important;
   stroke-width: 1.5;
   stroke-dasharray: 3,3;
 }
 
 .line-compare {
   fill: none;
-  stroke: #2563eb;
+  stroke: #1e3a8a !important;
   stroke-width: 2.2;
   stroke-dasharray: 5,4;
   stroke-linecap: round;
 }
 
+/* ★追加: 対案 (標準100名) 用の描画線スタイル ★ */
 .line-compare-base {
   fill: none;
-  stroke: #93c5fd;
+  stroke: #93c5fd !important;
   stroke-width: 1.2;
   stroke-dasharray: 2,2;
 }
 
-.dot-main { fill: #0f172a; stroke: #ffffff; stroke-width: 2; }
-.dot-compare { fill: #2563eb; stroke: #ffffff; stroke-width: 1.5; }
+.dot-main { fill: #0f172a !important; stroke: #ffffff; stroke-width: 2; }
+.dot-compare { fill: #1e3a8a !important; stroke: #ffffff; stroke-width: 1.5; }
 
 .pt-val-text {
   font-size: 10.5px;
   font-weight: 800;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
-.pt-val-text.main-val-txt { fill: #0f172a; text-anchor: middle; }
-.pt-val-text.compare-val-txt { fill: #1d4ed8; text-anchor: middle; }
+.pt-val-text.main-val-txt { fill: #0f172a !important; text-anchor: middle; }
+.pt-val-text.compare-val-txt { fill: #1e3a8a !important; text-anchor: middle; }
 
 .trend-legend-row {
   display: flex;
@@ -409,6 +423,7 @@
   margin-top: 6px;
   padding-top: 6px;
   border-top: 1px dashed #f1f5f9;
+  align-items: center;
 }
 
 .line-sample {
@@ -417,19 +432,25 @@
   border-radius: 1px;
 }
 
-.main-sample { background-color: #0f172a; }
-.main-base-sample { background-color: #94a3b8; height: 2px; }
-.compare-sample { background-color: #2563eb; }
+.main-sample { background-color: #0f172a !important; }
+.main-base-sample { background-color: #94a3b8 !important; height: 2px; }
+.compare-sample { background-color: #1e3a8a !important; }
 
-/* 右側ハイライトサマリー */
+/* ★追加: 凡例内のサンプル線（点線）スタイル ★ */
+.compare-base-sample {
+  background: transparent !important;
+  border-top: 1.5px dashed #93c5fd !important;
+  height: 0 !important;
+}
+
 .summary-highlight-panel {
-  background: #ffffff;
-  border: 2px solid #0f172a;
-  border-radius: 8px;
+  background: #ffffff !important;
+  border: 1.5px solid #1e3a8a !important;
+  border-radius: 6px !important;
   padding: 12px 14px;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 8px rgba(30, 58, 138, 0.08) !important;
 }
 
 .panel-header-line {
@@ -442,8 +463,8 @@
 .panel-tag {
   font-size: 0.62rem;
   font-weight: 800;
-  color: #ffffff;
-  background: #0f172a;
+  color: #ffffff !important;
+  background: #1e3a8a !important;
   padding: 1px 6px;
   border-radius: 3px;
   letter-spacing: 0.05em;
@@ -452,24 +473,24 @@
 .sc-cagr-badge {
   font-size: 0.68rem;
   font-weight: 800;
-  color: #2563eb;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
+  color: #1e3a8a !important;
+  background: #f0f4ff !important;
+  border: 1px solid #bfdbfe !important;
   padding: 1px 6px;
   border-radius: 3px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .panel-title {
   margin: 0 0 8px 0;
   font-size: 0.9rem;
   font-weight: 800;
-  color: #0f172a;
+  color: #0f172a !important;
 }
 
 .kpi-card-big {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
   border-radius: 6px;
   padding: 8px 12px;
   margin-bottom: 8px;
@@ -480,10 +501,10 @@
 .kpi-card-big small { font-size: 0.65rem; color: #64748b; }
 
 .kpi-num {
-  font-size: 1.5rem; /* ダイナミックに拡大 */
+  font-size: 1.5rem;
   font-weight: 800;
-  color: #0f172a;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: #0f172a !important;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   line-height: 1.1;
 }
 
@@ -492,8 +513,8 @@
 .diff-badge-green {
   font-size: 0.65rem;
   font-weight: 700;
-  color: #059669;
-  background: #ecfdf5;
+  color: #059669 !important;
+  background: #ecfdf5 !important;
   padding: 1px 6px;
   border-radius: 3px;
   width: fit-content;
@@ -508,8 +529,8 @@
 }
 
 .kpi-mini {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
   border-radius: 4px;
   padding: 5px 8px;
   display: flex;
@@ -517,18 +538,18 @@
 }
 
 .kpi-mini small { font-size: 0.6rem; color: #64748b; }
-.kpi-mini strong { font-size: 0.95rem; color: #0f172a; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
-.kpi-mini strong.cagr-num { color: #2563eb; }
+.kpi-mini strong { font-size: 0.95rem; color: #0f172a !important; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+.kpi-mini strong.cagr-num { color: #1e3a8a !important; }
 
 .story-text {
   margin: 0;
   font-size: 0.7rem;
-  color: #334155;
+  color: #334155 !important;
   line-height: 1.5;
-  background: #eff6ff;
+  background: #f0f4ff !important;
   padding: 8px 10px;
   border-radius: 6px;
-  border: 1px solid #bfdbfe;
+  border: 1px solid #bfdbfe !important;
 }
 
 .vs-compare-box {
@@ -542,9 +563,8 @@
 }
 
 .vs-tag { color: #64748b; }
-.vs-val { font-size: 0.9rem; font-weight: 800; color: #2563eb; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+.vs-val { font-size: 0.9rem; font-weight: 800; color: #1e3a8a !important; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
 
-/* 下段：超スリム化された4シナリオ・コントロールカード */
 .forecast-grid-v2 {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -553,8 +573,8 @@
 }
 
 .scenario-card-5y-slim {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
   border-radius: 6px;
   padding: 6px 10px;
   display: flex;
@@ -565,14 +585,14 @@
 }
 
 .scenario-card-5y-slim.selected-card {
-  border: 2px solid #0f172a;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
-  background: #ffffff;
+  border: 1.5px solid #1e3a8a !important;
+  box-shadow: 0 2px 6px rgba(30, 58, 138, 0.1) !important;
+  background: #ffffff !important;
 }
 
 .scenario-card-5y-slim.compare-card {
-  border: 2px dashed #2563eb;
-  background: #f0f9ff;
+  border: 1.5px dashed #1e3a8a !important;
+  background: #f0f4ff !important;
 }
 
 .sc-card-top-row {
@@ -589,27 +609,27 @@
 
 .sc-id-badge {
   font-size: 0.62rem;
-  font-weight: 700;
-  color: #ffffff;
-  background: #64748b;
+  font-weight: 800;
+  color: #ffffff !important;
+  background: #64748b !important;
   padding: 0 4px;
   border-radius: 3px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
-.sc-id-badge.selected { background: #0f172a; }
+.sc-id-badge.selected { background: #1e3a8a !important; }
 
 .sc-name-txt {
   font-size: 0.75rem;
-  font-weight: 700;
-  color: #0f172a;
+  font-weight: 800;
+  color: #0f172a !important;
 }
 
 .growth-tag {
   font-size: 0.65rem;
   font-weight: 800;
-  color: #059669;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: #059669 !important;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .sc-card-mid-row {
@@ -617,7 +637,7 @@
   color: #64748b;
 }
 
-.flow-txt strong { color: #0f172a; }
+.flow-txt strong { color: #0f172a !important; }
 
 .sc-card-bottom-row {
   display: flex;
@@ -629,14 +649,14 @@
 }
 
 .kpi-inline-item small { color: #64748b; }
-.kpi-inline-item strong { color: #0f172a; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
-.kpi-inline-item.profit strong { color: #059669; }
+.kpi-inline-item strong { color: #0f172a !important; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+.kpi-inline-item.profit strong { color: #059669 !important; }
 
 .kpi-inline-item.diff .diff-txt {
-  font-weight: 700;
-  color: #2563eb;
+  font-weight: 800;
+  color: #1e3a8a !important;
   font-size: 0.6rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 @media (max-width: 1024px) {

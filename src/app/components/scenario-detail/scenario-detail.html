@@ -13,10 +13,12 @@
           {{ isCustomActive ? '手動調整シミュレーション' : activeScenario?.name }}
         </strong>
 
-        <!-- 目標未達時の強力赤警告（最優先で目立つ位置に表示） -->
-        <div *ngIf="isCustomActive && customAlerts.length > 0" class="inline-alert-badge-strong">
-          🚨 目標未達 ({{ formatNumber(activeScenario?.totalSales, 2) }}億 / 目標{{ targetSales }}億)
-        </div>
+        <!-- アラート表示（最低人数下回り・目標未達等を動的に出力） -->
+        <ng-container *ngIf="isCustomActive && customAlerts.length > 0">
+          <div *ngFor="let alert of customAlerts" class="inline-alert-badge-strong">
+            🚨 {{ alert.message }}
+          </div>
+        </ng-container>
       </div>
 
       <div class="header-right-actions">
@@ -179,6 +181,12 @@
 
       </div>
     }
+  </div>
+  
+  <!-- 例：希望合致率の表示用バッジ -->
+  <div *ngIf="activeScenario?.preferenceMatch" class="preference-match-badge">
+    🎯 希望合致率: <strong>{{ activeScenario.preferenceMatch.matchRate }}%</strong>
+    <small>(第1希望: {{ activeScenario.preferenceMatch.firstChoiceMatchCount }}名 / 第2希望: {{ activeScenario.preferenceMatch.secondChoiceMatchCount }}名)</small>
   </div>
 
   <!-- 配属決定通知書モーダル -->

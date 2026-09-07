@@ -1,4 +1,4 @@
-#このファイル名はbackend/api/simulation.pyです。このコメントは消さないでください。
+#このファイル名はbackend/api/simulation.pyです。
 
 import tempfile
 import os
@@ -56,6 +56,7 @@ from scenarios.scenario4 import optimize_c_sales
 # ★ 追加採用・目標追従用動的最適化モジュール
 from app.dynamic_optimizer import (
     optimize_dynamic_adoption,
+    optimize_fixed_adoption,
     calculate_dynamic_settings,
 )
 
@@ -80,11 +81,13 @@ app.add_middleware(
 
 def prepare_employees_from_file(file_path: str):
     employees = load_employees(file_path)
+
     for employee in employees:
         employee["contributions"] = calculate_all_contributions(employee)
-    
+
     # 社員データに潜在希望を自動補完（CSVにない場合）
     employees = enrich_employees_with_preferences(employees)
+
     return employees
 
 
@@ -132,12 +135,20 @@ def build_scenario_result(
             dept: DEPARTMENT_SETTINGS[dept]["appropriate_count"]
             for dept in ["A", "B", "C"]
         }
+
         minimum_counts = {
             dept: DEPARTMENT_SETTINGS[dept]["minimum_count"]
             for dept in ["A", "B", "C"]
         }
 
-    assignment = result.get("assignment", {"A": [], "B": [], "C": []})
+    assignment = result.get(
+        "assignment",
+        {
+            "A": [],
+            "B": [],
+            "C": [],
+        },
+    )
 
     # 希望合致率データの算出
     preference_match = (
@@ -158,17 +169,33 @@ def build_scenario_result(
         "objective": objective,
         "objectiveValue": yen_to_oku(obj_val),
 
-        "totalSales": yen_to_oku(result.get("total_sales")),
-        "totalProfit": yen_to_oku(result.get("total_profit")),
+        "totalSales": yen_to_oku(
+            result.get("total_sales")
+        ),
+
+        "totalProfit": yen_to_oku(
+            result.get("total_profit")
+        ),
 
         "assignment": assignment,
 
         "departments": {
             dept: {
-                "count": int(result.get("count", {}).get(dept, 0)),
-                "ability": scale_ability(result.get("ability", {}).get(dept)),
-                "sales": yen_to_oku(result.get("sales", {}).get(dept)),
-                "profit": yen_to_oku(result.get("profit", {}).get(dept)),
+                "count": int(
+                    result.get("count", {}).get(dept, 0)
+                ),
+
+                "ability": scale_ability(
+                    result.get("ability", {}).get(dept)
+                ),
+
+                "sales": yen_to_oku(
+                    result.get("sales", {}).get(dept)
+                ),
+
+                "profit": yen_to_oku(
+                    result.get("profit", {}).get(dept)
+                ),
             }
             for dept in ["A", "B", "C"]
         },
@@ -198,7 +225,9 @@ async def run_scenarios(file: UploadFile = File(...)):
             tmp.write(content)
             temp_file_path = tmp.name
 
-        employees = prepare_employees_from_file(temp_file_path)
+        employees = prepare_employees_from_file(
+            temp_file_path
+        )
 
         result1 = optimize_total_sales(employees)
         result2 = optimize_a_profit(employees)
@@ -207,7 +236,12 @@ async def run_scenarios(file: UploadFile = File(...)):
 
         if any(
             r is None
-            for r in [result1, result2, result3, result4]
+            for r in [
+                result1,
+                result2,
+                result3,
+                result4,
+            ]
         ):
             raise HTTPException(
                 status_code=500,
@@ -224,6 +258,7 @@ async def run_scenarios(file: UploadFile = File(...)):
                     result1,
                     employees,
                 ),
+
                 build_scenario_result(
                     2,
                     "シナリオ2：A事業部利益最大化",
@@ -232,6 +267,7 @@ async def run_scenarios(file: UploadFile = File(...)):
                     result2,
                     employees,
                 ),
+
                 build_scenario_result(
                     3,
                     "シナリオ3：B事業部売上最大化",
@@ -240,6 +276,7 @@ async def run_scenarios(file: UploadFile = File(...)):
                     result3,
                     employees,
                 ),
+
                 build_scenario_result(
                     4,
                     "シナリオ4：C事業部売上最大化",
@@ -256,15 +293,24 @@ async def run_scenarios(file: UploadFile = File(...)):
 
     except Exception as e:
         import traceback
+
         traceback.print_exc()
-        print(f"[scenarios ERROR] {type(e).__name__}: {e}")
+
+        print(
+            f"[scenarios ERROR] "
+            f"{type(e).__name__}: {e}"
+        )
 
         raise HTTPException(
             status_code=400,
             detail=f"CSV処理または最適化エラー: {str(e)}"
         )
+
     finally:
-        if temp_file_path and os.path.exists(temp_file_path):
+        if (
+            temp_file_path
+            and os.path.exists(temp_file_path)
+        ):
             try:
                 os.remove(temp_file_path)
             except Exception:
@@ -282,13 +328,31 @@ async def run_adoption_scenarios(request: Request):
         form = await request.form()
 
         file_obj = form.get("file")
+
         candidates_raw = (
             form.get("candidates_json")
             or form.get("candidates")
             or "[]"
         )
 
-        if not file_obj or not hasattr(file_obj, "read"):
+        # ★ 一括最適化 / 100名固定
+        optimization_mode = str(
+            form.get("optimization_mode") or "all"
+        )
+
+        if optimization_mode not in ["all", "fixed"]:
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    "optimization_mode は "
+                    "'all' または 'fixed' を指定してください。"
+                )
+            )
+
+        if not file_obj or not hasattr(
+            file_obj,
+            "read"
+        ):
             raise HTTPException(
                 status_code=400,
                 detail="CSVファイルが正しく送信されていません。"
@@ -303,69 +367,294 @@ async def run_adoption_scenarios(request: Request):
             tmp.write(content)
             temp_file_path = tmp.name
 
-        employees = prepare_employees_from_file(temp_file_path)
+        # ------------------------------------------
+        # 追加採用前の100名
+        # ------------------------------------------
+        base_employees = prepare_employees_from_file(
+            temp_file_path
+        )
+
+        # 100名固定モードでは、
+        # この100名の配置を各シナリオごとに固定する。
+        #
+        # ※候補者追加前に保持しておくことが重要。
+        base_employees_for_fixed = list(
+            base_employees
+        )
 
         # ------------------------------------------
         # 追加採用候補者を社員データへ追加
         # ------------------------------------------
-        if isinstance(candidates_raw, str) and candidates_raw.strip():
+        employees = list(base_employees)
+
+        if (
+            isinstance(candidates_raw, str)
+            and candidates_raw.strip()
+        ):
             try:
-                raw_candidates = json.loads(candidates_raw)
+                raw_candidates = json.loads(
+                    candidates_raw
+                )
 
                 for c in raw_candidates:
-                    s_val = float(c.get("sales_ability", c.get("sales", 70)))
-                    m_val = float(c.get("management_ability", c.get("management", 60)))
-                    d_val = float(c.get("development_ability", c.get("development", 65)))
-                    t_val = float(c.get("training_ability", c.get("training", 60)))
+                    s_val = float(
+                        c.get(
+                            "sales_ability",
+                            c.get("sales", 70)
+                        )
+                    )
+
+                    m_val = float(
+                        c.get(
+                            "management_ability",
+                            c.get("management", 60)
+                        )
+                    )
+
+                    d_val = float(
+                        c.get(
+                            "development_ability",
+                            c.get("development", 65)
+                        )
+                    )
+
+                    t_val = float(
+                        c.get(
+                            "training_ability",
+                            c.get("training", 60)
+                        )
+                    )
 
                     candidate_emp = {
-                        "employee_id": str(c.get("id", "NEW")),
-                        "name": str(c.get("name", "候補者")),
+                        "employee_id": str(
+                            c.get("id", "NEW")
+                        ),
+
+                        "name": str(
+                            c.get("name", "候補者")
+                        ),
+
                         "sales": s_val,
                         "management": m_val,
                         "development": d_val,
                         "training": t_val,
+
                         "sales_ability": s_val,
                         "management_ability": m_val,
                         "development_ability": d_val,
                         "training_ability": t_val,
-                        "cost": float(c.get("cost", 10)),
-                        "preferred_dept": str(c.get("preferred_dept", c.get("desiredDepartment", ""))),
+
+                        "cost": float(
+                            c.get("cost", 10)
+                        ),
+
+                        "preferred_dept": str(
+                            c.get(
+                                "preferred_dept",
+                                c.get(
+                                    "desiredDepartment",
+                                    ""
+                                )
+                            )
+                        ),
                     }
 
-                    candidate_emp["contributions"] = calculate_all_contributions(candidate_emp)
+                    candidate_emp["contributions"] = (
+                        calculate_all_contributions(
+                            candidate_emp
+                        )
+                    )
 
-                    employees.append(candidate_emp)
+                    employees.append(
+                        candidate_emp
+                    )
 
                 # 候補者も含めて潜在希望を一括補完
-                employees = enrich_employees_with_preferences(employees)
+                employees = (
+                    enrich_employees_with_preferences(
+                        employees
+                    )
+                )
 
             except Exception as parse_err:
-                print(f"候補者JSONパース警告: {parse_err}")
+                print(
+                    f"候補者JSONパース警告: {parse_err}"
+                )
 
         # ------------------------------------------
         # 4シナリオを並列実行
         # ------------------------------------------
         loop = asyncio.get_running_loop()
 
-        task1 = loop.run_in_executor(
-            executor, optimize_dynamic_adoption, employees, 58.0, "total_sales"
-        )
-        task2 = loop.run_in_executor(
-            executor, optimize_dynamic_adoption, employees, 58.0, "a_profit"
-        )
-        task3 = loop.run_in_executor(
-            executor, optimize_dynamic_adoption, employees, 58.0, "b_sales"
-        )
-        task4 = loop.run_in_executor(
-            executor, optimize_dynamic_adoption, employees, 58.0, "c_sales"
+        if optimization_mode == "all":
+
+            # ======================================
+            # 一括最適化
+            #
+            # 100名＋追加採用者を全員再配置
+            # ======================================
+
+            task1 = loop.run_in_executor(
+                executor,
+                optimize_dynamic_adoption,
+                employees,
+                58.0,
+                "total_sales"
+            )
+
+            task2 = loop.run_in_executor(
+                executor,
+                optimize_dynamic_adoption,
+                employees,
+                58.0,
+                "a_profit"
+            )
+
+            task3 = loop.run_in_executor(
+                executor,
+                optimize_dynamic_adoption,
+                employees,
+                58.0,
+                "b_sales"
+            )
+
+            task4 = loop.run_in_executor(
+                executor,
+                optimize_dynamic_adoption,
+                employees,
+                58.0,
+                "c_sales"
+            )
+
+        else:
+
+            # ======================================
+            # 100名固定
+            #
+            # まず追加採用前の100名について、
+            # 各シナリオ本来の最適配置を求める。
+            #
+            # S1 → 全社売上最大化
+            # S2 → A事業部利益最大化
+            # S3 → B事業部売上最大化
+            # S4 → C事業部売上最大化
+            #
+            # その100名の配置を固定し、
+            # 追加採用者だけを配置する。
+            # ======================================
+
+            base_task1 = loop.run_in_executor(
+                executor,
+                optimize_total_sales,
+                base_employees_for_fixed
+            )
+
+            base_task2 = loop.run_in_executor(
+                executor,
+                optimize_a_profit,
+                base_employees_for_fixed
+            )
+
+            base_task3 = loop.run_in_executor(
+                executor,
+                optimize_b_sales,
+                base_employees_for_fixed
+            )
+
+            base_task4 = loop.run_in_executor(
+                executor,
+                optimize_c_sales,
+                base_employees_for_fixed
+            )
+
+            (
+                base_result1,
+                base_result2,
+                base_result3,
+                base_result4,
+            ) = await asyncio.gather(
+                base_task1,
+                base_task2,
+                base_task3,
+                base_task4,
+            )
+
+            if any(
+                r is None
+                for r in [
+                    base_result1,
+                    base_result2,
+                    base_result3,
+                    base_result4,
+                ]
+            ):
+                raise HTTPException(
+                    status_code=500,
+                    detail=(
+                        "追加採用前の100名の"
+                        "最適配置を取得できませんでした。"
+                    )
+                )
+
+            # ======================================
+            # 各シナリオの100名配置を固定して、
+            # 追加採用者だけを最適配置
+            # ======================================
+
+            task1 = loop.run_in_executor(
+                executor,
+                optimize_fixed_adoption,
+                employees,
+                base_result1["assignment"],
+                58.0,
+                "total_sales"
+            )
+
+            task2 = loop.run_in_executor(
+                executor,
+                optimize_fixed_adoption,
+                employees,
+                base_result2["assignment"],
+                58.0,
+                "a_profit"
+            )
+
+            task3 = loop.run_in_executor(
+                executor,
+                optimize_fixed_adoption,
+                employees,
+                base_result3["assignment"],
+                58.0,
+                "b_sales"
+            )
+
+            task4 = loop.run_in_executor(
+                executor,
+                optimize_fixed_adoption,
+                employees,
+                base_result4["assignment"],
+                58.0,
+                "c_sales"
+            )
+
+        result1, result2, result3, result4 = (
+            await asyncio.gather(
+                task1,
+                task2,
+                task3,
+                task4,
+            )
         )
 
-        result1, result2, result3, result4 = await asyncio.gather(
-            task1, task2, task3, task4
-        )
-
-        if any(r is None for r in [result1, result2, result3, result4]):
+        if any(
+            r is None
+            for r in [
+                result1,
+                result2,
+                result3,
+                result4,
+            ]
+        ):
             raise HTTPException(
                 status_code=500,
                 detail="追加採用の最適化結果を取得できませんでした。"
@@ -381,6 +670,7 @@ async def run_adoption_scenarios(request: Request):
                     result1,
                     employees,
                 ),
+
                 build_scenario_result(
                     2,
                     "シナリオ2：A事業部利益最大化 (追加採用)",
@@ -389,6 +679,7 @@ async def run_adoption_scenarios(request: Request):
                     result2,
                     employees,
                 ),
+
                 build_scenario_result(
                     3,
                     "シナリオ3：B事業部売上最大化 (追加採用)",
@@ -397,6 +688,7 @@ async def run_adoption_scenarios(request: Request):
                     result3,
                     employees,
                 ),
+
                 build_scenario_result(
                     4,
                     "シナリオ4：C事業部売上最大化 (追加採用)",
@@ -413,17 +705,27 @@ async def run_adoption_scenarios(request: Request):
 
     except Exception as e:
         import traceback
+
         traceback.print_exc()
 
-        print(f"[with-adoption ERROR] {type(e).__name__}: {e}")
+        print(
+            f"[with-adoption ERROR] "
+            f"{type(e).__name__}: {e}"
+        )
 
         raise HTTPException(
             status_code=400,
-            detail=f"追加採用CSV処理または最適化エラー: {str(e)}"
+            detail=(
+                "追加採用CSV処理または最適化エラー: "
+                f"{str(e)}"
+            )
         )
 
     finally:
-        if temp_file_path and os.path.exists(temp_file_path):
+        if (
+            temp_file_path
+            and os.path.exists(temp_file_path)
+        ):
             try:
                 os.remove(temp_file_path)
             except Exception:
@@ -443,36 +745,100 @@ async def recalculate_manual_assignment(request: Request):
         raw_body = await request.json()
 
         target_sales = 58.0
+
         if isinstance(raw_body, dict):
-            target_sales = float(raw_body.get("target_sales", 58.0))
+            target_sales = float(
+                raw_body.get(
+                    "target_sales",
+                    58.0
+                )
+            )
+
             employees_raw = (
                 raw_body.get("employees")
                 or raw_body.get("payload")
                 or raw_body.get("data")
                 or [raw_body]
             )
+
         elif isinstance(raw_body, list):
             employees_raw = raw_body
+
         else:
             employees_raw = []
 
-        dept_employees = {"A": [], "B": [], "C": []}
-        assignment = {"A": [], "B": [], "C": []}
+        dept_employees = {
+            "A": [],
+            "B": [],
+            "C": [],
+        }
+
+        assignment = {
+            "A": [],
+            "B": [],
+            "C": [],
+        }
+
         all_employees_list = []
 
         for item in employees_raw:
+
             if not isinstance(item, dict):
                 continue
 
-            emp_id_str = str(item.get("employee_id") or item.get("id") or item.get("employeeId") or "")
-            target_dept = str(item.get("assigned_dept") or item.get("dept") or "A")
+            emp_id_str = str(
+                item.get("employee_id")
+                or item.get("id")
+                or item.get("employeeId")
+                or ""
+            )
 
-            s_val = float(item.get("sales") or item.get("sales_ability") or item.get("salesAbility") or 60.0)
-            m_val = float(item.get("management") or item.get("management_ability") or item.get("managementAbility") or 60.0)
-            d_val = float(item.get("development") or item.get("development_ability") or item.get("developmentAbility") or 60.0)
-            t_val = float(item.get("training") or item.get("training_ability") or item.get("trainingAbility") or 60.0)
-            c_val = float(item.get("personnel_cost") or item.get("personnelCost") or item.get("cost") or 10.0)
-            p_dept = str(item.get("preferred_dept") or item.get("desiredDepartment") or "")
+            target_dept = str(
+                item.get("assigned_dept")
+                or item.get("dept")
+                or "A"
+            )
+
+            s_val = float(
+                item.get("sales")
+                or item.get("sales_ability")
+                or item.get("salesAbility")
+                or 60.0
+            )
+
+            m_val = float(
+                item.get("management")
+                or item.get("management_ability")
+                or item.get("managementAbility")
+                or 60.0
+            )
+
+            d_val = float(
+                item.get("development")
+                or item.get("development_ability")
+                or item.get("developmentAbility")
+                or 60.0
+            )
+
+            t_val = float(
+                item.get("training")
+                or item.get("training_ability")
+                or item.get("trainingAbility")
+                or 60.0
+            )
+
+            c_val = float(
+                item.get("personnel_cost")
+                or item.get("personnelCost")
+                or item.get("cost")
+                or 10.0
+            )
+
+            p_dept = str(
+                item.get("preferred_dept")
+                or item.get("desiredDepartment")
+                or ""
+            )
 
             emp_dict = {
                 "employee_id": emp_id_str,
@@ -484,40 +850,75 @@ async def recalculate_manual_assignment(request: Request):
                 "cost": c_val,
                 "preferred_dept": p_dept,
             }
-            emp_dict["contributions"] = calculate_all_contributions(emp_dict)
 
-            all_employees_list.append(emp_dict)
+            emp_dict["contributions"] = (
+                calculate_all_contributions(
+                    emp_dict
+                )
+            )
+
+            all_employees_list.append(
+                emp_dict
+            )
 
             if target_dept in dept_employees:
-                dept_employees[target_dept].append(emp_dict)
-                assignment[target_dept].append(emp_id_str)
+                dept_employees[
+                    target_dept
+                ].append(emp_dict)
+
+                assignment[
+                    target_dept
+                ].append(emp_id_str)
 
         # 潜在希望の自動補完
-        all_employees_list = enrich_employees_with_preferences(all_employees_list)
+        all_employees_list = (
+            enrich_employees_with_preferences(
+                all_employees_list
+            )
+        )
 
         departments_result = {}
+
         total_sales_billion = 0.0
         total_profit_billion = 0.0
+
         alerts = []
 
-        total_employee_count = sum(len(v) for v in dept_employees.values())
+        total_employee_count = sum(
+            len(v)
+            for v in dept_employees.values()
+        )
 
-        appropriate_counts, min_counts = calculate_dynamic_settings(total_employee_count)
+        appropriate_counts, min_counts = (
+            calculate_dynamic_settings(
+                total_employee_count
+            )
+        )
 
         for dept in ["A", "B", "C"]:
+
             emps = dept_employees[dept]
+
             emp_count = len(emps)
 
             if emp_count < min_counts[dept]:
                 alerts.append({
                     "level": "warning",
-                    "message": f"{dept}事業部の人員（{emp_count}名）が最低必要人数（{min_counts[dept]}名）を下回っています！"
+                    "message": (
+                        f"{dept}事業部の人員（{emp_count}名）が"
+                        f"最低必要人数（{min_counts[dept]}名）"
+                        "を下回っています！"
+                    )
                 })
 
-            ability_value = sum(e["contributions"][dept] for e in emps)
+            ability_value = sum(
+                e["contributions"][dept]
+                for e in emps
+            )
 
             fulfillment_rate = (
-                emp_count / appropriate_counts[dept]
+                emp_count
+                / appropriate_counts[dept]
                 if appropriate_counts[dept]
                 else 0.0
             )
@@ -527,37 +928,83 @@ async def recalculate_manual_assignment(request: Request):
                 "employee_count": emp_count,
                 "ability_value": ability_value,
                 "fulfillment_rate": fulfillment_rate,
-                "shortage_penalty": calculate_shortage_penalty(dept, fulfillment_rate),
-                "excess_penalty": calculate_excess_penalty(fulfillment_rate),
+                "shortage_penalty": (
+                    calculate_shortage_penalty(
+                        dept,
+                        fulfillment_rate
+                    )
+                ),
+                "excess_penalty": (
+                    calculate_excess_penalty(
+                        fulfillment_rate
+                    )
+                ),
             }
 
-            sales_info = calculate_sales(status)
-            dept_sales_billion = sales_info["final_sales"]
+            sales_info = calculate_sales(
+                status
+            )
 
-            total_cost_million = sum(e.get("personnel_cost", 10.0) for e in emps) * 3.0
-            total_cost_billion = total_cost_million / 100.0
+            dept_sales_billion = (
+                sales_info["final_sales"]
+            )
 
-            dept_profit_billion = dept_sales_billion - total_cost_billion
+            total_cost_million = (
+                sum(
+                    e.get(
+                        "personnel_cost",
+                        10.0
+                    )
+                    for e in emps
+                )
+                * 3.0
+            )
+
+            total_cost_billion = (
+                total_cost_million / 100.0
+            )
+
+            dept_profit_billion = (
+                dept_sales_billion
+                - total_cost_billion
+            )
 
             departments_result[dept] = {
                 "count": emp_count,
                 "ability": status["ability_value"],
                 "sales": dept_sales_billion,
                 "profit": dept_profit_billion,
-                "fulfillment_rate": status["fulfillment_rate"] * 100.0,
+                "fulfillment_rate": (
+                    status["fulfillment_rate"]
+                    * 100.0
+                ),
             }
 
-            total_sales_billion += dept_sales_billion
-            total_profit_billion += dept_profit_billion
+            total_sales_billion += (
+                dept_sales_billion
+            )
+
+            total_profit_billion += (
+                dept_profit_billion
+            )
 
         if total_sales_billion < target_sales:
             alerts.append({
                 "level": "danger",
-                "message": f"全社売上（{total_sales_billion:.2f}億円）が目標の{target_sales:.1f}億円に届いていません。"
+                "message": (
+                    f"全社売上（"
+                    f"{total_sales_billion:.2f}"
+                    f"億円）が目標の"
+                    f"{target_sales:.1f}億円"
+                    "に届いていません。"
+                )
             })
 
         # 手動調整結果の希望合致率の計算
-        pref_match = calculate_preference_match(assignment, all_employees_list)
+        pref_match = calculate_preference_match(
+            assignment,
+            all_employees_list
+        )
 
         return {
             "scenario": {
@@ -572,15 +1019,27 @@ async def recalculate_manual_assignment(request: Request):
                 "departments": departments_result,
                 "preferenceMatch": pref_match,
             },
+
             "meta": {
                 "alerts": alerts,
-                "preferredMatchCount": pref_match["firstChoiceMatchCount"],
-                "preferredMatchRate": pref_match["matchRate"],
+                "preferredMatchCount": (
+                    pref_match[
+                        "firstChoiceMatchCount"
+                    ]
+                ),
+                "preferredMatchRate": (
+                    pref_match[
+                        "matchRate"
+                    ]
+                ),
             }
         }
 
     except Exception as e:
-        print(f"再計算エラー詳細: {str(e)}")
+        print(
+            f"再計算エラー詳細: {str(e)}"
+        )
+
         raise HTTPException(
             status_code=400,
             detail=f"配置再計算エラー: {str(e)}",
@@ -594,50 +1053,194 @@ async def recalculate_manual_assignment(request: Request):
 async def reoptimize_with_target(request: Request):
     try:
         raw_body = await request.json()
-        employees_raw = raw_body.get("employees", [])
+
+        employees_raw = raw_body.get(
+            "employees",
+            []
+        )
 
         employees = []
-        for e in employees_raw:
-            emp_dict = {
-                "employee_id": str(e.get("employee_id") or e.get("id") or ""),
-                "sales": float(e.get("sales") or e.get("sales_ability") or 60.0),
-                "management": float(e.get("management") or e.get("management_ability") or 60.0),
-                "development": float(e.get("development") or e.get("development_ability") or 60.0),
-                "training": float(e.get("training") or e.get("training_ability") or 60.0),
-                "personnel_cost": float(e.get("personnel_cost") or e.get("cost") or 10.0),
-                "cost": float(e.get("personnel_cost") or e.get("cost") or 10.0),
-                "preferred_dept": str(e.get("preferred_dept") or e.get("desiredDepartment") or ""),
-            }
-            emp_dict["contributions"] = calculate_all_contributions(emp_dict)
-            employees.append(emp_dict)
 
-        employees = enrich_employees_with_preferences(employees)
+        for e in employees_raw:
+
+            emp_dict = {
+                "employee_id": str(
+                    e.get("employee_id")
+                    or e.get("id")
+                    or ""
+                ),
+
+                "sales": float(
+                    e.get("sales")
+                    or e.get("sales_ability")
+                    or 60.0
+                ),
+
+                "management": float(
+                    e.get("management")
+                    or e.get("management_ability")
+                    or 60.0
+                ),
+
+                "development": float(
+                    e.get("development")
+                    or e.get("development_ability")
+                    or 60.0
+                ),
+
+                "training": float(
+                    e.get("training")
+                    or e.get("training_ability")
+                    or 60.0
+                ),
+
+                "personnel_cost": float(
+                    e.get("personnel_cost")
+                    or e.get("cost")
+                    or 10.0
+                ),
+
+                "cost": float(
+                    e.get("personnel_cost")
+                    or e.get("cost")
+                    or 10.0
+                ),
+
+                "preferred_dept": str(
+                    e.get("preferred_dept")
+                    or e.get("desiredDepartment")
+                    or ""
+                ),
+            }
+
+            emp_dict["contributions"] = (
+                calculate_all_contributions(
+                    emp_dict
+                )
+            )
+
+            employees.append(
+                emp_dict
+            )
+
+        employees = (
+            enrich_employees_with_preferences(
+                employees
+            )
+        )
 
         loop = asyncio.get_running_loop()
 
-        task1 = loop.run_in_executor(executor, optimize_dynamic_adoption, employees, 58.0, "total_sales")
-        task2 = loop.run_in_executor(executor, optimize_dynamic_adoption, employees, 58.0, "a_profit")
-        task3 = loop.run_in_executor(executor, optimize_dynamic_adoption, employees, 58.0, "b_sales")
-        task4 = loop.run_in_executor(executor, optimize_dynamic_adoption, employees, 58.0, "c_sales")
+        task1 = loop.run_in_executor(
+            executor,
+            optimize_dynamic_adoption,
+            employees,
+            58.0,
+            "total_sales"
+        )
 
-        res1, res2, res3, res4 = await asyncio.gather(task1, task2, task3, task4)
+        task2 = loop.run_in_executor(
+            executor,
+            optimize_dynamic_adoption,
+            employees,
+            58.0,
+            "a_profit"
+        )
 
-        if res1 is None: res1 = optimize_total_sales(employees)
-        if res2 is None: res2 = optimize_a_profit(employees)
-        if res3 is None: res3 = optimize_b_sales(employees)
-        if res4 is None: res4 = optimize_c_sales(employees)
+        task3 = loop.run_in_executor(
+            executor,
+            optimize_dynamic_adoption,
+            employees,
+            58.0,
+            "b_sales"
+        )
+
+        task4 = loop.run_in_executor(
+            executor,
+            optimize_dynamic_adoption,
+            employees,
+            58.0,
+            "c_sales"
+        )
+
+        res1, res2, res3, res4 = (
+            await asyncio.gather(
+                task1,
+                task2,
+                task3,
+                task4,
+            )
+        )
+
+        if res1 is None:
+            res1 = optimize_total_sales(
+                employees
+            )
+
+        if res2 is None:
+            res2 = optimize_a_profit(
+                employees
+            )
+
+        if res3 is None:
+            res3 = optimize_b_sales(
+                employees
+            )
+
+        if res4 is None:
+            res4 = optimize_c_sales(
+                employees
+            )
 
         return {
             "scenarios": [
-                build_scenario_result(1, "シナリオ1：全社売上最大化", "全社売上", "全社売上", res1, employees),
-                build_scenario_result(2, "シナリオ2：A事業部利益最大化", "A利益", "A事業部利益", res2, employees),
-                build_scenario_result(3, "シナリオ3：B事業部売上最大化", "B売上", "B事業部売上", res3, employees),
-                build_scenario_result(4, "シナリオ4：C事業部売上最大化", "C売上", "C事業部売上", res4, employees),
+                build_scenario_result(
+                    1,
+                    "シナリオ1：全社売上最大化",
+                    "全社売上",
+                    "全社売上",
+                    res1,
+                    employees,
+                ),
+
+                build_scenario_result(
+                    2,
+                    "シナリオ2：A事業部利益最大化",
+                    "A利益",
+                    "A事業部利益",
+                    res2,
+                    employees,
+                ),
+
+                build_scenario_result(
+                    3,
+                    "シナリオ3：B事業部売上最大化",
+                    "B売上",
+                    "B事業部売上",
+                    res3,
+                    employees,
+                ),
+
+                build_scenario_result(
+                    4,
+                    "シナリオ4：C事業部売上最大化",
+                    "C売上",
+                    "C事業部売上",
+                    res4,
+                    employees,
+                ),
             ]
         }
+
     except Exception as e:
-        print(f"目標再最適化エラー: {str(e)}")
-        raise HTTPException(status_code=400, detail=f"再最適化エラー: {str(e)}")
+        print(
+            f"目標再最適化エラー: {str(e)}"
+        )
+
+        raise HTTPException(
+            status_code=400,
+            detail=f"再最適化エラー: {str(e)}"
+        )
 
 
 # ==================================================
@@ -647,31 +1250,106 @@ async def reoptimize_with_target(request: Request):
 async def adoption_threshold(request: Request):
     try:
         raw_body = await request.json()
-        baseline_scenarios_raw = raw_body.get("baseline_scenarios", [])
-        target_sales = float(raw_body.get("target_sales", 58.0))
+
+        baseline_scenarios_raw = (
+            raw_body.get(
+                "baseline_scenarios",
+                []
+            )
+        )
+
+        target_sales = float(
+            raw_body.get(
+                "target_sales",
+                58.0
+            )
+        )
 
         baseline_scenarios = []
+
         for s in baseline_scenarios_raw:
-            depts = s.get("departments", {})
+
+            depts = s.get(
+                "departments",
+                {}
+            )
+
             baseline_scenarios.append({
-                "id": int(s.get("id")),
-                "mode": str(s.get("mode")),
-                "totalSales": float(s.get("totalSales", 0.0)),
-                "totalProfit": float(s.get("totalProfit", 0.0)),
+                "id": int(
+                    s.get("id")
+                ),
+
+                "mode": str(
+                    s.get("mode")
+                ),
+
+                "totalSales": float(
+                    s.get(
+                        "totalSales",
+                        0.0
+                    )
+                ),
+
+                "totalProfit": float(
+                    s.get(
+                        "totalProfit",
+                        0.0
+                    )
+                ),
+
                 "departments": {
                     dept: {
-                        "count": int(depts.get(dept, {}).get("count", 0)),
-                        "ability": float(depts.get(dept, {}).get("ability", 0.0)),
-                        "sales": float(depts.get(dept, {}).get("sales", 0.0)),
+                        "count": int(
+                            depts.get(
+                                dept,
+                                {}
+                            ).get(
+                                "count",
+                                0
+                            )
+                        ),
+
+                        "ability": float(
+                            depts.get(
+                                dept,
+                                {}
+                            ).get(
+                                "ability",
+                                0.0
+                            )
+                        ),
+
+                        "sales": float(
+                            depts.get(
+                                dept,
+                                {}
+                            ).get(
+                                "sales",
+                                0.0
+                            )
+                        ),
                     }
                     for dept in ["A", "B", "C"]
                 },
             })
 
-        table = compute_adoption_threshold_table(baseline_scenarios, target_sales)
+        table = compute_adoption_threshold_table(
+            baseline_scenarios,
+            target_sales
+        )
 
         return table
 
     except Exception as e:
-        print(f"必要人材シミュレーションエラー: {str(e)}")
-        raise HTTPException(status_code=400, detail=f"必要人材シミュレーションエラー: {str(e)}")
+        print(
+            f"必要人材シミュレーションエラー: "
+            f"{str(e)}"
+        )
+
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "必要人材シミュレーションエラー: "
+                f"{str(e)}"
+            )
+        )

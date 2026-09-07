@@ -1,5 +1,3 @@
-<!-- src/app/components/management-report/management-report.html -->
-
 <div class="management-report" [class.composition-mode]="reportStep === 'composition'" [class.preview-mode]="reportStep === 'preview'">
   <header class="report-header no-print">
     <div class="report-title">
@@ -222,6 +220,7 @@
         @if (reportOptions.comparison) {
           <app-report-overview
             [validScenarios]="validScenarios"
+            [base100Scenarios]="base100Scenarios"
             [targetSales]="targetSales"
             [primaryScenarioId]="primaryScenarioId"
             [secondaryScenarioId]="secondaryScenarioId"
