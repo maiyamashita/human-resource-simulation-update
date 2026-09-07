@@ -23,6 +23,56 @@ YEN_PER_100_MILLION = 100_000_000
 YEN_PER_MILLION = 1_000_000
 
 
+def _calculate_max_bounds_for_dynamic_model(employees):
+    """
+    社員データから、各変数の実際の最大値を計算する。
+    これにより、NewIntVar の上限値を適切に設定できる。
+    """
+    max_growth_numerator = {}
+    max_growth_sales = {}
+    max_raw_sales = {}
+
+    n = len(employees)
+
+    for department in DEPARTMENTS:
+        # 貢献度を100倍した値をソートして、上位N名の合計を取得
+        contributions_scaled = sorted(
+            [
+                int(round(emp["contributions"][department] * 100))
+                for emp in employees
+            ],
+            reverse=True
+        )
+        # 動的設定での適正人数を取得
+        app_counts, _ = calculate_dynamic_settings(n)
+        appropriate = app_counts[department]
+        max_ability = sum(contributions_scaled[:appropriate])
+
+        # 基準売上（円）と成長率を計算
+        base_sales_yen = int(
+            round(BASE_SALES[department] * YEN_PER_100_MILLION)
+        )
+        growth_percent = int(round(GROWTH_RATE[department] * 100))
+
+        # growth_numerator の最大値
+        max_growth_numerator[department] = (
+            base_sales_yen * max_ability * growth_percent
+        )
+
+        # growth_sales の最大値
+        max_growth_sales[department] = (
+            max_growth_numerator[department] // 1_000_000
+        )
+
+        # raw_sales の最大値
+        # = (base_sales + growth_sales) × penalty
+        # penalty は 0-100 の範囲だが、最大100を想定
+        max_basic_sales = base_sales_yen + max_growth_sales[department]
+        max_raw_sales[department] = max_basic_sales * 100
+
+    return max_growth_numerator, max_growth_sales, max_raw_sales
+
+
 def calculate_dynamic_settings(total_employees: int):
     """
     全社員数 N 名に応じた適正人数と最低人数を動的に計算する。
@@ -74,6 +124,13 @@ def optimize_dynamic_adoption(
     # 動的に適正人数・最低人数を算出
     # ==================================================
     app_counts, min_counts = calculate_dynamic_settings(n)
+
+    # ==================================================
+    # 最大値を計算（変数上限の最適化）
+    # ==================================================
+    max_growth_numerator, max_growth_sales, max_raw_sales = (
+        _calculate_max_bounds_for_dynamic_model(sorted_employees)
+    )
 
     # ==================================================
     # 1. 社員配置
@@ -251,7 +308,7 @@ def optimize_dynamic_adoption(
 
         growth_numerator = model.NewIntVar(
             0,
-            10**18,
+            max_growth_numerator[department],
             f"{department}_growth_numerator"
         )
 
@@ -266,7 +323,7 @@ def optimize_dynamic_adoption(
 
         growth_sales = model.NewIntVar(
             0,
-            10**18,
+            max_growth_sales[department],
             f"{department}_growth_sales"
         )
 
@@ -300,7 +357,7 @@ def optimize_dynamic_adoption(
 
             raw_sales = model.NewIntVar(
                 0,
-                10**17,
+                max_raw_sales[department],
                 f"{department}_raw_sales"
             )
 
@@ -437,7 +494,8 @@ def optimize_dynamic_adoption(
 
     solver.parameters.random_seed = 42
     solver.parameters.num_search_workers = 1
-    solver.parameters.max_time_in_seconds = 30.0
+    # 1シナリオあたりの計算時間を 0.8秒 に制限（4シナリオで計約3.2秒）
+    solver.parameters.max_time_in_seconds = 0.8
 
     solver_start = time.perf_counter()
 

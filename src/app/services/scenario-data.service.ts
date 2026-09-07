@@ -1,6 +1,6 @@
 //このファイル名はsrc/app/services/scenario-data.service.tsです。
 
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, isDevMode } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { Observable } from 'rxjs';
@@ -120,8 +120,14 @@ export interface AdoptionThresholdBaselineScenario {
 })
 export class ScenarioDataService {
 
-  // RenderのバックエンドベースURL
-  private readonly baseUrl = 'https://backend-w5zi.onrender.com';
+  // --------------------------------------------------
+  // ★ API接続先ベースURL（ローカル開発と本番環境で自動切替）
+  // --------------------------------------------------
+  // ng serve (ローカル開発時) ➔ 'http://localhost:8000'
+  // ng build (本番Render環境) ➔ 'https://backend-w5zi.onrender.com'
+  private readonly baseUrl = isDevMode()
+    ? 'http://localhost:8000'
+    : 'https://backend-w5zi.onrender.com';
 
   // 100名 通常モード用API URL
   private readonly apiUrl = `${this.baseUrl}/api/scenarios`;

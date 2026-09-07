@@ -34,6 +34,56 @@ TARGET_SALES = 58 * YEN_PER_100_MILLION
 
 
 # ==================================================
+# 最大値計算（変数上限の最適化用）
+# ==================================================
+
+def _calculate_max_bounds_for_common_model(employees):
+    """
+    社員データから、各変数の実際の最大値を計算する。
+    これにより、NewIntVar の上限値を適切に設定できる。
+    """
+    max_growth_numerator = {}
+    max_growth_sales = {}
+    max_raw_sales = {}
+
+    for department in DEPARTMENTS:
+        # 貢献度を100倍した値をソートして、上位N名の合計を取得
+        contributions_scaled = sorted(
+            [
+                int(round(emp["contributions"][department] * 100))
+                for emp in employees
+            ],
+            reverse=True
+        )
+        appropriate = DEPARTMENT_SETTINGS[department]["appropriate_count"]
+        max_ability = sum(contributions_scaled[:appropriate])
+
+        # 基準売上（円）と成長率を計算
+        base_sales_yen = int(
+            round(BASE_SALES[department] * YEN_PER_100_MILLION)
+        )
+        growth_percent = int(round(GROWTH_RATE[department] * 100))
+
+        # growth_numerator の最大値
+        max_growth_numerator[department] = (
+            base_sales_yen * max_ability * growth_percent
+        )
+
+        # growth_sales の最大値
+        max_growth_sales[department] = (
+            max_growth_numerator[department] // 1_000_000
+        )
+
+        # raw_sales の最大値
+        # = (base_sales + growth_sales) × penalty
+        # penalty は 0-100 の範囲だが、最大100を想定
+        max_basic_sales = base_sales_yen + max_growth_sales[department]
+        max_raw_sales[department] = max_basic_sales * 100
+
+    return max_growth_numerator, max_growth_sales, max_raw_sales
+
+
+# ==================================================
 # 共通最適化モデル
 # ==================================================
 
@@ -57,6 +107,13 @@ def build_common_model(employees):
     model = cp_model.CpModel()
 
     n = len(employees)
+
+    # ==================================================
+    # 最大値を計算（変数上限の最適化）
+    # ==================================================
+    max_growth_numerator, max_growth_sales, max_raw_sales = (
+        _calculate_max_bounds_for_common_model(employees)
+    )
 
     # ==================================================
     # 1. 社員配置
@@ -334,7 +391,7 @@ def build_common_model(employees):
 
         growth_numerator = model.NewIntVar(
             0,
-            10**18,
+            max_growth_numerator[department],
             f"{department}_growth_numerator",
         )
 
@@ -348,7 +405,7 @@ def build_common_model(employees):
 
         growth_sales = model.NewIntVar(
             0,
-            10**18,
+            max_growth_sales[department],
             f"{department}_growth_sales",
         )
 
@@ -380,7 +437,7 @@ def build_common_model(employees):
 
         raw_sales = model.NewIntVar(
             0,
-            10**17,
+            max_raw_sales[department],
             f"{department}_raw_sales",
         )
 
@@ -509,7 +566,7 @@ def create_solver():
 
     # ★ 高速化設定
     # 1. タイムアウトを 3 秒に短縮（3秒以内でその時点の最良解を返す）
-    solver.parameters.max_time_in_seconds = 30.0
+    solver.parameters.max_time_in_seconds = 0.8
 
     # 2. 再現性を優先し、シングルスレッド・固定シードを基本とする
     #    （AddElement化によりモデルが大幅に軽量化されたため、
