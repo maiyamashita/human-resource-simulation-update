@@ -565,12 +565,13 @@ def create_solver():
     solver = cp_model.CpSolver()
 
     # ★ 高速化設定
-    # 1. タイムアウトを 3 秒に短縮（3秒以内でその時点の最良解を返す）
-    solver.parameters.max_time_in_seconds = 0.8
+    # 1. タイムアウトを 12 秒に設定
+    #    （ローカル環境では数秒で終了、Render等の制限環境でも OPTIMAL/FEASIBLE に到達できるよう余裕を持たせた）
+    solver.parameters.max_time_in_seconds = 12
 
     # 2. 再現性を優先し、シングルスレッド・固定シードを基本とする
     #    （AddElement化によりモデルが大幅に軽量化されたため、
-    #     並列化なしでも3秒以内にOPTIMALへ到達できる）
+    #     並列化なしでも数秒以内にOPTIMALへ到達できる）
     solver.parameters.num_search_workers = 1
     solver.parameters.random_seed = 42
 
@@ -588,7 +589,17 @@ def get_assignment_result(
     employees,
     assignment,
     solver,
+    status=None,
 ):
+    # status が OPTIMAL/FEASIBLE でない場合は結果を構築できない
+    if status is not None and status not in (
+        cp_model.OPTIMAL,
+        cp_model.FEASIBLE,
+    ):
+        return {
+            department: []
+            for department in DEPARTMENTS
+        }
 
     result = {
         department: []

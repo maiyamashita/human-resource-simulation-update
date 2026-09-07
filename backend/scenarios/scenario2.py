@@ -47,64 +47,69 @@ def optimize_a_profit(employees):
         employees,
         model_data["assignment"],
         solver,
+        status,
     )
 
-    return {
-        # 配置
-        "assignment": assignment,
+    try:
+        return {
+            # 配置
+            "assignment": assignment,
 
-        # 全社
-        "total_sales": solver.Value(
-            model_data["total_sales"]
-        ),
+            # 全社
+            "total_sales": solver.Value(
+                model_data["total_sales"]
+            ),
 
-        "total_profit": solver.Value(
-            model_data["total_profit"]
-        ),
+            "total_profit": solver.Value(
+                model_data["total_profit"]
+            ),
 
-        # 事業部売上
-        "sales": {
-            department: solver.Value(
-                model_data["final_sales"][department]
-            )
-            for department in DEPARTMENTS
-        },
+            # 事業部売上
+            "sales": {
+                department: solver.Value(
+                    model_data["final_sales"][department]
+                )
+                for department in DEPARTMENTS
+            },
 
-        # 事業部利益
-        "profit": {
-            department: solver.Value(
-                model_data["profit"][department]
-            )
-            for department in DEPARTMENTS
-        },
+            # 事業部利益
+            "profit": {
+                department: solver.Value(
+                    model_data["profit"][department]
+                )
+                for department in DEPARTMENTS
+            },
 
-        # シナリオ固有目的値
-        "profit_a": solver.Value(
-            model_data["profit"]["A"]
-        ),
+            # シナリオ固有目的値
+            "profit_a": solver.Value(
+                model_data["profit"]["A"]
+            ),
 
-        # 比較用
-        "b_sales": solver.Value(
-            model_data["final_sales"]["B"]
-        ),
+            # 比較用
+            "b_sales": solver.Value(
+                model_data["final_sales"]["B"]
+            ),
 
-        "c_sales": solver.Value(
-            model_data["final_sales"]["C"]
-        ),
+            "c_sales": solver.Value(
+                model_data["final_sales"]["C"]
+            ),
 
-        # 人数
-        "count": {
-            department: solver.Value(
-                model_data["count"][department]
-            )
-            for department in DEPARTMENTS
-        },
+            # 人数
+            "count": {
+                department: solver.Value(
+                    model_data["count"][department]
+                )
+                for department in DEPARTMENTS
+            },
 
-        # 能力値
-        "ability": {
-            department: solver.Value(
-                model_data["ability"][department]
-            )
-            for department in DEPARTMENTS
-        },
-    }
+            # 能力値
+            "ability": {
+                department: solver.Value(
+                    model_data["ability"][department]
+                )
+                for department in DEPARTMENTS
+            },
+        }
+    except Exception as e:
+        print(f"Failed to extract solver values from scenario2: {e}")
+        return None

@@ -46,48 +46,53 @@ def optimize_c_sales(employees):
         employees,
         model_data["assignment"],
         solver,
+        status,
     )
 
-    return {
-        "assignment": assignment,
+    try:
+        return {
+            "assignment": assignment,
 
-        "total_sales": solver.Value(
-            model_data["total_sales"]
-        ),
+            "total_sales": solver.Value(
+                model_data["total_sales"]
+            ),
 
-        "c_sales": solver.Value(
-            model_data["final_sales"]["C"]
-        ),
+            "c_sales": solver.Value(
+                model_data["final_sales"]["C"]
+            ),
 
-        "count": {
-            department: solver.Value(
-                model_data["count"][department]
-            )
-            for department in DEPARTMENTS
-        },
+            "count": {
+                department: solver.Value(
+                    model_data["count"][department]
+                )
+                for department in DEPARTMENTS
+            },
 
-        "ability": {
-            department: solver.Value(
-                model_data["ability"][department]
-            )
-            for department in DEPARTMENTS
-        },
+            "ability": {
+                department: solver.Value(
+                    model_data["ability"][department]
+                )
+                for department in DEPARTMENTS
+            },
 
-        "sales": {
-            department: solver.Value(
-                model_data["final_sales"][department]
-            )
-            for department in DEPARTMENTS
-        },
+            "sales": {
+                department: solver.Value(
+                    model_data["final_sales"][department]
+                )
+                for department in DEPARTMENTS
+            },
 
-        "profit": {
-            department: solver.Value(
-                model_data["profit"][department]
-            )
-            for department in DEPARTMENTS
-        },
+            "profit": {
+                department: solver.Value(
+                    model_data["profit"][department]
+                )
+                for department in DEPARTMENTS
+            },
 
-        "total_profit": solver.Value(
-            model_data["total_profit"]
-        ),
-    }
+            "total_profit": solver.Value(
+                model_data["total_profit"]
+            ),
+        }
+    except Exception as e:
+        print(f"Failed to extract solver values from scenario4: {e}")
+        return None

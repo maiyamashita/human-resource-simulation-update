@@ -494,8 +494,9 @@ def optimize_dynamic_adoption(
 
     solver.parameters.random_seed = 42
     solver.parameters.num_search_workers = 1
-    # 1シナリオあたりの計算時間を 0.8秒 に制限（4シナリオで計約3.2秒）
-    solver.parameters.max_time_in_seconds = 0.8
+    # タイムアウトを 15 秒に設定
+    # （ローカル環境では数秒で終了、Render等の制限環境でも OPTIMAL/FEASIBLE に到達できるよう余裕を持たせた）
+    solver.parameters.max_time_in_seconds = 15
 
     solver_start = time.perf_counter()
 
@@ -541,86 +542,94 @@ def optimize_dynamic_adoption(
         return None
 
     # ==================================================
-    # 13. 結果の構築
+    # 13. 結果の構築（solver.Value() 呼び出しで例外が発生しないよう try-catch で保護）
     # ==================================================
-    assignment_res = {
-        department: []
-        for department in DEPARTMENTS
-    }
-
-    for employee in sorted_employees:
-
-        employee_id = str(
-            employee["employee_id"]
-        )
-
-        for department in DEPARTMENTS:
-
-            if solver.Value(
-                assignment[
-                    employee_id
-                ][department]
-            ):
-
-                assignment_res[
-                    department
-                ].append(employee_id)
-
-                break
-
-    return {
-        "assignment": assignment_res,
-
-        "total_sales": solver.Value(
-            total_sales
-        ),
-
-        "total_profit": solver.Value(
-            total_profit
-        ),
-
-        "sales": {
-            d: solver.Value(
-                final_sales[d]
-            )
-            for d in DEPARTMENTS
-        },
-
-        "profit": {
-            d: solver.Value(
-                profit[d]
-            )
-            for d in DEPARTMENTS
-        },
-
-        "a_profit": solver.Value(
-            profit["A"]
-        ),
-
-        "b_sales": solver.Value(
-            final_sales["B"]
-        ),
-
-        "c_sales": solver.Value(
-            final_sales["C"]
-        ),
-
-        "count": {
-            d: solver.Value(
-                count[d]
-            )
-            for d in DEPARTMENTS
-        },
-
-        "ability": {
-            d: solver.Value(
-                ability[d]
-            )
-            for d in DEPARTMENTS
-        },
-
-        "dynamic_settings": {
-            "appropriate_counts": app_counts,
-            "minimum_counts": min_counts
+    try:
+        assignment_res = {
+            department: []
+            for department in DEPARTMENTS
         }
-    }
+
+        for employee in sorted_employees:
+
+            employee_id = str(
+                employee["employee_id"]
+            )
+
+            for department in DEPARTMENTS:
+
+                if solver.Value(
+                    assignment[
+                        employee_id
+                    ][department]
+                ):
+
+                    assignment_res[
+                        department
+                    ].append(employee_id)
+
+                    break
+
+        return {
+            "assignment": assignment_res,
+
+            "total_sales": solver.Value(
+                total_sales
+            ),
+
+            "total_profit": solver.Value(
+                total_profit
+            ),
+
+            "sales": {
+                d: solver.Value(
+                    final_sales[d]
+                )
+                for d in DEPARTMENTS
+            },
+
+            "profit": {
+                d: solver.Value(
+                    profit[d]
+                )
+                for d in DEPARTMENTS
+            },
+
+            "a_profit": solver.Value(
+                profit["A"]
+            ),
+
+            "b_sales": solver.Value(
+                final_sales["B"]
+            ),
+
+            "c_sales": solver.Value(
+                final_sales["C"]
+            ),
+
+            "count": {
+                d: solver.Value(
+                    count[d]
+                )
+                for d in DEPARTMENTS
+            },
+
+            "ability": {
+                d: solver.Value(
+                    ability[d]
+                )
+                for d in DEPARTMENTS
+            },
+
+            "dynamic_settings": {
+                "appropriate_counts": app_counts,
+                "minimum_counts": min_counts
+            }
+        }
+
+    except Exception as e:
+        print(
+            f"[DynamicOptimizer] "
+            f"Failed to extract solver values: {e}"
+        )
+        return None
