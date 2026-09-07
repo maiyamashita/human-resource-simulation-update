@@ -42,3 +42,8 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+__pycache__/
+*.pyc
+.venv/
+node_modules/

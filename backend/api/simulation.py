@@ -4,6 +4,28 @@ import tempfile
 import os
 import json
 import asyncio
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+# 許可するフロントエンドのURLを追加
+origins = [
+    "https://maiyamashita.github.io/human-resource-simulation-update/", # これから公開するGitHub PagesのURL
+    "http://localhost:4200",          # パソコンでの開発用
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# --- ここから下にいつものAPIの処理が続く ---
+
 from concurrent.futures import ThreadPoolExecutor
 from typing import Optional, List, Dict, Any, Union
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Request
