@@ -120,16 +120,19 @@ export interface AdoptionThresholdBaselineScenario {
 })
 export class ScenarioDataService {
 
+  // RenderのバックエンドベースURL
+  private readonly baseUrl = 'https://backend-w5zi.onrender.com';
+
   // 100名 通常モード用API URL
-  private readonly apiUrl = '/api/scenarios';
+  private readonly apiUrl = `${this.baseUrl}/api/scenarios`;
   // 追加採用 モード用API URL
-  private readonly adoptionApiUrl = '/api/scenarios/with-adoption';
+  private readonly adoptionApiUrl = `${this.baseUrl}/api/scenarios/with-adoption`;
   // 手動調整・リアルタイム再計算用API URL
-  private readonly recalculateApiUrl = '/api/scenarios/recalculate';
+  private readonly recalculateApiUrl = `${this.baseUrl}/api/scenarios/recalculate`;
   // 目標売上動的再最適化用API URL
-  private readonly reoptimizeApiUrl = '/api/scenarios/reoptimize';
+  private readonly reoptimizeApiUrl = `${this.baseUrl}/api/scenarios/reoptimize`;
   // 必要人材の目安（4ペルソナ x 4シナリオ）試算用API URL
-  private readonly adoptionThresholdApiUrl = '/api/scenarios/adoption-threshold';
+  private readonly adoptionThresholdApiUrl = `${this.baseUrl}/api/scenarios/adoption-threshold`;
 
   // inject 関数を使用して確実に依存注入（NG2003 エラー回避）
   private http = inject(HttpClient);
