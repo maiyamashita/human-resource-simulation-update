@@ -532,7 +532,7 @@ def optimize_dynamic_adoption(
     solver.parameters.num_search_workers = 1
     # タイムアウトを 15 秒に設定
     # （ローカル環境では数秒で終了、Render等の制限環境でも OPTIMAL/FEASIBLE に到達できるよう余裕を持たせた）
-    solver.parameters.max_time_in_seconds = 15
+    solver.parameters.max_time_in_seconds = 60
 
     solver_start = time.perf_counter()
 
@@ -1351,7 +1351,7 @@ def optimize_fixed_adoption(
 
     solver.parameters.random_seed = 42
     solver.parameters.num_search_workers = 1
-    solver.parameters.max_time_in_seconds = 15
+    solver.parameters.max_time_in_seconds = 60
 
     solver_start = time.perf_counter()
 
