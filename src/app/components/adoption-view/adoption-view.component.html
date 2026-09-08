@@ -34,7 +34,7 @@
 
       @if (snapshots.length > 0) {
         <div class="snapshot-history-chips-container">
-          <span class="history-chip-label">保存済みプラン一覧:</span>
+          <span class="history-chip-label">保存済みプラン:</span>
           <div class="history-chips-scroll">
             @for (sn of snapshots; track sn.id) {
               <div 
@@ -44,7 +44,7 @@
                 <button type="button" class="btn-chip-apply" (click)="applySnapshot(sn)">
                   <span class="chip-title">{{ sn.name }}</span>
                   <span class="chip-metric">
-                    +{{ sn.candidateCount }}名 / 改善効果: {{ sn.profitDiff > 0 ? '+' : '' }}{{ sn.profitDiff | number:'1.2-2' }}億円
+                    +{{ sn.candidateCount }}名 / {{ sn.profitDiff > 0 ? '+' : '' }}{{ sn.profitDiff | number:'1.2-2' }}億円
                   </span>
                 </button>
                 <button type="button" class="btn-chip-delete" title="削除" (click)="deleteSnapshot(sn.id)">✕</button>
@@ -60,7 +60,7 @@
   <!-- メイン2カラム構造 -->
   <div class="adoption-main-grid">
 
-    <!-- 左カラム：試算前後の優先度自動切替（試算後は改善効果が左上へ昇格） -->
+    <!-- 左カラム：試算前後の優先度自動切替 -->
     <div class="adoption-col-main-results">
 
       @if (isAdoptionCalculated) {
@@ -72,7 +72,7 @@
           [candidates]="candidateEmployees"
         ></app-adoption-diff>
 
-        <!-- 脇役（推奨ペルソナ）は左下へコンパクト配置 -->
+        <!-- 脇役（推奨ペルソナ）は左下へ配置 -->
         <div class="persona-sub-container">
           <app-adoption-threshold
             [baseScenarios]="base100Scenarios"
@@ -81,7 +81,7 @@
           ></app-adoption-threshold>
         </div>
       } @else {
-        <!-- 【試算実行前（初期表示）】：主役（推奨ペルソナ）を左上に配置 -->
+        <!-- 【試算実行前】：主役（推奨ペルソナ）を左上に配置 -->
         <div class="persona-main-container">
           <app-adoption-threshold
             [baseScenarios]="base100Scenarios"
@@ -101,7 +101,7 @@
 
     </div>
 
-    <!-- 右カラム：設定・候補者入力（条件設定および手動実行ボタン） -->
+    <!-- 右カラム：設定・候補者入力 -->
     <div class="adoption-col-side-controls">
       <app-adoption-control
         [mode]="adoptionMode"
@@ -114,22 +114,33 @@
 
   </div>
 
-  <!-- 下部：社員マスタアップデート -->
+  <!-- 下部：社員マスタアップデート（素のHTMLボタンをモダナイズ） -->
   <div class="csv-update-section">
     <div class="csv-card">
       <div class="csv-header-text">
         <strong>社員マスタデータの変更・再読み込み</strong>
         <span>最新の100名組織データ（CSV）をシステムへ再インポートします</span>
       </div>
+      
       <div class="csv-action-row">
-        <input
-          id="csv-file-reupload"
-          type="file"
-          accept=".csv,text/csv"
-          (change)="onCsvFileChange($event)"
-          class="csv-file-input"
-        />
-        <span class="success-message">適用中の既存社員マスタ: <strong>{{ employees.length }} 名</strong></span>
+        <!-- カスタムファイルアップロードボタン -->
+        <div class="custom-file-upload">
+          <label for="csv-file-reupload" class="custom-file-btn">
+            <span class="icon">📁</span>
+            <span>ファイルを選択</span>
+          </label>
+          <input
+            id="csv-file-reupload"
+            type="file"
+            accept=".csv,text/csv"
+            (change)="onCsvFileChange($event)"
+            class="csv-file-input-hidden"
+          />
+        </div>
+
+        <span class="success-message">
+          適用中の既存社員マスタ: <strong>{{ employees.length }} 名</strong>
+        </span>
       </div>
     </div>
   </div>

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectorRef, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -39,8 +39,18 @@ interface ReportOptions {
   templateUrl: './management-report.html',
   styleUrl: './management-report.css'
 })
-export class ManagementReportComponent {
+export class ManagementReportComponent implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
+
+  /** printStylePreset ごとの @page size 値。CSSの@pageはクラスで切り替えられないため、
+   *  <head> に注入する<style>要素の中身をここから動的に生成する。 */
+  private static readonly PAGE_SIZE_BY_PRESET: Record<PrintStylePreset, string> = {
+    'a4-landscape': 'A4 landscape',
+    'a4-portrait': 'A4 portrait',
+    'a3-landscape': 'A3 landscape'
+  };
+
+  private pageStyleEl: HTMLStyleElement | null = null;
 
   @Input() scenarios: Scenario[] = [];
   @Input() base100Scenarios: Scenario[] = [];
@@ -108,6 +118,33 @@ export class ManagementReportComponent {
     );
   }
 
+  ngOnInit(): void {
+    this.applyPageStyle(this.printStylePreset);
+  }
+
+  ngOnDestroy(): void {
+    this.pageStyleEl?.remove();
+    this.pageStyleEl = null;
+  }
+
+  /**
+   * 出力サイズ設定（用紙プリセット）変更時のハンドラ。
+   * @page はクラスセレクタに反応できないため、<head> に注入した<style>を書き換えて連動させる。
+   */
+  onPresetChange(preset: PrintStylePreset): void {
+    this.applyPageStyle(preset);
+  }
+
+  private applyPageStyle(preset: PrintStylePreset): void {
+    if (!this.pageStyleEl) {
+      this.pageStyleEl = document.createElement('style');
+      this.pageStyleEl.id = 'management-report-page-style';
+      document.head.appendChild(this.pageStyleEl);
+    }
+    const size = ManagementReportComponent.PAGE_SIZE_BY_PRESET[preset];
+    this.pageStyleEl.textContent = `@page { size: ${size}; margin: 8mm 10mm; }`;
+  }
+
   /**
    * STEP 2 (プレビュー表示) へ切り替え
    * DOM構築を検知させてからリサイズイベントを通知し、グラフの初回レンダリング崩れを防止する
@@ -153,6 +190,7 @@ export class ManagementReportComponent {
    * 描画中のコンポーネントがある場合に備えて最新化を行った後に印刷命令を実行する
    */
   printReport(): void {
+    this.applyPageStyle(this.printStylePreset);
     this.cdr.detectChanges();
     setTimeout(() => {
       window.print();

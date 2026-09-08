@@ -1,12 +1,10 @@
-/* src/app/components/header/header.css */
-
 .app-header-compact {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 40px; /* パッドを少し抑えて縦幅をコンパクトに */
+  height: 40px;
   padding: 0 16px;
-  background: #0f172a; /* 落ち着いたダークスチール */
+  background: #0f172a;
   border-bottom: 1px solid #1e293b;
   color: #f8fafc;
   box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2);
@@ -27,7 +25,7 @@
 }
 
 .logo-icon {
-  display: none; /* ポップなアイコンを消去 */
+  display: none;
 }
 
 .app-title {
@@ -39,7 +37,6 @@
   font-family: var(--exec-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
 }
 
-/* 「PRO」バッジを社内ツールらしい静粛なタグに変更 */
 .version-tag {
   background: #1e3a8a;
   color: #ffffff;
@@ -237,7 +234,9 @@
   font-size: 0.78rem;
 }
 
-/* モーダル表示制御 */
+/* ==================================================
+   モーダル共通スタイル（文字視認性 ＆ スクロールバー制御）
+================================================== */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -258,13 +257,14 @@
   background: #ffffff;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+  overflow: hidden !important; /* 横スクロール遮断 */
+  box-sizing: border-box;
   animation: modalSlideUp 0.15s ease-out;
 }
 
 .modal-content-sm {
-  max-width: 420px;
+  max-width: 440px;
 }
 
 @keyframes modalSlideUp {
@@ -276,7 +276,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 16px;
+  padding: 12px 18px;
   background: #0f172a;
   color: #ffffff;
   border-bottom: 1px solid #1e293b;
@@ -313,29 +313,56 @@
 }
 
 .modal-body {
-  padding: 16px 20px;
+  padding: 18px 20px;
   max-height: 68vh;
   overflow-y: auto;
+  overflow-x: hidden !important; /* ★横スクロールを強制除去 */
   color: #334155;
   font-size: 0.82rem;
   line-height: 1.6;
+  box-sizing: border-box;
+}
+
+/* ★文字視認性向上: 保存モーダル内の説明テキスト */
+.modal-description {
+  margin: 0 0 14px 0;
+  font-size: 0.8rem;
+  color: #475569 !important; /* 濃いスレートグレーで白背景でもはっきり見せる */
+  line-height: 1.5;
+}
+
+.save-input-group {
+  margin-top: 8px;
+}
+
+.save-input-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #334155; /* 黒寄りの色に変更 */
+  display: block;
+  margin-bottom: 4px;
 }
 
 .save-name-input {
   width: 100%;
+  box-sizing: border-box; /* 要素の溢れを防止 */
   padding: 8px 12px;
   background: #ffffff;
   border: 1px solid #cbd5e1;
   border-radius: 4px;
   color: #0f172a;
   font-size: 0.85rem;
+  font-weight: 600;
   outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .save-name-input:focus {
   border-color: #1e3a8a;
+  box-shadow: 0 0 0 2px rgba(30, 58, 138, 0.15);
 }
 
+/* ガイド用スタイル */
 .guide-section {
   margin-bottom: 16px;
 }
@@ -426,7 +453,7 @@
 }
 
 .modal-footer {
-  padding: 10px 16px;
+  padding: 12px 18px;
   background: #f8fafc;
   border-top: 1px solid #e2e8f0;
   display: flex;
@@ -438,10 +465,16 @@
   background: #ffffff;
   color: #475569;
   border: 1px solid #cbd5e1;
-  padding: 5px 14px;
+  padding: 6px 14px;
   border-radius: 4px;
   font-size: 0.78rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-secondary-cancel:hover {
+  background: #f1f5f9;
 }
 
 .btn-primary-save,
@@ -449,11 +482,12 @@
   background: #1e3a8a;
   color: #ffffff;
   border: none;
-  padding: 5px 16px;
+  padding: 6px 16px;
   border-radius: 4px;
   font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .btn-primary-save:hover,

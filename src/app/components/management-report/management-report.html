@@ -1,4 +1,4 @@
-<div class="management-report" [class.composition-mode]="reportStep === 'composition'" [class.preview-mode]="reportStep === 'preview'">
+<div class="management-report" [class]="printStylePreset" [class.composition-mode]="reportStep === 'composition'" [class.preview-mode]="reportStep === 'preview'">
   <header class="report-header no-print">
     <div class="report-title">
       <h1>経営会議レポート作成</h1>
@@ -198,7 +198,7 @@
           <!-- レイアウト・用紙サイズ選択（CSS @page へ直接自動連動） -->
           <div class="layout-preset-group">
             <span class="preset-label">出力サイズ設定：</span>
-            <select class="preset-select" [(ngModel)]="printStylePreset">
+            <select class="preset-select" [(ngModel)]="printStylePreset" (ngModelChange)="onPresetChange($event)">
               <option value="a4-landscape">A4 横向き (推奨・標準)</option>
               <option value="a4-portrait">A4 縦向き</option>
               <option value="a3-landscape">A3 横向き (大型プロジェクター / ワイド印刷用)</option>

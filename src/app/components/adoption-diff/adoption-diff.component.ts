@@ -1,5 +1,3 @@
-// src/app/components/adoption-diff/adoption-diff.component.ts
-
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Scenario } from '../../models/scenario.model';
@@ -96,12 +94,13 @@ type DeptKey = 'A' | 'B' | 'C';
             </div>
           }
         } @else {
-          <!-- 未試算ガイド表示 -->
+          <!-- 【デザイン改善】未試算ガイド表示（モダンカード化） -->
           <div class="placeholder-guide-box">
             <div class="guide-inner">
+              <div class="guide-icon">📊</div>
               <strong class="guide-title">追加採用シミュレーション未実行</strong>
               <p class="guide-desc">
-                右側で条件や採用人数を設定し、<strong>「この条件で再シミュレーションを実行」</strong> ボタンをクリックしてください。<br>
+                右側で条件や採用人数を設定し、<span class="highlight-btn-text">「この条件で再シミュレーションを実行」</span> ボタンをクリックしてください。<br>
                 試算実行後、全社売上増分・追加コスト・純増利益のインパクトがここに反映されます。
               </p>
             </div>
@@ -111,7 +110,7 @@ type DeptKey = 'A' | 'B' | 'C';
       </div>
     </section>
   `,
-  styleUrl: './adoption-diff.component.css' // ★ styles: [...] を消して外部CSS参照に変更
+  styleUrl: './adoption-diff.component.css'
 })
 export class AdoptionDiffComponent {
   @Input() mode: 'standard' | 'adoption' = 'standard';

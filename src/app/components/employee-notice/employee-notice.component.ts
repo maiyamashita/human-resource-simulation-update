@@ -319,7 +319,7 @@ export class EmployeeNoticeComponent implements OnChanges {
       case 'A':
 
         return {
-          name: 'A事業部（飽和/既存事業）',
+          name: 'A事業部',
           mission:
             '既存収益基盤の維持・組織運営の最大効率化'
         };
@@ -328,7 +328,7 @@ export class EmployeeNoticeComponent implements OnChanges {
       case 'B':
 
         return {
-          name: 'B事業部（成長事業）',
+          name: 'B事業部',
           mission:
             '営業力の集中的発揮とスケールメリットによる売上拡大'
         };
@@ -337,7 +337,7 @@ export class EmployeeNoticeComponent implements OnChanges {
       case 'C':
 
         return {
-          name: 'C事業部（新規事業）',
+          name: 'C事業部',
           mission:
             '高い開拓力を活かした新市場創出と将来成長の牽引'
         };

@@ -475,28 +475,37 @@
   margin-bottom: 8px;
 }
 
-/* レポート本文領域（画面表示用） */
+/* レポート本文領域 */
 .report-document-body {
   width: 100%;
 }
 
 /* ==========================================================================
-   ★ 印刷用スタイル (@media print) 空白・改ページ最適化 ★
+   ★ 印刷用スタイル (@media print) 画面崩れ・見切れ完全修復 ★
    ========================================================================== */
 
 @media print {
-  /* 1. 不要な画面用操作パーツを非表示 */
+  /* 1. 操作画面用UIを完全に隠す */
   .no-print,
   .report-header,
   .preview-control-toolbar,
   .close-button,
-  .report-step-indicator {
+  .report-step-indicator,
+  .composition-bottom-bar {
     display: none !important;
   }
 
-  /* 2. 親要素のスクロール・Flex構造・高さ固定をすべて解体してフルオープン */
-  html, 
-  body, 
+  /* 2. 印刷時のページ余白設定
+     実際の用紙サイズ（A4横/A4縦/A3横）は @page がクラスに反応できないため、
+     ManagementReportComponent が printStylePreset の変更に応じて
+     <head> に @page ルールを動的注入することで切り替える（management-report.ts 参照）。
+     ここではJS注入が万一失敗した場合のフォールバックとして標準値を定義する。 */
+  @page {
+    size: A4 landscape;
+    margin: 8mm 10mm;
+  }
+
+  /* 3. コンテナの固定高さ・スクロール指定を解体して全開にする */
   :host,
   .management-report,
   .report-section,
@@ -504,6 +513,7 @@
   .report-document-body {
     display: block !important;
     position: static !important;
+    width: 100% !important;
     height: auto !important;
     min-height: 0 !important;
     max-height: none !important;
@@ -513,26 +523,39 @@
     margin: 0 !important;
     box-shadow: none !important;
     border: none !important;
-    width: 100% !important;
   }
 
-  /* 3. 子コンポーネントタグを明示的にブロック要素化 */
+  /* 4. 各コンポーネントごとの改ページ制御 */
   app-report-overview,
   app-report-forecast,
+  .supplementary-preview {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    /* 1つのレポート項目ごとにきれいに改ページ */
+    break-after: page !important;
+    page-break-after: always !important;
+  }
+
+  /* 補足資料の中身 */
   app-report-employee-list,
   app-report-calculation,
   app-report-adoption,
   app-report-skill-gap {
     display: block !important;
     position: static !important;
+    width: 100% !important;
     height: auto !important;
     overflow: visible !important;
-    width: 100% !important;
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+    margin-bottom: 20px !important;
   }
 
-  /* 4. Canvas・SVG・グラフ要素が印刷モードで破棄・空白化されるのを防ぐ */
-  canvas,
-  svg {
+  /* 5. グラフ/Canvas要素が印刷時に縮んだり破棄されるのを防ぐ */
+  canvas, svg {
     max-width: 100% !important;
     height: auto !important;
     display: block !important;
@@ -540,71 +563,9 @@
     page-break-inside: avoid !important;
   }
 
-  /* 5. 主要資料：1ページ内に収まるよう保護し、下部にマージンをとる */
-  app-report-overview,
-  app-report-forecast {
-    break-inside: avoid !important;
-    page-break-inside: avoid !important;
-    margin-bottom: 20px !important;
-  }
-
-  /* 6. 補足資料領域：強制改ページを解除し、自然に流す */
-  .supplementary-preview {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    margin-top: 0 !important;
-    padding: 0 !important;
-    border: none !important;
-  }
-
-  /* 見出し類がページの最下部に孤立するのを防止 */
-  .supplementary-preview h3,
-  .page-header,
-  .section-heading,
-  .card-header {
-    break-after: avoid !important;
-    page-break-after: avoid !important;
-  }
-
-  /* 7. 長い資料（名簿等）はコンポーネント単位の改ページ防止を解除して複数ページへの跨ぎを許可 */
-  app-report-employee-list,
-  app-report-calculation,
-  app-report-adoption,
-  app-report-skill-gap {
-    break-inside: auto !important;
-    page-break-inside: auto !important;
-    margin-bottom: 20px !important;
-  }
-
-  /* テーブルの行や各部門枠単位での崩れを抑える最小限の改ページ保護 */
-  tr, .employee-row, .department-column {
+  /* 表の途中で行が上下半分に切れるのを防止 */
+  tr, .employee-row, .card-body {
     break-inside: avoid !important;
     page-break-inside: avoid !important;
   }
 }
-
-/* @page 用紙定義 */
-@page {
-  margin: 10mm;
-}
-
-@page a4-ls {
-  size: A4 landscape;
-  margin: 10mm;
-}
-
-@page a4-pt {
-  size: A4 portrait;
-  margin: 10mm;
-}
-
-@page a3-ls {
-  size: A3 landscape;
-  margin: 10mm;
-}
-
-/* 用紙設定クラス連動 */
-.report-document-body.a4-landscape { page: a4-ls; }
-.report-document-body.a4-portrait  { page: a4-pt; }
-.report-document-body.a3-landscape  { page: a3-ls; }

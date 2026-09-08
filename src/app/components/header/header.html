@@ -78,6 +78,7 @@
   </div>
 </header>
 
+<!-- 保存モーダル -->
 @if (isSaveModalOpen) {
   <div class="modal-overlay" (click)="closeSaveModal()">
     <div class="modal-content modal-content-sm" (click)="$event.stopPropagation()">
@@ -90,11 +91,11 @@
       </div>
 
       <div class="modal-body">
-        <p style="margin-top: 0; font-size: 0.8rem; color: #cbd5e1;">
+        <p class="modal-description">
           会議中の調整結果（選択シナリオ・目標売上・追加採用人数など）を即座に保存します。
         </p>
         <div class="save-input-group">
-          <label style="font-size: 0.75rem; color: #94a3b8; display: block; margin-bottom: 4px;">保存名:</label>
+          <label class="save-input-label">保存名:</label>
           <input 
             type="text" 
             class="save-name-input" 
@@ -113,6 +114,7 @@
   </div>
 }
 
+<!-- 計算ロジックガイドモーダル -->
 @if (isGuideOpen) {
   <div class="modal-overlay" (click)="closeGuide()">
     <div class="modal-content" (click)="$event.stopPropagation()">
